@@ -23,8 +23,8 @@
 
     <div class="header-actions">
         <a href="#account">Account</a>
-        <a href="#wishlist">♡ Wishlist</a>
-        <a href="#cart">🛒 Cart <b>0</b></a>
+        <a href="#wishlist">♡ Wishlist <b class="wishlist-badge-count">0</b></a>
+        <a href="cart.html" id="cartHeaderBtn">🛒 Cart <b class="cart-badge-count">0</b></a>
     </div>
 </header>
 
@@ -38,16 +38,16 @@
             <p class="hero-text">Quality spare parts for reliable performance, easy ordering and fast delivery.</p>
 
             <div class="search-box">
-                <select>
-                    <option>All Categories</option>
-                    <option>Engine Parts</option>
-                    <option>Brake Parts</option>
-                    <option>Filters</option>
-                    <option>Batteries</option>
-                    <option>Lights</option>
+                <select id="heroSearchCategory">
+                    <option value="all">All Categories</option>
+                    <option value="engine-parts">Engine Parts</option>
+                    <option value="brake-parts">Brake Parts</option>
+                    <option value="filters">Filters</option>
+                    <option value="batteries">Batteries</option>
+                    <option value="lights">Lights</option>
                 </select>
-                <input type="text" placeholder="Search spare parts, model, OEM no...">
-                <button>SEARCH</button>
+                <input type="text" id="heroSearchInput" placeholder="Search spare parts, model, OEM no...">
+                <button id="heroSearchBtn">SEARCH</button>
             </div>
         </div>
     </section>
@@ -59,31 +59,31 @@
                 <p class="small-title">SHOP BY TYPE</p>
                 <h2>Categories</h2>
             </div>
-            <a href="#" class="view-link">View All →</a>
+            <a href="#productsSection" class="view-link">View All →</a>
         </div>
 
         <div class="category-grid">
-            <a href="#" class="category-card">
+            <a href="#productsSection" class="category-card" data-category="engine-parts">
                 <img src="images/engine.jpg" alt="Engine Parts">
                 <h3>Engine Parts</h3>
                 <p>120+ Products</p>
             </a>
-            <a href="#" class="category-card">
+            <a href="#productsSection" class="category-card" data-category="brake-parts">
                 <img src="images/brake.jpg" alt="Brake Parts">
                 <h3>Brake Parts</h3>
                 <p>80+ Products</p>
             </a>
-            <a href="#" class="category-card">
+            <a href="#productsSection" class="category-card" data-category="filters">
                 <img src="images/filter.jpg" alt="Filters">
                 <h3>Filters</h3>
                 <p>65+ Products</p>
             </a>
-            <a href="#" class="category-card">
+            <a href="#productsSection" class="category-card" data-category="batteries">
                 <img src="images/battery.jpg" alt="Batteries">
                 <h3>Batteries</h3>
                 <p>35+ Products</p>
             </a>
-            <a href="#" class="category-card">
+            <a href="#productsSection" class="category-card" data-category="lights">
                 <img src="images/lights.jpg" alt="Lights">
                 <h3>Lights</h3>
                 <p>50+ Products</p>
@@ -106,78 +106,47 @@
                 <div><strong id="seconds">48</strong><span>Seconds</span></div>
             </div>
 
-            <a href="#" class="light-button">Shop Sale →</a>
+            <a href="product-details.html?id=brake-pad-set" class="light-button">Shop Sale →</a>
         </div>
     </section>
 
-    <!-- FEATURED PRODUCTS -->
-    <section class="section products-section">
+    <!-- FEATURED & ALL PRODUCTS -->
+    <section class="section products-section" id="productsSection">
         <div class="section-heading">
             <div>
-                <p class="small-title">POPULAR CHOICES</p>
-                <h2>Featured Products</h2>
+                <p class="small-title">POPULAR & GENUINE SPARE PARTS</p>
+                <h2>Our Spare Parts Catalog</h2>
             </div>
-            <a href="#" class="view-link">View All →</a>
+            <a href="javascript:void(0)" id="viewAllHeaderLink" class="view-link">View All (9 Parts) →</a>
         </div>
 
-        <div class="product-grid">
+        <!-- CATEGORY FILTER PILLS -->
+        <div class="product-filters-row" id="categoryFilterPills">
+            <button class="filter-pill active" data-category="all" onclick="filterCatalogByCategory('all')">All Genuine Parts (9)</button>
+            <button class="filter-pill" data-category="engine-parts" onclick="filterCatalogByCategory('engine-parts')">Engine Parts</button>
+            <button class="filter-pill" data-category="brake-parts" onclick="filterCatalogByCategory('brake-parts')">Brake Parts</button>
+            <button class="filter-pill" data-category="filters" onclick="filterCatalogByCategory('filters')">Filters</button>
+            <button class="filter-pill" data-category="batteries" onclick="filterCatalogByCategory('batteries')">Batteries</button>
+            <button class="filter-pill" data-category="lights" onclick="filterCatalogByCategory('lights')">Lights & Electrical</button>
+        </div>
 
-            <article class="product-card">
-                <button class="wishlist-btn" aria-label="Add to wishlist">♡</button>
-                <div class="product-image">
-                    <img src="images/brake-pad.jpg" alt="Front Brake Pad Set">
-                </div>
-                <div class="product-info">
-                    <p class="product-category">Brake Parts</p>
-                    <h3>Front Brake Pad Set</h3>
-                    <div class="rating">★★★★★ <span>(12)</span></div>
-                    <p class="price">Rs. 4,500.00</p>
-                    <button class="cart-button">ADD TO CART</button>
-                </div>
-            </article>
+        <!-- SEARCH / FILTER STATUS BANNER -->
+        <div id="searchStatusBar" class="search-status-bar" style="display: none;">
+            <div class="status-text-wrap">
+                <span class="status-icon">🔍</span>
+                <span id="searchStatusText">Showing results for <strong>Engine Parts</strong> (2 items)</span>
+            </div>
+            <button id="resetSearchBtn" type="button" class="reset-filter-btn" onclick="resetCatalogFilter()">Reset Filter / View All</button>
+        </div>
 
-            <article class="product-card">
-                <button class="wishlist-btn" aria-label="Add to wishlist">♡</button>
-                <div class="product-image">
-                    <img src="images/oil-filter.jpg" alt="Toyota Oil Filter">
-                </div>
-                <div class="product-info">
-                    <p class="product-category">Filters</p>
-                    <h3>Toyota Oil Filter</h3>
-                    <div class="rating">★★★★★ <span>(18)</span></div>
-                    <p class="price">Rs. 1,250.00</p>
-                    <button class="cart-button">ADD TO CART</button>
-                </div>
-            </article>
+        <!-- MAIN DYNAMIC PRODUCT GRID -->
+        <div class="product-grid" id="mainProductGrid">
+            <!-- Populated dynamically from products.js with all 9 parts -->
+        </div>
 
-            <article class="product-card">
-                <button class="wishlist-btn" aria-label="Add to wishlist">♡</button>
-                <div class="product-image">
-                    <img src="images/air-filter.jpg" alt="Premium Air Filter">
-                </div>
-                <div class="product-info">
-                    <p class="product-category">Filters</p>
-                    <h3>Premium Air Filter</h3>
-                    <div class="rating">★★★★☆ <span>(9)</span></div>
-                    <p class="price">Rs. 2,150.00</p>
-                    <button class="cart-button">ADD TO CART</button>
-                </div>
-            </article>
-
-            <article class="product-card">
-                <button class="wishlist-btn" aria-label="Add to wishlist">♡</button>
-                <div class="product-image">
-                    <img src="images/car-battery.jpg" alt="Car Battery 60Ah">
-                </div>
-                <div class="product-info">
-                    <p class="product-category">Batteries</p>
-                    <h3>Exide Car Battery 60Ah</h3>
-                    <div class="rating">★★★★★ <span>(21)</span></div>
-                    <p class="price">Rs. 32,500.00</p>
-                    <button class="cart-button">ADD TO CART</button>
-                </div>
-            </article>
-
+        <!-- SEE MORE / SHOW LESS BUTTON -->
+        <div class="see-more-container" id="seeMoreContainer">
+            <button id="seeMoreBtn" class="see-more-btn" type="button" onclick="toggleSeeMoreCatalog()">See More Spare Parts (9) ↓</button>
         </div>
     </section>
 
@@ -444,6 +413,16 @@
     </div>
 </footer>
 
+<!-- TOAST NOTIFICATION -->
+<div class="toast-notification" id="toastNotification">
+    <div class="toast-icon">✓</div>
+    <div class="toast-content">
+        <strong id="toastTitle">Added to Cart!</strong>
+        <p id="toastMessage">Product has been added to your shopping cart.</p>
+    </div>
+</div>
+
+<script src="products.js"></script>
 <script src="homejs.js"></script>
 </body>
 </html>

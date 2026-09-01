@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Product Details | AutoGenuine Spare Parts</title>
+    <link rel="stylesheet" href="homecss.css">
+    <link rel="stylesheet" href="product-details.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <a href="home.html" class="logo">
+        <img src="images/logo.png" alt="AutoGenuine Logo">
+    </a>
+
+    <nav class="navbar">
+        <a href="home.html">Home</a>
+        <a href="home.html#shop" class="active">Shop</a>
+        <a href="home.html#about">About Us</a>
+        <a href="home.html#blog">Blog</a>
+        <a href="home.html#contact">Contact Us</a>
+    </nav>
+
+    <div class="header-actions">
+        <a href="#account">Account</a>
+        <a href="#wishlist">♡ Wishlist <b class="wishlist-badge-count">0</b></a>
+        <a href="cart.html" id="cartHeaderBtn">🛒 Cart <b class="cart-badge-count">0</b></a>
+    </div>
+</header>
+
+<main class="product-page-main">
+
+    <!-- BREADCRUMBS -->
+    <nav class="breadcrumb-container" aria-label="Breadcrumb">
+        <div class="breadcrumb-inner">
+            <a href="home.html">Home</a>
+            <span class="crumb-separator">/</span>
+            <a href="home.html#shop" id="crumbCategory">Categories</a>
+            <span class="crumb-separator">/</span>
+            <span class="crumb-current" id="crumbProductTitle">Loading Part Details...</span>
+        </div>
+    </nav>
+
+    <!-- PRODUCT HERO SECTION -->
+    <section class="section product-details-section">
+        <div class="product-layout-container">
+            
+            <!-- LEFT: PRODUCT GALLERY -->
+            <div class="gallery-column">
+                <div class="main-image-wrapper" id="mainImageWrapper">
+                    <span class="badge-stock in-stock" id="stockBadge">✓ IN STOCK</span>
+                    <span class="badge-discount" id="discountBadge">SAVE 20%</span>
+                    <button class="wishlist-float-btn" id="wishlistFloatBtn" title="Add to wishlist" aria-label="Wishlist">♡</button>
+                    <img id="mainProductImg" src="images/brake-pad.jpg" alt="Product Image">
+                    <div class="image-hint">🔍 Hover or click thumbnails to view details</div>
+                </div>
+
+                <div class="thumbnail-strip" id="thumbnailStrip">
+                    <!-- Dynamic Thumbnails inserted via JavaScript -->
+                </div>
+
+                <div class="trust-pill-row">
+                    <div class="trust-pill">
+                        <span class="pill-icon">🛡️</span>
+                        <div>
+                            <strong>100% Genuine OEM</strong>
+                            <small>Direct from certified makers</small>
+                        </div>
+                    </div>
+                    <div class="trust-pill">
+                        <span class="pill-icon">⚡</span>
+                        <div>
+                            <strong>Express Delivery</strong>
+                            <small>1 - 2 Days Islandwide</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: PRODUCT INFO & PURCHASE CONTROLS -->
+            <div class="info-column">
+                <div class="product-header-meta">
+                    <span class="category-tag" id="productCategoryTag">Brake Parts</span>
+                    <span class="sku-tag">SKU: <strong id="productSku">AG-BRK-4091</strong></span>
+                    <span class="oem-tag">OEM: <strong id="productOem">04465-02220</strong></span>
+                </div>
+
+                <h1 class="product-detail-title" id="productTitle">Front Ceramic Brake Pad Set</h1>
+                
+                <div class="product-rating-row">
+                    <div class="stars" id="productStars">★★★★★</div>
+                    <span class="rating-val" id="productRatingVal">4.9</span>
+                    <a href="#reviews" class="review-count-link" id="productReviewCountLink">(12 customer reviews)</a>
+                    <span class="meta-dot">•</span>
+                    <span class="brand-name">Brand: <strong id="productBrand">Brembo / Advics</strong></span>
+                </div>
+
+                <div class="price-container">
+                    <div class="price-main">
+                        <span class="currency">Rs.</span>
+                        <span class="amount" id="productPrice">4,500.00</span>
+                    </div>
+                    <div class="original-price-wrap" id="originalPriceWrap">
+                        <span class="old-price" id="productOriginalPrice">Rs. 5,800.00</span>
+                        <span class="save-tag" id="productSaveTag">You Save Rs. 1,300.00</span>
+                    </div>
+                    <p class="tax-note">Inclusive of all local taxes & import duties</p>
+                </div>
+
+                <p class="product-short-desc" id="productShortDesc">
+                    High-performance ceramic front brake pad set offering exceptional stopping power, whisper-quiet braking, and ultra-low brake dust buildup.
+                </p>
+
+                <!-- VEHICLE FITMENT CHECKER WIDGET -->
+                <div class="fitment-checker-box">
+                    <div class="checker-header">
+                        <span class="checker-icon">🚗</span>
+                        <div>
+                            <h4>Vehicle Fitment Check</h4>
+                            <p>Verify if this part fits your exact car model</p>
+                        </div>
+                    </div>
+                    <div class="checker-inputs">
+                        <select id="fitmentMakeSelect">
+                            <option value="">Select Make</option>
+                            <option value="Toyota">Toyota</option>
+                            <option value="Nissan">Nissan</option>
+                            <option value="Honda">Honda</option>
+                            <option value="Mitsubishi">Mitsubishi</option>
+                            <option value="Suzuki">Suzuki</option>
+                        </select>
+                        <select id="fitmentModelSelect" disabled>
+                            <option value="">Select Model</option>
+                        </select>
+                        <button id="checkFitmentBtn" type="button">Check Fit</button>
+                    </div>
+                    <div class="fitment-result" id="fitmentResult" style="display:none;"></div>
+                </div>
+
+                <!-- PURCHASE CONTROLS -->
+                <div class="purchase-actions-box">
+                    <div class="quantity-picker">
+                        <label for="qtyInput">Quantity:</label>
+                        <div class="qty-stepper">
+                            <button type="button" id="qtyMinusBtn" aria-label="Decrease quantity">−</button>
+                            <input type="number" id="qtyInput" value="1" min="1" max="99" readonly>
+                            <button type="button" id="qtyPlusBtn" aria-label="Increase quantity">+</button>
+                        </div>
+                        <span class="stock-status-note" id="stockStatusNote">18 units available</span>
+                    </div>
+
+                    <div class="action-buttons-row">
+                        <button class="btn-add-cart" id="addToCartBtn">
+                            <span>🛒</span> ADD TO CART
+                        </button>
+                        <button class="btn-buy-now" id="buyNowBtn">
+                            BUY NOW →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KEY HIGHLIGHTS LIST -->
+                <div class="highlights-card">
+                    <div class="highlight-item">
+                        <span class="h-icon">✓</span>
+                        <span><strong>Warranty:</strong> <span id="productWarranty">2 Years / 40,000 km Warranty</span></span>
+                    </div>
+                    <div class="highlight-item">
+                        <span class="h-icon">✓</span>
+                        <span><strong>Dispatch:</strong> Orders placed before 2 PM dispatched same day</span>
+                    </div>
+                    <div class="highlight-item">
+                        <span class="h-icon">✓</span>
+                        <span><strong>Returns:</strong> 14-day hassle-free exchange & return policy</span>
+                    </div>
+                    <div class="highlight-item">
+                        <span class="h-icon">✓</span>
+                        <span><strong>Technical Support:</strong> Call or WhatsApp our mechanics for fitment help</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- DETAILED TABS SECTION -->
+    <section class="section tabs-section" id="moreDetails">
+        <div class="tabs-container">
+            
+            <div class="tabs-nav-bar" role="tablist">
+                <button class="tab-btn active" role="tab" data-tab="tab-description">Overview & Features</button>
+                <button class="tab-btn" role="tab" data-tab="tab-specifications">Technical Specifications</button>
+                <button class="tab-btn" role="tab" data-tab="tab-compatibility">Vehicle Compatibility (<span id="tabFitmentCount">5</span>)</button>
+                <button class="tab-btn" role="tab" data-tab="tab-reviews">Customer Reviews (<span id="tabReviewCount">12</span>)</button>
+                <button class="tab-btn" role="tab" data-tab="tab-shipping">Shipping & Warranty</button>
+            </div>
+
+            <!-- TAB 1: DESCRIPTION -->
+            <div class="tab-content active" id="tab-description" role="tabpanel">
+                <div class="tab-inner-content">
+                    <h3>Product Overview</h3>
+                    <div id="fullDescriptionText" class="description-text">
+                        <!-- Filled by JS -->
+                    </div>
+
+                    <h4 class="subheading-margin">Key Advantages & Features</h4>
+                    <ul class="features-checklist" id="featuresList">
+                        <!-- Filled by JS -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- TAB 2: SPECIFICATIONS -->
+            <div class="tab-content" id="tab-specifications" role="tabpanel">
+                <div class="tab-inner-content">
+                    <h3>Technical Specifications</h3>
+                    <p class="tab-subtext">Original equipment manufacturer (OEM) dimension and tolerance standards.</p>
+                    
+                    <div class="specs-table-wrapper">
+                        <table class="specs-table" id="specsTable">
+                            <tbody>
+                                <!-- Filled by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: VEHICLE COMPATIBILITY -->
+            <div class="tab-content" id="tab-compatibility" role="tabpanel">
+                <div class="tab-inner-content">
+                    <h3>Vehicle Fitment & Compatibility Guide</h3>
+                    <p class="tab-subtext">This spare part is guaranteed to fit the following makes, models, and engine variants:</p>
+
+                    <div class="compatibility-table-wrapper">
+                        <table class="compatibility-table" id="compatibilityTable">
+                            <thead>
+                                <tr>
+                                    <th>Make</th>
+                                    <th>Model Variant</th>
+                                    <th>Model Years</th>
+                                    <th>Engine Code / Spec</th>
+                                    <th>Fitment Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="compatibilityTableBody">
+                                <!-- Filled by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="fitment-disclaimer">⚠️ Not sure if your specific chassis or model year matches? Message our team on the Live Chat below for immediate VIN verification.</p>
+                </div>
+            </div>
+
+            <!-- TAB 4: REVIEWS -->
+            <div class="tab-content" id="tab-reviews" role="tabpanel">
+                <div class="tab-inner-content">
+                    <div class="reviews-summary-card">
+                        <div class="overall-rating-box">
+                            <span class="huge-score" id="reviewOverallScore">4.9</span>
+                            <div class="stars" id="reviewOverallStars">★★★★★</div>
+                            <p>Based on <strong id="reviewTotalCount">12</strong> verified customer reviews</p>
+                        </div>
+
+                        <div class="rating-bars-box">
+                            <div class="bar-row">
+                                <span>5 Stars</span>
+                                <div class="bar-track"><div class="bar-fill" style="width: 90%;"></div></div>
+                                <span>90%</span>
+                            </div>
+                            <div class="bar-row">
+                                <span>4 Stars</span>
+                                <div class="bar-track"><div class="bar-fill" style="width: 10%;"></div></div>
+                                <span>10%</span>
+                            </div>
+                            <div class="bar-row">
+                                <span>3 Stars</span>
+                                <div class="bar-track"><div class="bar-fill" style="width: 0%;"></div></div>
+                                <span>0%</span>
+                            </div>
+                            <div class="bar-row">
+                                <span>2 Stars</span>
+                                <div class="bar-track"><div class="bar-fill" style="width: 0%;"></div></div>
+                                <span>0%</span>
+                            </div>
+                            <div class="bar-row">
+                                <span>1 Star</span>
+                                <div class="bar-track"><div class="bar-fill" style="width: 0%;"></div></div>
+                                <span>0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CUSTOMER REVIEWS LIST -->
+                    <h3 class="reviews-list-heading">Customer Feedback</h3>
+                    <div class="customer-reviews-container" id="customerReviewsList">
+                        <!-- Filled by JS -->
+                    </div>
+
+                    <!-- WRITE A REVIEW FORM -->
+                    <div class="add-review-card">
+                        <h3>Write a Review</h3>
+                        <p>Have you purchased or installed this part? Share your experience with other vehicle owners.</p>
+                        <form id="addReviewForm" class="review-form">
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label for="reviewAuthor">Your Name *</label>
+                                    <input type="text" id="reviewAuthor" required placeholder="e.g. Sahan Wickramasinghe">
+                                </div>
+                                <div class="form-group">
+                                    <label for="reviewLocation">Your City / Location</label>
+                                    <input type="text" id="reviewLocation" placeholder="e.g. Colombo, Kandy, Galle">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="reviewRating">Rating *</label>
+                                <select id="reviewRating" required>
+                                    <option value="5">★★★★★ (5 - Excellent)</option>
+                                    <option value="4">★★★★☆ (4 - Very Good)</option>
+                                    <option value="3">★★★☆☆ (3 - Average)</option>
+                                    <option value="2">★★☆☆☆ (2 - Below Average)</option>
+                                    <option value="1">★☆☆☆☆ (1 - Poor)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="reviewTitle">Review Headline *</label>
+                                <input type="text" id="reviewTitle" required placeholder="e.g. Perfect fit, noticeable difference!">
+                            </div>
+                            <div class="form-group">
+                                <label for="reviewComment">Review Description *</label>
+                                <textarea id="reviewComment" rows="4" required placeholder="Describe installation, performance, delivery and satisfaction..."></textarea>
+                            </div>
+                            <button type="submit" class="primary-button submit-review-btn">Submit Verified Review</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TAB 5: SHIPPING -->
+            <div class="tab-content" id="tab-shipping" role="tabpanel">
+                <div class="tab-inner-content">
+                    <h3>Delivery & Warranty Information</h3>
+                    
+                    <div class="shipping-grid">
+                        <div class="shipping-card">
+                            <div class="ship-icon">📦</div>
+                            <h4>Islandwide Delivery</h4>
+                            <p>We deliver across Sri Lanka via tracked courier services (PromptX / Domex / Pronto). Delivery takes 24 hours within Western Province and 48 hours for outstation locations.</p>
+                        </div>
+                        <div class="shipping-card">
+                            <div class="ship-icon">🏬</div>
+                            <h4>Store Pickup Option</h4>
+                            <p>Prefer picking up the part yourself? Select Store Pickup at checkout to collect from our Colombo central distribution center within 2 business hours.</p>
+                        </div>
+                        <div class="shipping-card">
+                            <div class="ship-icon">🛡️</div>
+                            <h4>Official Warranty Guarantee</h4>
+                            <p>All items come with official manufacturer warranty coverage against factory defects. Warranty cards are stamped and dispatched with your original tax invoice.</p>
+                        </div>
+                        <div class="shipping-card">
+                            <div class="ship-icon">🔄</div>
+                            <h4>14-Day Fitment Return Guarantee</h4>
+                            <p>If you ordered the wrong part variant, exchange it within 14 days in original unused packaging for the correct model with zero restocking fees.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- RELATED PRODUCTS -->
+    <section class="section related-products-section">
+        <div class="section-heading">
+            <div>
+                <p class="small-title">RECOMMENDED FOR YOU</p>
+                <h2>Related Genuine Spare Parts</h2>
+            </div>
+            <a href="home.html#shop" class="view-link">Browse All Catalog →</a>
+        </div>
+
+        <div class="product-grid" id="relatedProductGrid">
+            <!-- Dynamic related products inserted by JS -->
+        </div>
+    </section>
+
+</main>
+
+<!-- LIVE CHAT: CLOSED BY DEFAULT -->
+<div class="chat-box" id="chatBox" aria-hidden="true">
+    <div class="chat-header">
+        AutoGenuine Support
+        <button id="chatClose" aria-label="Close chat">×</button>
+    </div>
+    <div class="chat-body">
+        <p>Hi! Need assistance with vehicle part compatibility?</p>
+        <input type="text" placeholder="Type your message or car model...">
+        <button id="chatSendBtn">Send</button>
+    </div>
+</div>
+
+<button class="chat-toggle" id="chatToggle" aria-label="Open live chat">💬</button>
+
+<!-- TOAST NOTIFICATION -->
+<div class="toast-notification" id="toastNotification">
+    <div class="toast-icon">✓</div>
+    <div class="toast-content">
+        <strong id="toastTitle">Added to Cart!</strong>
+        <p id="toastMessage">Product has been added to your shopping cart.</p>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-column footer-about">
+            <a href="home.html" class="footer-logo">Auto<span>Genuine</span></a>
+            <p class="footer-description">
+                AutoGenuine is an online spare parts store created to make finding
+                reliable and genuine car parts simple, convenient and trustworthy.
+            </p>
+            <div class="footer-trust">
+                <span>✓ Genuine Parts</span>
+                <span>✓ Trusted Brands</span>
+                <span>✓ Islandwide Delivery</span>
+            </div>
+            <div class="footer-socials">
+                <a href="#" aria-label="Facebook">f</a>
+                <a href="#" aria-label="Instagram">◎</a>
+                <a href="#" aria-label="WhatsApp">◉</a>
+            </div>
+        </div>
+
+        <div class="footer-column">
+            <h3>QUICK LINKS</h3>
+            <a href="home.html">Home</a>
+            <a href="home.html#shop">Shop</a>
+            <a href="home.html#about">About Us</a>
+            <a href="home.html#blog">Blog</a>
+            <a href="home.html#contact">Contact Us</a>
+        </div>
+
+        <div class="footer-column">
+            <h3>CATEGORIES</h3>
+            <a href="home.html#shop">Engine Parts</a>
+            <a href="home.html#shop">Brake Systems</a>
+            <a href="home.html#shop">Filters & Oils</a>
+            <a href="home.html#shop">Batteries</a>
+            <a href="home.html#shop">Electrical & Lights</a>
+        </div>
+
+        <div class="footer-column">
+            <h3>CONTACT & SUPPORT</h3>
+            <p>📧 info@autogenuine.lk</p>
+            <p>☎ +94 7X XXX XXXX</p>
+            <p>📍 Colombo, Sri Lanka</p>
+            <p class="footer-hours">Mon – Sat: 8.30 AM – 6.00 PM</p>
+            <a href="home.html#contact" class="footer-help">Need help finding a part? →</a>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>© 2026 AutoGenuine. All Rights Reserved.</p>
+        <div class="footer-bottom-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms & Conditions</a>
+            <a href="#">Return Policy</a>
+        </div>
+    </div>
+</footer>
+
+<script src="products.js"></script>
+<script src="product-details.js"></script>
+</body>
+</html>

@@ -165,17 +165,32 @@ button{cursor:pointer}
     transition:.3s
 }
 .product-card:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:rgba(255,255,255,.15)}
+.product-card h3{cursor:pointer;transition:color .2s}
+.product-card h3:hover{color:var(--red)}
 .wishlist-btn{
     position:absolute;right:13px;top:13px;z-index:3;width:37px;height:37px;
     border-radius:50%;border:1px solid var(--line);background:rgba(7,17,31,.82);
     color:#d6dce5;font-size:21px;backdrop-filter:blur(8px)
 }
-.wishlist-btn:hover{color:var(--red)}
+.wishlist-btn:hover,.wishlist-btn.active{color:var(--red);border-color:var(--red)}
 .product-image{
-    height:220px;margin:10px;border-radius:13px;overflow:hidden;background:#162438
+    height:220px;margin:10px;border-radius:13px;overflow:hidden;background:#162438;
+    position:relative;cursor:pointer
 }
 .product-image img{width:100%;height:100%;object-fit:cover;display:block;transition:.4s}
 .product-card:hover .product-image img{transform:scale(1.05)}
+.quick-view-overlay{
+    position:absolute;inset:0;background:rgba(7,17,31,.72);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;transition:opacity .25s ease;backdrop-filter:blur(3px);z-index:2
+}
+.product-image:hover .quick-view-overlay{opacity:1}
+.quick-view-btn-pill{
+    background:var(--red);color:#fff;font-size:11px;font-weight:800;
+    padding:8px 15px;border-radius:999px;box-shadow:0 4px 15px rgba(255,51,65,.4);
+    transform:translateY(6px);transition:transform .25s ease
+}
+.product-image:hover .quick-view-btn-pill{transform:translateY(0)}
 .product-info{padding:0 18px 20px}
 .product-category{color:#ff6670;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
 .product-info h3{font-size:15px;margin:4px 0 7px}
@@ -187,6 +202,79 @@ button{cursor:pointer}
     background:#17263a;color:#fff;font-weight:800;font-size:11px;transition:.25s
 }
 .cart-button:hover{background:var(--red);border-color:var(--red)}
+
+/* Category Filter Pills */
+.product-filters-row{
+    display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;align-items:center
+}
+.filter-pill{
+    padding:8px 16px;border-radius:999px;background:rgba(255,255,255,.04);
+    border:1px solid var(--line);color:#aebaca;font-size:12px;font-weight:700;
+    cursor:pointer;transition:all .2s
+}
+.filter-pill:hover,.filter-pill.active{
+    background:var(--red);border-color:var(--red);color:#fff;
+    box-shadow:0 4px 15px rgba(255,51,65,.3)
+}
+
+/* Search Status Bar */
+.search-status-bar{
+    display:flex;justify-content:space-between;align-items:center;
+    background:rgba(255,51,65,.08);border:1px solid rgba(255,51,65,.25);
+    border-radius:12px;padding:12px 18px;margin-bottom:22px;
+    font-size:13px;color:#fff;flex-wrap:wrap;gap:10px
+}
+.status-text-wrap{
+    display:flex;align-items:center;gap:8px
+}
+.reset-filter-btn{
+    background:#17263a;border:1px solid var(--line);color:#ff6c75;
+    padding:6px 14px;border-radius:8px;font-size:11px;font-weight:800;
+    cursor:pointer;transition:all .2s
+}
+.reset-filter-btn:hover{
+    background:var(--red);color:#fff;border-color:var(--red)
+}
+
+/* No Results Box */
+.no-results-card{
+    grid-column:1/-1;text-align:center;padding:45px 20px;
+    background:#0b1727;border:1px dashed var(--line);border-radius:16px
+}
+.no-results-card h3{font-size:18px;color:#fff;margin-bottom:6px}
+.no-results-card p{color:var(--muted);font-size:13px;margin-bottom:18px}
+
+/* See More Button */
+.see-more-container{
+    display:flex;justify-content:center;margin-top:35px
+}
+.see-more-btn{
+    padding:14px 34px;border-radius:12px;background:linear-gradient(135deg,#16253b,#0e1a2b);
+    border:1px solid rgba(255,51,65,.3);color:#fff;font-size:13px;font-weight:800;
+    cursor:pointer;transition:all .25s;box-shadow:0 10px 25px rgba(0,0,0,.2)
+}
+.see-more-btn:hover{
+    background:var(--red);border-color:var(--red);
+    transform:translateY(-2px);box-shadow:0 12px 30px rgba(255,51,65,.35)
+}
+
+/* Toast Notification */
+.toast-notification{
+    position:fixed;bottom:28px;left:50%;
+    transform:translateX(-50%) translateY(120px);
+    background:#0e1e33;border:1px solid rgba(78,237,157,.4);
+    box-shadow:0 15px 40px rgba(0,0,0,.5);border-radius:14px;
+    padding:14px 22px;display:flex;align-items:center;gap:14px;
+    z-index:999;opacity:0;transition:all .35s cubic-bezier(0.16,1,0.3,1);
+    pointer-events:none
+}
+.toast-notification.show{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
+.toast-icon{
+    width:32px;height:32px;border-radius:50%;background:#2abf7a;
+    color:#fff;font-weight:900;display:grid;place-items:center;font-size:16px
+}
+.toast-content strong{display:block;font-size:13px;color:#fff}
+.toast-content p{font-size:11px;color:#b0bfd4;margin:0}
 
 .coupon-banner{
     border:1px dashed rgba(255,83,93,.5);background:linear-gradient(120deg,#171725,#151c2a);
