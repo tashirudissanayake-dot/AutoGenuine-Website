@@ -614,3 +614,199 @@
     .cart-item-delete-btn { grid-area: del; justify-self: end; }
     .form-grid-2 { grid-template-columns: 1fr; }
 }
+
+/* =========================================================
+   LIGHT THEME OVERRIDES FOR SHOPPING CART & CHECKOUT
+   ========================================================= */
+
+body.light-theme .cart-item-card,
+html[data-theme="light"] .cart-item-card{
+    background:#ffffff;
+    border-color:rgba(0,0,0,.08);
+    box-shadow:0 6px 20px rgba(0,0,0,.03);
+}
+
+body.light-theme .cart-item-img,
+html[data-theme="light"] .cart-item-img{
+    background:#f1f5f9;
+}
+
+body.light-theme .cart-item-info h4,
+body.light-theme .cart-item-total .total-val,
+html[data-theme="light"] .cart-item-info h4,
+html[data-theme="light"] .cart-item-total .total-val{
+    color:#0f172a;
+}
+
+body.light-theme .cart-item-unit-price,
+body.light-theme .total-label,
+html[data-theme="light"] .cart-item-unit-price,
+html[data-theme="light"] .total-label{
+    color:#64748b;
+}
+
+body.light-theme .cart-qty-stepper,
+html[data-theme="light"] .cart-qty-stepper{
+    background:#f8fafc;
+    border-color:rgba(0,0,0,.12);
+}
+
+body.light-theme .cart-qty-stepper button,
+body.light-theme .cart-qty-stepper span,
+html[data-theme="light"] .cart-qty-stepper button,
+html[data-theme="light"] .cart-qty-stepper span{
+    color:#0f172a;
+}
+
+body.light-theme .empty-cart-card,
+html[data-theme="light"] .empty-cart-card{
+    background:#ffffff;
+    border-color:rgba(0,0,0,.08);
+    box-shadow:0 10px 30px rgba(0,0,0,.04);
+}
+
+body.light-theme .empty-cart-card h3,
+html[data-theme="light"] .empty-cart-card h3{
+    color:#0f172a;
+}
+
+body.light-theme .empty-cart-card p,
+html[data-theme="light"] .empty-cart-card p{
+    color:#64748b;
+}
+
+body.light-theme .btn-secondary-link,
+html[data-theme="light"] .btn-secondary-link{
+    color:#475569;
+}
+
+body.light-theme .btn-secondary-link:hover,
+html[data-theme="light"] .btn-secondary-link:hover{
+    color:#0f172a;
+}
+
+body.light-theme .summary-card,
+html[data-theme="light"] .summary-card{
+    background:#ffffff;
+    border-color:rgba(0,0,0,.08);
+    box-shadow:0 10px 30px rgba(0,0,0,.04);
+}
+
+body.light-theme .summary-title,
+html[data-theme="light"] .summary-title{
+    color:#0f172a;
+    border-bottom-color:rgba(0,0,0,.08);
+}
+
+body.light-theme .summary-line,
+html[data-theme="light"] .summary-line{
+    color:#475569;
+}
+
+body.light-theme .summary-val,
+html[data-theme="light"] .summary-val{
+    color:#0f172a;
+}
+
+body.light-theme .summary-total-line,
+html[data-theme="light"] .summary-total-line{
+    color:#0f172a;
+    border-top-color:rgba(0,0,0,.08);
+}
+
+body.light-theme .coupon-input-box,
+html[data-theme="light"] .coupon-input-box{
+    background:#f8fafc;
+    border-color:rgba(0,0,0,.15);
+}
+
+body.light-theme .coupon-input-box label,
+html[data-theme="light"] .coupon-input-box label{
+    color:#0f172a;
+}
+
+body.light-theme .coupon-field-wrap input,
+html[data-theme="light"] .coupon-field-wrap input{
+    background:#ffffff;
+    border-color:rgba(0,0,0,.12);
+    color:#0f172a;
+}
+
+body.light-theme .coupon-field-wrap button,
+html[data-theme="light"] .coupon-field-wrap button{
+    background:#0f172a;
+    color:#ffffff;
+    border-color:#0f172a;
+}
+
+body.light-theme .modal-card,
+html[data-theme="light"] .modal-card{
+    background:#ffffff;
+    border-color:rgba(0,0,0,.1);
+    box-shadow:0 25px 60px rgba(0,0,0,.2);
+}
+
+body.light-theme .modal-header,
+html[data-theme="light"] .modal-header{
+    border-bottom-color:rgba(0,0,0,.08);
+}
+
+body.light-theme .modal-header h3,
+body.light-theme .checkout-form label,
+html[data-theme="light"] .modal-header h3,
+html[data-theme="light"] .checkout-form label{
+    color:#0f172a;
+}
+
+body.light-theme .modal-close,
+html[data-theme="light"] .modal-close{
+    background:#f1f5f9;
+    color:#0f172a;
+}
+
+body.light-theme .modal-close:hover,
+html[data-theme="light"] .modal-close:hover{
+    background:var(--red);
+    color:#ffffff;
+}
+
+body.light-theme .checkout-form input,
+body.light-theme .checkout-form select,
+html[data-theme="light"] .checkout-form input,
+html[data-theme="light"] .checkout-form select{
+    background:#f8fafc;
+    border-color:rgba(0,0,0,.12);
+    color:#0f172a;
+}
+
+body.light-theme .pay-option,
+html[data-theme="light"] .pay-option{
+    background:#f8fafc;
+    border-color:rgba(0,0,0,.1);
+    color:#334155;
+}
+
+body.light-theme .pay-option input:checked + span,
+html[data-theme="light"] .pay-option input:checked + span{
+    color:#0f172a;
+}
+
+body.light-theme .checkout-modal-summary,
+html[data-theme="light"] .checkout-modal-summary{
+    background:rgba(255,51,65,.08);
+    border-color:rgba(255,51,65,.2);
+    color:#0f172a;
+}
+
+body.light-theme .success-card h2,
+html[data-theme="light"] .success-card h2{
+    color:#0f172a;
+}
+
+body.light-theme .order-details-box,
+html[data-theme="light"] .order-details-box{
+    background:#f8fafc;
+    border-color:rgba(0,0,0,.08);
+    color:#334155;
+}
+

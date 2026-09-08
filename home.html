@@ -3,27 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoGenuine | Genuine Car Spare Parts</title>
+    <title>AutoGenuine | Genuine Car Spare Parts Sri Lanka</title>
     <link rel="stylesheet" href="homecss.css">
+    <script>
+        (function() {
+            try {
+                var saved = localStorage.getItem("autogenuine_theme");
+                if (saved === "light") {
+                    document.documentElement.setAttribute("data-theme", "light");
+                    document.documentElement.classList.add("light-theme");
+                }
+            } catch (e) {}
+        })();
+    </script>
 </head>
 <body>
 
 <header class="header">
-    <a href="#" class="logo">
+    <a href="home.html" class="logo">
         <img src="images/logo.png" alt="AutoGenuine Logo">
     </a>
 
     <nav class="navbar">
-        <a href="#" class="active">Home</a>
+        <a href="home.html" class="active">Home</a>
         <a href="#shop">Shop</a>
         <a href="#about">About Us</a>
         <a href="#blog">Blog</a>
-        <a href="#contact">Contact Us</a>
+        <a href="javascript:void(0)" onclick="openModal('contactQuotationModal')">Request Quotation</a>
     </nav>
 
     <div class="header-actions">
-        <a href="#account">Account</a>
-        <a href="#wishlist">♡ Wishlist <b class="wishlist-badge-count">0</b></a>
+        <button class="theme-toggle-btn" id="themeToggleBtn" type="button" title="Switch to Light Mode" aria-label="Toggle Light / Dark Mode">
+            <span class="theme-icon">🌙</span> <span class="theme-text">Dark</span>
+        </button>
+        <button class="account-btn" id="accountHeaderBtn" type="button" onclick="openAccountModal()">
+            👤 <span id="accountBtnText">Account</span>
+        </button>
+        <a href="wishlist.html" id="wishlistHeaderBtn">♡ Wishlist <b class="wishlist-badge-count">0</b></a>
         <a href="cart.html" id="cartHeaderBtn">🛒 Cart <b class="cart-badge-count">0</b></a>
     </div>
 </header>
@@ -35,7 +51,7 @@
         <div class="hero-content">
             <p class="eyebrow">GENUINE • RELIABLE • QUALITY</p>
             <h1>Find Genuine Parts<br>For Your <span>Car</span></h1>
-            <p class="hero-text">Quality spare parts for reliable performance, easy ordering and fast delivery.</p>
+            <p class="hero-text">Quality spare parts for reliable performance, easy ordering and guaranteed islandwide delivery across Sri Lanka.</p>
 
             <div class="search-box">
                 <select id="heroSearchCategory">
@@ -46,7 +62,7 @@
                     <option value="batteries">Batteries</option>
                     <option value="lights">Lights</option>
                 </select>
-                <input type="text" id="heroSearchInput" placeholder="Search spare parts, model, OEM no...">
+                <input type="text" id="heroSearchInput" placeholder="Search spare parts, car model, OEM no (e.g. Brembo, Exide)...">
                 <button id="heroSearchBtn">SEARCH</button>
             </div>
         </div>
@@ -59,7 +75,7 @@
                 <p class="small-title">SHOP BY TYPE</p>
                 <h2>Categories</h2>
             </div>
-            <a href="#productsSection" class="view-link">View All →</a>
+            <a href="#productsSection" class="view-link">View All Catalog →</a>
         </div>
 
         <div class="category-grid">
@@ -97,7 +113,7 @@
             <div>
                 <p class="small-title light">LIMITED TIME OFFER</p>
                 <h2>Flash Sale</h2>
-                <p>Get selected genuine spare parts at special prices.</p>
+                <p>Get selected genuine spare parts at special discounted rates.</p>
             </div>
 
             <div class="countdown">
@@ -106,7 +122,7 @@
                 <div><strong id="seconds">48</strong><span>Seconds</span></div>
             </div>
 
-            <a href="product-details.html?id=brake-pad-set" class="light-button">Shop Sale →</a>
+            <a href="product-details.html?id=brake-pad-set" class="light-button">Shop Sale Items →</a>
         </div>
     </section>
 
@@ -120,14 +136,27 @@
             <a href="javascript:void(0)" id="viewAllHeaderLink" class="view-link">View All (9 Parts) →</a>
         </div>
 
-        <!-- CATEGORY FILTER PILLS -->
+        <!-- CATEGORY FILTER PILLS & SORT CONTROL -->
         <div class="product-filters-row" id="categoryFilterPills">
-            <button class="filter-pill active" data-category="all" onclick="filterCatalogByCategory('all')">All Genuine Parts (9)</button>
-            <button class="filter-pill" data-category="engine-parts" onclick="filterCatalogByCategory('engine-parts')">Engine Parts</button>
-            <button class="filter-pill" data-category="brake-parts" onclick="filterCatalogByCategory('brake-parts')">Brake Parts</button>
-            <button class="filter-pill" data-category="filters" onclick="filterCatalogByCategory('filters')">Filters</button>
-            <button class="filter-pill" data-category="batteries" onclick="filterCatalogByCategory('batteries')">Batteries</button>
-            <button class="filter-pill" data-category="lights" onclick="filterCatalogByCategory('lights')">Lights & Electrical</button>
+            <div class="pills-group">
+                <button class="filter-pill active" data-category="all" onclick="filterCatalogByCategory('all')">All Genuine Parts (9)</button>
+                <button class="filter-pill" data-category="engine-parts" onclick="filterCatalogByCategory('engine-parts')">Engine Parts</button>
+                <button class="filter-pill" data-category="brake-parts" onclick="filterCatalogByCategory('brake-parts')">Brake Parts</button>
+                <button class="filter-pill" data-category="filters" onclick="filterCatalogByCategory('filters')">Filters</button>
+                <button class="filter-pill" data-category="batteries" onclick="filterCatalogByCategory('batteries')">Batteries</button>
+                <button class="filter-pill" data-category="lights" onclick="filterCatalogByCategory('lights')">Lights & Electrical</button>
+            </div>
+
+            <div class="sort-control-group">
+                <label for="catalogSortSelect">Sort By:</label>
+                <select id="catalogSortSelect" onchange="handleSortChange(this.value)">
+                    <option value="featured">Featured (Default)</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="rating-high">Rating: Highest First</option>
+                    <option value="name-az">Name: A to Z</option>
+                </select>
+            </div>
         </div>
 
         <!-- SEARCH / FILTER STATUS BANNER -->
@@ -156,7 +185,7 @@
             <div>
                 <p class="small-title">SAVE MORE</p>
                 <h2>Get 10% Off Your First Order</h2>
-                <p>Use the coupon code below at checkout.</p>
+                <p>Use the promo coupon code below in your shopping cart.</p>
             </div>
             <div class="coupon-code">WELCOME10</div>
         </div>
@@ -172,109 +201,123 @@
         </div>
 
         <div class="benefit-grid">
-            <div class="benefit-card">
-                <div class="benefit-icon">✓</div>
+            <article class="benefit-card">
+                <div class="benefit-icon">🛡️</div>
                 <h3>100% Genuine Parts</h3>
-                <p>Quality parts from trusted brands.</p>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">↗</div>
+                <p>Direct sourcing from authorized OEM manufacturers with holograms and stamped warranty cards.</p>
+            </article>
+
+            <article class="benefit-card">
+                <div class="benefit-icon">⚡</div>
                 <h3>Fast Delivery</h3>
-                <p>Convenient delivery across Sri Lanka.</p>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">▣</div>
+                <p>24h delivery in Western Province and 48h islandwide courier dispatch with real-time tracking.</p>
+            </article>
+
+            <article class="benefit-card">
+                <div class="benefit-icon">💳</div>
                 <h3>Secure Payment</h3>
-                <p>Simple and secure checkout experience.</p>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">↻</div>
-                <h3>Easy Returns</h3>
-                <p>Customer-friendly return support.</p>
-            </div>
+                <p>Cash on Delivery (COD), direct bank transfer, and secure card payment checkout options.</p>
+            </article>
+
+            <article class="benefit-card">
+                <div class="benefit-icon">🔧</div>
+                <h3>Fitment Support</h3>
+                <p>Mechanical specialists check exact vehicle compatibility against chassis & VIN numbers.</p>
+            </article>
         </div>
     </section>
 
-    <!-- ABOUT -->
-    <section class="about-section" id="about">
-        <div class="about-image">
-            <img src="images/hero-car.png" alt="AutoGenuine">
-        </div>
-
-        <div class="about-content">
-            <p class="small-title">ABOUT OUR BUSINESS</p>
-            <h2>Your Reliable Online Spare Parts Store</h2>
-            <p>AutoGenuine is an online e-business system designed to help vehicle owners find genuine and quality car spare parts conveniently.</p>
-            <p>Customers can browse categories, search for suitable parts, add products to a cart and place orders online.</p>
-            <a href="#" class="primary-button">Learn More →</a>
-        </div>
-    </section>
-
-    <!-- REVIEWS -->
-    <section class="section reviews-section">
-        <div class="section-heading">
+    <!-- ABOUT US SHOWCASE -->
+    <section class="section about-showcase-section" id="about">
+        <div class="section-heading centered">
             <div>
-                <p class="small-title">CUSTOMER FEEDBACK</p>
-                <h2>Reviews & Ratings</h2>
+                <p class="small-title">WHO WE ARE • OUR COMMITMENT</p>
+                <h2>Engineering Trust in Automotive Spare Parts</h2>
+                <p class="section-subtext">Sri Lanka's dedicated platform for 100% authentic OEM spare parts, precision vehicle fitment, and certified warranties.</p>
             </div>
         </div>
 
-        <div class="review-grid">
-            <article class="review-card">
-                <div class="review-top">
-                    <div class="review-avatar">KD</div>
-                    <div>
-                        <strong class="review-name">Kasun D.</strong>
-                        <small>Verified Customer</small>
-                    </div>
-                    <span class="review-date">2 days ago</span>
+        <div class="about-main-grid">
+            <!-- LEFT: Core Story & 4 Pillars -->
+            <div class="about-story-col">
+                <div class="story-intro-card">
+                    <h3>Built for Drivers, Mechanics & Workshops</h3>
+                    <p>
+                        Counterfeit and sub-standard car parts pose a serious hazard on the road while causing costly engine damage. 
+                        <strong>AutoGenuine</strong> was established to bridge this gap — delivering factory-sealed, genuine manufacturer components directly to your doorstep with total transparency.
+                    </p>
                 </div>
-                <div class="rating">★★★★★ <span>5.0</span></div>
-                <p>“I was looking for brake pads for my Toyota. The product details were clear and ordering was really easy. The part arrived safely and matched the description.”</p>
-                <div class="verified">✓ Verified Purchase</div>
-            </article>
 
-            <article class="review-card">
-                <div class="review-top">
-                    <div class="review-avatar">NS</div>
-                    <div>
-                        <strong class="review-name">Nimal S.</strong>
-                        <small>Verified Customer</small>
+                <div class="about-pillars-grid">
+                    <div class="pillar-card">
+                        <div class="pillar-icon-wrap">🏆</div>
+                        <div class="pillar-text">
+                            <h4>100% Genuine OEM Sourcing</h4>
+                            <p>Direct sourcing from authorized Japanese, German, and global manufacturers with authentic holograms and serial verification.</p>
+                        </div>
                     </div>
-                    <span class="review-date">1 week ago</span>
-                </div>
-                <div class="rating">★★★★★ <span>5.0</span></div>
-                <p>“The website made it much easier to compare parts before buying. I also liked having the OEM number and compatibility information available.”</p>
-                <div class="verified">✓ Verified Purchase</div>
-            </article>
 
-            <article class="review-card">
-                <div class="review-top">
-                    <div class="review-avatar">AR</div>
-                    <div>
-                        <strong class="review-name">Amal R.</strong>
-                        <small>Verified Customer</small>
+                    <div class="pillar-card">
+                        <div class="pillar-icon-wrap">🔍</div>
+                        <div class="pillar-text">
+                            <h4>Chassis & VIN Fitment Check</h4>
+                            <p>Our mechanical specialists cross-reference every part against your exact engine and chassis code (NZT260, RU1, NZE161, KDH200) before shipping.</p>
+                        </div>
                     </div>
-                    <span class="review-date">2 weeks ago</span>
-                </div>
-                <div class="rating">★★★★☆ <span>4.0</span></div>
-                <p>“Found the air filter I needed without spending a lot of time searching. The ordering process was simple and the delivery updates were useful.”</p>
-                <div class="verified">✓ Verified Purchase</div>
-            </article>
 
-            <article class="review-card">
-                <div class="review-top">
-                    <div class="review-avatar">RP</div>
-                    <div>
-                        <strong class="review-name">Ravindu P.</strong>
-                        <small>Verified Customer</small>
+                    <div class="pillar-card">
+                        <div class="pillar-icon-wrap">⚡</div>
+                        <div class="pillar-text">
+                            <h4>24h / 48h Express Islandwide Courier</h4>
+                            <p>Safe, shock-resistant shockproof packaging with fast doorstep delivery across all 25 districts in Sri Lanka with live tracking.</p>
+                        </div>
                     </div>
-                    <span class="review-date">3 weeks ago</span>
+
+                    <div class="pillar-card">
+                        <div class="pillar-icon-wrap">🛡️</div>
+                        <div class="pillar-text">
+                            <h4>Comprehensive Warranty Card</h4>
+                            <p>Up to 36 months official replacement warranty on batteries and 2 years warranty on brake and engine components.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="rating">★★★★★ <span>5.0</span></div>
-                <p>“Good range of products and the categories are easy to understand. I would use AutoGenuine again when I need another genuine part.”</p>
-                <div class="verified">✓ Verified Purchase</div>
-            </article>
+            </div>
+
+            <!-- RIGHT: Stats, Certifications & Quality Card -->
+            <div class="about-sidebar-col">
+                <div class="stats-showcase-card">
+                    <h4>AutoGenuine Performance Metrics</h4>
+                    <div class="stats-grid-2x2">
+                        <div class="stat-box">
+                            <strong class="stat-number">10,000+</strong>
+                            <span class="stat-label">Genuine Parts Delivered</span>
+                        </div>
+                        <div class="stat-box">
+                            <strong class="stat-number">99.8%</strong>
+                            <span class="stat-label">Fitment Accuracy Rate</span>
+                        </div>
+                        <div class="stat-box">
+                            <strong class="stat-number">3,500+</strong>
+                            <span class="stat-label">Active Car Owners & Garages</span>
+                        </div>
+                        <div class="stat-box">
+                            <strong class="stat-number">100%</strong>
+                            <span class="stat-label">Warranty Stamped Guarantee</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quality-assurance-card">
+                    <div class="qa-badge-icon">🎖️</div>
+                    <div class="qa-content">
+                        <h4>Official Quality Assurance</h4>
+                        <p>Every spare part in our catalog complies with ISO 9001 and Japanese JIS automotive manufacturing benchmarks.</p>
+                    </div>
+                    <div class="qa-actions">
+                        <button type="button" class="btn-qa-quotation" onclick="openModal('contactQuotationModal')">Request Custom Part Quotation →</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -285,43 +328,43 @@
                 <p class="small-title">USEFUL INFORMATION</p>
                 <h2>Latest From Our Blog</h2>
             </div>
-            <a href="#" class="view-link">View All →</a>
+            <span class="view-link">Click Any Article to Read →</span>
         </div>
 
         <div class="blog-grid">
-            <article class="blog-card">
+            <article class="blog-card" onclick="openBlogArticleModal('1')">
                 <div class="blog-image">
                     <img src="images/brake.jpg" alt="Brake care">
                 </div>
                 <div class="blog-content">
                     <span>Maintenance</span>
                     <h3>How to Choose the Right Brake Parts</h3>
-                    <p>Simple tips for selecting suitable spare parts for your vehicle.</p>
-                    <a href="#">Read More →</a>
+                    <p>Simple tips for selecting suitable brake pads and disc rotors for your vehicle.</p>
+                    <span class="read-more-link">Read Full Guide →</span>
                 </div>
             </article>
 
-            <article class="blog-card">
+            <article class="blog-card" onclick="openBlogArticleModal('2')">
                 <div class="blog-image">
                     <img src="images/engine.jpg" alt="Engine care">
                 </div>
                 <div class="blog-content">
                     <span>Tips</span>
                     <h3>Why Genuine Parts Matter</h3>
-                    <p>Learn why quality and compatibility are important when buying parts.</p>
-                    <a href="#">Read More →</a>
+                    <p>Learn why quality and compatibility are crucial for engine longevity.</p>
+                    <span class="read-more-link">Read Full Guide →</span>
                 </div>
             </article>
 
-            <article class="blog-card">
+            <article class="blog-card" onclick="openBlogArticleModal('3')">
                 <div class="blog-image">
                     <img src="images/filter.jpg" alt="Filter guide">
                 </div>
                 <div class="blog-content">
                     <span>Guide</span>
                     <h3>When Should You Replace a Filter?</h3>
-                    <p>A quick guide to common vehicle filter replacement needs.</p>
-                    <a href="#">Read More →</a>
+                    <p>A quick maintenance guide to engine oil, air, and cabin AC filter intervals.</p>
+                    <span class="read-more-link">Read Full Guide →</span>
                 </div>
             </article>
         </div>
@@ -330,43 +373,213 @@
     <!-- CONTACT CTA -->
     <section class="contact-cta" id="contact">
         <div>
-            <p class="small-title light">NEED HELP?</p>
-            <h2>Can't Find the Part You Need?</h2>
-            <p>Contact our team and we will help you find the right spare part.</p>
+            <p class="small-title light">NEED HELP SOURCING A PART?</p>
+            <h2>Can't Find Your Exact Spare Part?</h2>
+            <p>Send your car model or Chassis / VIN number and our mechanics will quote the genuine part with warranty.</p>
         </div>
-        <a href="#" class="light-button">Contact Us</a>
+        <button type="button" class="light-button" onclick="openModal('contactQuotationModal')">Request Quotation →</button>
     </section>
 
 </main>
 
-<!-- LIVE CHAT: CLOSED BY DEFAULT -->
-<div class="chat-box" id="chatBox" aria-hidden="true">
-    <div class="chat-header">
-        AutoGenuine Support
-        <button id="chatClose" aria-label="Close chat">×</button>
-    </div>
-    <div class="chat-body">
-        <p>Hi! How can we help you?</p>
-        <input type="text" placeholder="Type your message...">
-        <button>Send</button>
+<!-- ACCOUNT MODAL -->
+<div class="modal-overlay" id="accountModal" aria-hidden="true">
+    <div class="modal-card account-modal-card">
+        <div class="modal-header">
+            <h3 id="accountModalTitle">My Account</h3>
+            <button class="modal-close" onclick="closeModal('accountModal')">✕</button>
+        </div>
+        
+        <div class="account-tabs-nav" id="accountTabsNav">
+            <button class="account-tab-btn active" data-tab="login" onclick="switchAccountTab('login')">Sign In</button>
+            <button class="account-tab-btn" data-tab="register" onclick="switchAccountTab('register')">Register</button>
+            <button class="account-tab-btn" data-tab="profile" id="profileTabBtn" style="display: none;" onclick="switchAccountTab('profile')">My Profile & Orders</button>
+        </div>
+
+        <!-- LOGIN TAB -->
+        <div class="account-tab-content active" id="accountLoginTab">
+            <form id="loginForm" onsubmit="handleUserLogin(event)">
+                <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" id="loginEmail" placeholder="e.g. kasun@gmail.com" required value="kasun@gmail.com">
+                </div>
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required value="123">
+                </div>
+                <button type="submit" class="btn-checkout">Sign In to Account →</button>
+                <div class="demo-login-hint">Demo Account: <strong>kasun@gmail.com</strong> / Pass: <strong>123</strong></div>
+            </form>
+        </div>
+
+        <!-- REGISTER TAB -->
+        <div class="account-tab-content" id="accountRegisterTab">
+            <form id="registerForm" onsubmit="handleUserRegister(event)">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="regName" placeholder="e.g. Kasun Dharmasena" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" id="regEmail" placeholder="kasun@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number *</label>
+                    <input type="tel" id="regPhone" placeholder="077 123 4567" required>
+                </div>
+                <div class="form-group">
+                    <label>Registered Vehicle Make/Model</label>
+                    <input type="text" id="regVehicle" placeholder="e.g. Toyota Premio NZT260 (2016)">
+                </div>
+                <div class="form-group">
+                    <label>Create Password *</label>
+                    <input type="password" id="regPassword" placeholder="Minimum 3 characters" required minlength="3">
+                </div>
+                <button type="submit" class="btn-checkout">Create Free Account →</button>
+            </form>
+        </div>
+
+        <!-- PROFILE & ORDERS TAB -->
+        <div class="account-tab-content" id="accountProfileTab">
+            <div class="profile-header-box">
+                <div class="profile-avatar-circle" id="profileAvatar">KD</div>
+                <div>
+                    <h4 id="profileName">Kasun Dharmasena</h4>
+                    <p id="profileEmail">kasun@gmail.com • <span id="profilePhone">077 123 4567</span></p>
+                    <div class="profile-vehicle-badge" id="profileVehicle">🚗 Toyota Premio NZT260</div>
+                </div>
+            </div>
+
+            <div class="orders-history-section">
+                <h4>Recent Orders & Deliveries</h4>
+                <div id="ordersListContainer" class="orders-list">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <div class="profile-actions-row">
+                <button type="button" class="btn-logout" onclick="handleUserLogout()">Sign Out</button>
+            </div>
+        </div>
     </div>
 </div>
 
-<button class="chat-toggle" id="chatToggle" aria-label="Open live chat">💬</button>
+<!-- PART QUOTATION & CONTACT MODAL -->
+<div class="modal-overlay" id="contactQuotationModal" aria-hidden="true">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Request Spare Part Quotation</h3>
+            <button class="modal-close" onclick="closeModal('contactQuotationModal')">✕</button>
+        </div>
+        <form id="quotationForm" onsubmit="handleQuotationSubmit(event)">
+            <p class="quotation-subtitle">Can't find your specific spare part in the catalog? Enter your vehicle specifications below and our specialist mechanics will check OEM stock and send you a quotation.</p>
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label>Your Name *</label>
+                    <input type="text" id="quotName" placeholder="Kasun Perera" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone / WhatsApp *</label>
+                    <input type="tel" id="quotPhone" placeholder="077 123 4567" required>
+                </div>
+            </div>
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label>Vehicle Make & Model *</label>
+                    <input type="text" id="quotVehicle" placeholder="e.g. Honda Vezel RU1 / Axio NZE161" required>
+                </div>
+                <div class="form-group">
+                    <label>Manufacturing Year *</label>
+                    <input type="text" id="quotYear" placeholder="e.g. 2017" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Chassis / VIN Number (Optional)</label>
+                <input type="text" id="quotVIN" placeholder="e.g. NZT260-0048192">
+            </div>
+            <div class="form-group">
+                <label>Spare Parts Required & Details *</label>
+                <textarea id="quotDetails" rows="3" placeholder="e.g. Need front suspension shock absorbers and tie rod ends..." required></textarea>
+            </div>
+            <button type="submit" class="btn-checkout">Send Quotation Request →</button>
+        </form>
+    </div>
+</div>
+
+<!-- BLOG ARTICLE READER MODAL -->
+<div class="modal-overlay" id="blogArticleModal" aria-hidden="true">
+    <div class="modal-card blog-modal-card">
+        <div class="modal-header">
+            <span class="blog-cat-badge" id="blogModalCategory">Maintenance</span>
+            <button class="modal-close" onclick="closeModal('blogArticleModal')">✕</button>
+        </div>
+        <div class="blog-modal-body">
+            <h2 id="blogModalTitle">How to Choose the Right Brake Parts</h2>
+            <div class="blog-meta-row">
+                <span id="blogModalAuthor">Eng. Samantha Silva</span> • 
+                <span id="blogModalDate">September 2026</span> • 
+                <span id="blogModalReadTime">4 min read</span>
+            </div>
+            <div class="blog-modal-img-wrap">
+                <img id="blogModalImg" src="images/brake.jpg" alt="Blog Image">
+            </div>
+            <div class="blog-modal-text" id="blogModalContent">
+                <!-- Populated dynamically -->
+            </div>
+            <div class="blog-related-cta" id="blogRelatedCta">
+                <h4>Need Genuine Spare Parts for This Service?</h4>
+                <p>Explore verified OEM parts with guaranteed vehicle compatibility and nationwide warranty.</p>
+                <a id="blogShopPartBtn" href="product-details.html?id=brake-pad-set" class="primary-button">View Related Genuine Part →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- LIVE CHATBOT WIDGET -->
+<div class="chat-widget">
+    <button class="chat-toggle" id="chatToggle" aria-label="Open Live Chat">
+        💬 <span class="chat-bubble-label">Chat with Mechanics</span>
+    </button>
+    <div class="chat-box" id="chatBox" aria-hidden="true">
+        <div class="chat-header">
+            <div>
+                <h4>AutoGenuine Tech Support</h4>
+                <p><span class="online-indicator">●</span> Online • Typically replies in 1 min</p>
+            </div>
+            <button class="chat-close" id="chatClose">✕</button>
+        </div>
+        <div class="chat-body" id="chatMessageList">
+            <div class="chat-bubble bot-msg">
+                <p>👋 Ayubowan! Welcome to AutoGenuine Support. How can we assist you with car spare parts, vehicle fitment, or warranties today?</p>
+                <span class="chat-time">Just now</span>
+            </div>
+        </div>
+        <div class="chat-quick-suggestions">
+            <button type="button" class="quick-prompt-btn" onclick="sendQuickPrompt('Check Vehicle Fitment')">🚗 Fitment</button>
+            <button type="button" class="quick-prompt-btn" onclick="sendQuickPrompt('Delivery Timelines')">🚚 Delivery</button>
+            <button type="button" class="quick-prompt-btn" onclick="sendQuickPrompt('Warranty Details')">🛡️ Warranty</button>
+            <button type="button" class="quick-prompt-btn" onclick="sendQuickPrompt('Payment Options')">💳 Payments</button>
+        </div>
+        <form class="chat-footer" id="chatForm" onsubmit="handleChatSubmit(event)">
+            <input type="text" id="chatInput" placeholder="Type part name, chassis no, or question..." required>
+            <button type="submit" aria-label="Send message">➔</button>
+        </form>
+    </div>
+</div>
 
 <!-- FOOTER -->
 <footer class="footer">
     <div class="footer-container">
         <div class="footer-column footer-about">
-            <a href="#" class="footer-logo">Auto<span>Genuine</span></a>
+            <a href="home.html" class="footer-logo">Auto<span>Genuine</span></a>
             <p class="footer-description">
-                AutoGenuine is an online spare parts store created to make finding
-                reliable and genuine car parts simple, convenient and trustworthy.
+                AutoGenuine is Sri Lanka's trusted genuine automotive spare parts store.
+                We make finding genuine, warranty-backed components simple and trustworthy.
             </p>
             <div class="footer-trust">
-                <span>✓ Genuine Parts</span>
-                <span>✓ Trusted Brands</span>
-                <span>✓ Islandwide Delivery</span>
+                <span>✓ 100% Genuine OEM</span>
+                <span>✓ Verified Fitment</span>
+                <span>✓ Islandwide Courier</span>
             </div>
             <div class="footer-socials">
                 <a href="#" aria-label="Facebook">f</a>
@@ -377,38 +590,38 @@
 
         <div class="footer-column">
             <h3>QUICK LINKS</h3>
-            <a href="#">Home</a>
-            <a href="#shop">Shop</a>
-            <a href="#about">About Us</a>
-            <a href="#blog">Blog</a>
-            <a href="#contact">Contact Us</a>
+            <a href="home.html">Home</a>
+            <a href="home.html#shop">Shop Catalog</a>
+            <a href="wishlist.html">My Wishlist</a>
+            <a href="cart.html">Shopping Cart</a>
+            <a href="javascript:void(0)" onclick="openModal('contactQuotationModal')">Request Quotation</a>
         </div>
 
         <div class="footer-column">
-            <h3>CATEGORIES</h3>
-            <a href="#">Engine Parts</a>
-            <a href="#">Brake Systems</a>
-            <a href="#">Filters & Oils</a>
-            <a href="#">Batteries</a>
-            <a href="#">Electrical & Lights</a>
+            <h3>SPARE PART CATEGORIES</h3>
+            <a href="javascript:void(0)" onclick="filterCatalogByCategory('engine-parts')">Engine Timing & Water Pumps</a>
+            <a href="javascript:void(0)" onclick="filterCatalogByCategory('brake-parts')">Ceramic Pads & Disc Rotors</a>
+            <a href="javascript:void(0)" onclick="filterCatalogByCategory('filters')">Engine Oil & Air Filters</a>
+            <a href="javascript:void(0)" onclick="filterCatalogByCategory('batteries')">Exide & Amaron Batteries</a>
+            <a href="javascript:void(0)" onclick="filterCatalogByCategory('lights')">LED Headlights & Electrical</a>
         </div>
 
         <div class="footer-column">
             <h3>CONTACT & SUPPORT</h3>
             <p>📧 info@autogenuine.lk</p>
-            <p>☎ +94 7X XXX XXXX</p>
+            <p>☎ +94 77 123 4567</p>
             <p>📍 Colombo, Sri Lanka</p>
             <p class="footer-hours">Mon – Sat: 8.30 AM – 6.00 PM</p>
-            <a href="#contact" class="footer-help">Need help finding a part? →</a>
+            <a href="javascript:void(0)" onclick="openModal('contactQuotationModal')" class="footer-help">Need part quotation? →</a>
         </div>
     </div>
 
     <div class="footer-bottom">
-        <p>© 2026 AutoGenuine. All Rights Reserved.</p>
+        <p>© 2026 AutoGenuine. All Rights Reserved. University Web Engineering Project.</p>
         <div class="footer-bottom-links">
             <a href="#">Privacy Policy</a>
             <a href="#">Terms & Conditions</a>
-            <a href="#">Return Policy</a>
+            <a href="#">Warranty & Returns</a>
         </div>
     </div>
 </footer>

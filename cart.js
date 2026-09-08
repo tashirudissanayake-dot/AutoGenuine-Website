@@ -237,6 +237,21 @@ function initCheckoutModal() {
                 <p><strong>Total Paid / Due:</strong> <strong style="color: #4eed9d;">Rs. ${formatPrice(total)}</strong></p>
             `;
 
+            // Save to Orders History
+            const orderData = {
+                orderId: orderRef,
+                customerName: name,
+                phone: phone,
+                address: `${address}, ${city}, ${district}`,
+                payMethod: payMethod,
+                items: items.map(i => `${i.quantity}x ${i.name}`).join(", "),
+                itemCount: items.reduce((sum, i) => sum + i.quantity, 0),
+                total: total,
+                date: new Date().toLocaleDateString(),
+                status: "Processing Dispatch"
+            };
+            saveOrder(orderData);
+
             checkoutModal.classList.remove("active");
             checkoutModal.setAttribute("aria-hidden", "true");
 
@@ -252,33 +267,196 @@ function initCheckoutModal() {
 
 // Live Chat Widget Controller
 function initLiveChat() {
-    const chatBox = document.getElementById("chatBox");
     const chatToggle = document.getElementById("chatToggle");
+    const chatBox = document.getElementById("chatBox");
     const chatClose = document.getElementById("chatClose");
-    const chatSendBtn = document.getElementById("chatSendBtn");
 
     if (chatToggle && chatBox && chatClose) {
-        chatToggle.addEventListener("click", function () {
+        chatToggle.addEventListener("click", () => {
             const isOpen = chatBox.classList.toggle("open");
             chatBox.setAttribute("aria-hidden", String(!isOpen));
         });
-
-        chatClose.addEventListener("click", function () {
+        chatClose.addEventListener("click", () => {
             chatBox.classList.remove("open");
             chatBox.setAttribute("aria-hidden", "true");
         });
     }
+}
 
-    if (chatSendBtn) {
-        chatSendBtn.addEventListener("click", function () {
-            const input = chatBox.querySelector("input");
-            if (input && input.value.trim()) {
-                alert(`Thank you for your message: "${input.value}"\nOur technical support specialist will reply shortly.`);
-                input.value = "";
-            }
-        });
+function handleChatSubmit(e) {
+    e.preventDefault();
+    const input = document.getElementById("chatInput");
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    appendChatMessage(msg, "user");
+    input.value = "";
+
+    setTimeout(() => {
+        const reply = getBotResponse(msg);
+        appendChatMessage(reply, "bot");
+    }, 600);
+}
+window.handleChatSubmit = handleChatSubmit;
+
+function sendQuickPrompt(promptText) {
+    appendChatMessage(promptText, "user");
+    setTimeout(() => {
+        const reply = getBotResponse(promptText);
+        appendChatMessage(reply, "bot");
+    }, 500);
+}
+window.sendQuickPrompt = sendQuickPrompt;
+
+function appendChatMessage(htmlText, sender = "user") {
+    const list = document.getElementById("chatMessageList");
+    if (!list) return;
+
+    const div = document.createElement("div");
+    div.className = `chat-bubble ${sender === 'user' ? 'user-msg' : 'bot-msg'}`;
+    div.innerHTML = `
+        <p>${htmlText}</p>
+        <span class="chat-time">Just now</span>
+    `;
+    list.appendChild(div);
+    list.scrollTop = list.scrollHeight;
+}
+
+// Account Auth Handlers
+function openAccountModal() {
+    const user = getCurrentUser();
+    if (user) {
+        switchAccountTab('profile');
+    } else {
+        switchAccountTab('login');
+    }
+    openModal('accountModal');
+}
+window.openAccountModal = openAccountModal;
+
+function switchAccountTab(tabName) {
+    const user = getCurrentUser();
+    const profileBtn = document.getElementById("profileTabBtn");
+    if (profileBtn) {
+        profileBtn.style.display = user ? "inline-block" : "none";
+    }
+
+    document.querySelectorAll(".account-tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-tab") === tabName);
+    });
+
+    document.querySelectorAll(".account-tab-content").forEach(c => {
+        c.classList.remove("active");
+    });
+
+    const target = document.getElementById(
+        tabName === "login" ? "accountLoginTab" :
+        tabName === "register" ? "accountRegisterTab" : "accountProfileTab"
+    );
+    if (target) target.classList.add("active");
+
+    if (tabName === "profile" && user) {
+        populateUserProfile(user);
     }
 }
+window.switchAccountTab = switchAccountTab;
+
+function populateUserProfile(user) {
+    const nameEl = document.getElementById("profileName");
+    const emailEl = document.getElementById("profileEmail");
+    const avatarEl = document.getElementById("profileAvatar");
+    const vehicleEl = document.getElementById("profileVehicle");
+    const ordersList = document.getElementById("ordersListContainer");
+
+    if (nameEl) nameEl.textContent = user.name;
+    if (emailEl) emailEl.innerHTML = `${user.email} • <span>${user.phone || ''}</span>`;
+    if (avatarEl) {
+        const initials = user.name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
+        avatarEl.textContent = initials || "U";
+    }
+    if (vehicleEl) vehicleEl.textContent = `🚗 ${user.vehicle || 'Standard Vehicle'}`;
+
+    if (ordersList) {
+        const orders = getOrdersHistory();
+        if (orders.length === 0) {
+            ordersList.innerHTML = `<p class="no-orders-msg">No past orders found yet. Orders placed on cart checkout will appear here!</p>`;
+        } else {
+            ordersList.innerHTML = orders.map(o => `
+                <div class="order-history-card">
+                    <div class="order-hist-header">
+                        <strong>${o.orderId || '#AG-ORDER'}</strong>
+                        <span class="order-status-badge">Processing Dispatch</span>
+                    </div>
+                    <div class="order-hist-details">
+                        <p>Date: ${o.date || 'Recent'}</p>
+                        <p>Total: <strong>Rs. ${formatPrice(o.total || 0)}</strong> (${o.itemCount || 1} items)</p>
+                        <p class="order-dest">Delivery: ${o.address || 'Sri Lanka'}</p>
+                    </div>
+                </div>
+            `).join("");
+        }
+    }
+}
+
+function handleUserLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById("loginEmail").value.trim();
+    const pass = document.getElementById("loginPassword").value.trim();
+
+    const res = loginUser(email, pass);
+    if (res.success) {
+        showToast("Signed In", res.message);
+        switchAccountTab('profile');
+    } else {
+        alert(res.message);
+    }
+}
+window.handleUserLogin = handleUserLogin;
+
+function handleUserRegister(e) {
+    e.preventDefault();
+    const name = document.getElementById("regName").value.trim();
+    const email = document.getElementById("regEmail").value.trim();
+    const phone = document.getElementById("regPhone").value.trim();
+    const vehicle = document.getElementById("regVehicle").value.trim();
+    const pass = document.getElementById("regPassword").value.trim();
+
+    const res = registerUser(name, email, phone, pass, vehicle);
+    if (res.success) {
+        showToast("Account Created", res.message);
+        switchAccountTab('profile');
+    } else {
+        alert(res.message);
+    }
+}
+window.handleUserRegister = handleUserRegister;
+
+function handleUserLogout() {
+    logoutUser();
+    showToast("Signed Out", "You have been logged out successfully.");
+    switchAccountTab('login');
+}
+window.handleUserLogout = handleUserLogout;
+
+function handleQuotationSubmit(e) {
+    e.preventDefault();
+    const name = document.getElementById("quotName").value.trim();
+    const phone = document.getElementById("quotPhone").value.trim();
+    const vehicle = document.getElementById("quotVehicle").value.trim();
+    const year = document.getElementById("quotYear").value.trim();
+    const vin = document.getElementById("quotVIN").value.trim();
+    const details = document.getElementById("quotDetails").value.trim();
+
+    const quoteId = `#QUOT-${Math.floor(1000 + Math.random() * 9000)}`;
+    const quoteData = { quoteId, name, phone, vehicle, year, vin, details, date: new Date().toLocaleDateString() };
+
+    saveQuotation(quoteData);
+    closeModal('contactQuotationModal');
+    e.target.reset();
+
+    showToast("Quotation Submitted!", `Request ${quoteId} received! Our mechanics will contact you within 15 minutes.`);
+}
+window.handleQuotationSubmit = handleQuotationSubmit;
 
 // Toast Notification Helper
 let toastTimeout;
@@ -303,3 +481,4 @@ function showToast(title, message, type = "success") {
 function formatPrice(num) {
     return Number(num).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
+

@@ -3,11 +3,14 @@
 let currentCategory = "all";
 let isExpanded = false;
 let currentSearchQuery = "";
+let currentSort = "featured";
 const INITIAL_LIMIT = 4;
 
 document.addEventListener("DOMContentLoaded", function () {
-    // 1. Initial Product Catalog Render
+    // 1. Initial Catalog Render
     renderCatalog();
+    initAccountModalLogic();
+    initLiveChatWidget();
 
     // 2. Setup Category Cards in Shop Section
     const categoryCards = document.querySelectorAll(".category-card");
@@ -84,26 +87,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     updateCountdown();
     setInterval(updateCountdown, 1000);
-
-    // 6. Live Chat
-    const chatBox = document.getElementById("chatBox");
-    const chatToggle = document.getElementById("chatToggle");
-    const chatClose = document.getElementById("chatClose");
-
-    if (chatToggle && chatBox && chatClose) {
-        chatToggle.addEventListener("click", function () {
-            const isOpen = chatBox.classList.toggle("open");
-            chatBox.setAttribute("aria-hidden", String(!isOpen));
-        });
-
-        chatClose.addEventListener("click", function () {
-            chatBox.classList.remove("open");
-            chatBox.setAttribute("aria-hidden", "true");
-        });
-    }
 });
 
-// Master Catalog Rendering Function
+// Master Catalog Rendering Function with Category + Search + Sort
 function renderCatalog() {
     const grid = document.getElementById("mainProductGrid");
     const seeMoreBtn = document.getElementById("seeMoreBtn");
@@ -113,9 +99,8 @@ function renderCatalog() {
 
     if (!grid) return;
 
-    // Get products based on active category
     let allProducts = getAllProducts();
-    let filtered = allProducts;
+    let filtered = [...allProducts];
 
     // Filter by Category
     if (currentCategory && currentCategory !== "all") {
@@ -125,7 +110,7 @@ function renderCatalog() {
         );
     }
 
-    // Filter by Search Query (if any)
+    // Filter by Search Query
     if (currentSearchQuery) {
         const q = currentSearchQuery.toLowerCase();
         filtered = filtered.filter(p => 
@@ -138,10 +123,21 @@ function renderCatalog() {
         );
     }
 
+    // Apply Sorting
+    if (currentSort === "price-low") {
+        filtered.sort((a, b) => a.price - b.price);
+    } else if (currentSort === "price-high") {
+        filtered.sort((a, b) => b.price - a.price);
+    } else if (currentSort === "rating-high") {
+        filtered.sort((a, b) => b.rating - a.rating);
+    } else if (currentSort === "name-az") {
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
     const totalMatching = filtered.length;
 
     // Update Status Bar
-    if (currentCategory !== "all" || currentSearchQuery) {
+    if (currentCategory !== "all" || currentSearchQuery || currentSort !== "featured") {
         statusBar.style.display = "flex";
         let label = [];
         if (currentCategory !== "all") {
@@ -151,14 +147,18 @@ function renderCatalog() {
         if (currentSearchQuery) {
             label.push(`Keyword: <strong>"${currentSearchQuery}"</strong>`);
         }
-        statusText.innerHTML = `Showing results for ${label.join(" & ")} (${totalMatching} ${totalMatching === 1 ? 'part' : 'parts'} found)`;
+        if (currentSort !== "featured") {
+            const sortLabel = document.getElementById("catalogSortSelect")?.selectedOptions[0]?.text || currentSort;
+            label.push(`Sorted by: <strong>${sortLabel}</strong>`);
+        }
+        statusText.innerHTML = `Showing results for ${label.join(" • ")} (${totalMatching} ${totalMatching === 1 ? 'part' : 'parts'} found)`;
     } else {
         statusBar.style.display = "none";
     }
 
     // Determine slice to display
     let displayed = filtered;
-    if (!isExpanded && currentCategory === "all" && !currentSearchQuery) {
+    if (!isExpanded && currentCategory === "all" && !currentSearchQuery && currentSort === "featured") {
         displayed = filtered.slice(0, INITIAL_LIMIT);
     }
 
@@ -167,8 +167,11 @@ function renderCatalog() {
         grid.innerHTML = `
             <div class="no-results-card">
                 <h3>🔍 No matching spare parts found</h3>
-                <p>We couldn't find any genuine parts matching your search criteria. Try a different search term or category.</p>
-                <button class="primary-button" onclick="resetCatalogFilter()">View All Genuine Parts →</button>
+                <p>We couldn't find any genuine parts matching your search criteria. Try a different search term, category, or request a custom quotation.</p>
+                <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;">
+                    <button class="primary-button" onclick="resetCatalogFilter()">View All Genuine Parts →</button>
+                    <button class="btn-clear-wishlist" onclick="openModal('contactQuotationModal')">Request Custom Quotation</button>
+                </div>
             </div>
         `;
         if (seeMoreContainer) seeMoreContainer.style.display = "none";
@@ -201,7 +204,7 @@ function renderCatalog() {
 
     // See More Button State
     if (seeMoreContainer && seeMoreBtn) {
-        if (currentCategory !== "all" || currentSearchQuery || allProducts.length <= INITIAL_LIMIT) {
+        if (currentCategory !== "all" || currentSearchQuery || currentSort !== "featured" || allProducts.length <= INITIAL_LIMIT) {
             seeMoreContainer.style.display = "none";
         } else {
             seeMoreContainer.style.display = "flex";
@@ -213,6 +216,13 @@ function renderCatalog() {
         }
     }
 }
+
+// Global Sort Handler
+window.handleSortChange = function(sortVal) {
+    currentSort = sortVal;
+    isExpanded = true;
+    renderCatalog();
+};
 
 // Global Toggle for See More Button
 window.toggleSeeMoreCatalog = function () {
@@ -229,7 +239,6 @@ window.filterCatalogByCategory = function (categorySlug) {
     currentSearchQuery = "";
     isExpanded = true;
 
-    // Update Pills Active Class
     const filterPills = document.querySelectorAll("#categoryFilterPills .filter-pill");
     filterPills.forEach(pill => {
         if (pill.getAttribute("data-category") === currentCategory) {
@@ -239,15 +248,10 @@ window.filterCatalogByCategory = function (categorySlug) {
         }
     });
 
-    // Update Hero Select if exists
     const searchCat = document.getElementById("heroSearchCategory");
-    if (searchCat) {
-        searchCat.value = currentCategory;
-    }
+    if (searchCat) searchCat.value = currentCategory;
     const searchInput = document.getElementById("heroSearchInput");
-    if (searchInput) {
-        searchInput.value = "";
-    }
+    if (searchInput) searchInput.value = "";
 
     renderCatalog();
     document.getElementById("productsSection")?.scrollIntoView({ behavior: "smooth" });
@@ -257,6 +261,7 @@ window.filterCatalogByCategory = function (categorySlug) {
 window.resetCatalogFilter = function () {
     currentCategory = "all";
     currentSearchQuery = "";
+    currentSort = "featured";
     isExpanded = true;
 
     const filterPills = document.querySelectorAll("#categoryFilterPills .filter-pill");
@@ -264,6 +269,8 @@ window.resetCatalogFilter = function () {
         p.classList.toggle("active", p.getAttribute("data-category") === "all");
     });
 
+    const sortSelect = document.getElementById("catalogSortSelect");
+    if (sortSelect) sortSelect.value = "featured";
     const searchCat = document.getElementById("heroSearchCategory");
     if (searchCat) searchCat.value = "all";
     const searchInput = document.getElementById("heroSearchInput");
@@ -285,7 +292,6 @@ function executeHeroSearch() {
     currentSearchQuery = query;
     isExpanded = true;
 
-    // Update Filter Pills
     const filterPills = document.querySelectorAll("#categoryFilterPills .filter-pill");
     filterPills.forEach(pill => {
         if (pill.getAttribute("data-category") === currentCategory) {
@@ -335,9 +341,237 @@ window.handleCardWishlist = function (event, productId) {
     showToast(isAdded ? "Added to Wishlist" : "Removed from Wishlist", isAdded ? `Saved to your wishlist.` : `Removed from wishlist.`);
 };
 
-// Toast notification helper
+// ==========================================
+// BLOG ARTICLE MODAL READER
+// ==========================================
+function openBlogArticleModal(blogId) {
+    const article = getBlogArticleById(blogId);
+    if (!article) return;
+
+    document.getElementById("blogModalCategory").textContent = article.category;
+    document.getElementById("blogModalTitle").textContent = article.title;
+    document.getElementById("blogModalAuthor").textContent = article.author;
+    document.getElementById("blogModalDate").textContent = article.date;
+    document.getElementById("blogModalReadTime").textContent = article.readTime;
+    document.getElementById("blogModalImg").src = article.image;
+    document.getElementById("blogModalContent").innerHTML = article.content;
+
+    const relatedBtn = document.getElementById("blogShopPartBtn");
+    if (relatedBtn && article.relatedProductId) {
+        relatedBtn.href = `product-details.html?id=${article.relatedProductId}`;
+    }
+
+    openModal('blogArticleModal');
+}
+window.openBlogArticleModal = openBlogArticleModal;
+
+// ==========================================
+// ACCOUNT MODAL & AUTH LOGIC
+// ==========================================
+function openAccountModal() {
+    const user = getCurrentUser();
+    if (user) {
+        switchAccountTab('profile');
+    } else {
+        switchAccountTab('login');
+    }
+    openModal('accountModal');
+}
+window.openAccountModal = openAccountModal;
+
+function switchAccountTab(tabName) {
+    const user = getCurrentUser();
+    const profileBtn = document.getElementById("profileTabBtn");
+    if (profileBtn) {
+        profileBtn.style.display = user ? "inline-block" : "none";
+    }
+
+    document.querySelectorAll(".account-tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-tab") === tabName);
+    });
+
+    document.querySelectorAll(".account-tab-content").forEach(c => {
+        c.classList.remove("active");
+    });
+
+    const target = document.getElementById(
+        tabName === "login" ? "accountLoginTab" :
+        tabName === "register" ? "accountRegisterTab" : "accountProfileTab"
+    );
+    if (target) target.classList.add("active");
+
+    if (tabName === "profile" && user) {
+        populateUserProfile(user);
+    }
+}
+window.switchAccountTab = switchAccountTab;
+
+function populateUserProfile(user) {
+    const nameEl = document.getElementById("profileName");
+    const emailEl = document.getElementById("profileEmail");
+    const avatarEl = document.getElementById("profileAvatar");
+    const vehicleEl = document.getElementById("profileVehicle");
+    const ordersList = document.getElementById("ordersListContainer");
+
+    if (nameEl) nameEl.textContent = user.name;
+    if (emailEl) emailEl.innerHTML = `${user.email} • <span>${user.phone || ''}</span>`;
+    if (avatarEl) {
+        const initials = user.name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
+        avatarEl.textContent = initials || "U";
+    }
+    if (vehicleEl) vehicleEl.textContent = `🚗 ${user.vehicle || 'Standard Vehicle'}`;
+
+    if (ordersList) {
+        const orders = getOrdersHistory();
+        if (orders.length === 0) {
+            ordersList.innerHTML = `<p class="no-orders-msg">No past orders found yet. Orders placed on cart checkout will appear here!</p>`;
+        } else {
+            ordersList.innerHTML = orders.map(o => `
+                <div class="order-history-card">
+                    <div class="order-hist-header">
+                        <strong>${o.orderId || '#AG-ORDER'}</strong>
+                        <span class="order-status-badge">Processing Dispatch</span>
+                    </div>
+                    <div class="order-hist-details">
+                        <p>Date: ${o.date || 'Recent'}</p>
+                        <p>Total: <strong>Rs. ${formatPrice(o.total || 0)}</strong> (${o.itemCount || 1} items)</p>
+                        <p class="order-dest">Delivery: ${o.address || 'Sri Lanka'}</p>
+                    </div>
+                </div>
+            `).join("");
+        }
+    }
+}
+
+function handleUserLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById("loginEmail").value.trim();
+    const pass = document.getElementById("loginPassword").value.trim();
+
+    const res = loginUser(email, pass);
+    if (res.success) {
+        showToast("Signed In", res.message);
+        switchAccountTab('profile');
+    } else {
+        alert(res.message);
+    }
+}
+window.handleUserLogin = handleUserLogin;
+
+function handleUserRegister(e) {
+    e.preventDefault();
+    const name = document.getElementById("regName").value.trim();
+    const email = document.getElementById("regEmail").value.trim();
+    const phone = document.getElementById("regPhone").value.trim();
+    const vehicle = document.getElementById("regVehicle").value.trim();
+    const pass = document.getElementById("regPassword").value.trim();
+
+    const res = registerUser(name, email, phone, pass, vehicle);
+    if (res.success) {
+        showToast("Account Created", res.message);
+        switchAccountTab('profile');
+    } else {
+        alert(res.message);
+    }
+}
+window.handleUserRegister = handleUserRegister;
+
+function handleUserLogout() {
+    logoutUser();
+    showToast("Signed Out", "You have been logged out successfully.");
+    switchAccountTab('login');
+}
+window.handleUserLogout = handleUserLogout;
+
+function initAccountModalLogic() {
+    // Already exposed on window
+}
+
+// ==========================================
+// PART QUOTATION INQUIRY
+// ==========================================
+function handleQuotationSubmit(e) {
+    e.preventDefault();
+    const name = document.getElementById("quotName").value.trim();
+    const phone = document.getElementById("quotPhone").value.trim();
+    const vehicle = document.getElementById("quotVehicle").value.trim();
+    const year = document.getElementById("quotYear").value.trim();
+    const vin = document.getElementById("quotVIN").value.trim();
+    const details = document.getElementById("quotDetails").value.trim();
+
+    const quoteId = `#QUOT-${Math.floor(1000 + Math.random() * 9000)}`;
+    const quoteData = { quoteId, name, phone, vehicle, year, vin, details, date: new Date().toLocaleDateString() };
+
+    saveQuotation(quoteData);
+    closeModal('contactQuotationModal');
+    e.target.reset();
+
+    showToast("Quotation Submitted!", `Request ${quoteId} received! Our mechanics will contact you within 15 minutes.`);
+}
+window.handleQuotationSubmit = handleQuotationSubmit;
+
+// ==========================================
+// LIVE CHATBOT WIDGET
+// ==========================================
+function initLiveChatWidget() {
+    const chatToggle = document.getElementById("chatToggle");
+    const chatBox = document.getElementById("chatBox");
+    const chatClose = document.getElementById("chatClose");
+
+    if (chatToggle && chatBox && chatClose) {
+        chatToggle.addEventListener("click", () => {
+            const isOpen = chatBox.classList.toggle("open");
+            chatBox.setAttribute("aria-hidden", String(!isOpen));
+        });
+        chatClose.addEventListener("click", () => {
+            chatBox.classList.remove("open");
+            chatBox.setAttribute("aria-hidden", "true");
+        });
+    }
+}
+
+function handleChatSubmit(e) {
+    e.preventDefault();
+    const input = document.getElementById("chatInput");
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    appendChatMessage(msg, "user");
+    input.value = "";
+
+    setTimeout(() => {
+        const reply = getBotResponse(msg);
+        appendChatMessage(reply, "bot");
+    }, 600);
+}
+window.handleChatSubmit = handleChatSubmit;
+
+function sendQuickPrompt(promptText) {
+    appendChatMessage(promptText, "user");
+    setTimeout(() => {
+        const reply = getBotResponse(promptText);
+        appendChatMessage(reply, "bot");
+    }, 500);
+}
+window.sendQuickPrompt = sendQuickPrompt;
+
+function appendChatMessage(htmlText, sender = "user") {
+    const list = document.getElementById("chatMessageList");
+    if (!list) return;
+
+    const div = document.createElement("div");
+    div.className = `chat-bubble ${sender === 'user' ? 'user-msg' : 'bot-msg'}`;
+    div.innerHTML = `
+        <p>${htmlText}</p>
+        <span class="chat-time">Just now</span>
+    `;
+    list.appendChild(div);
+    list.scrollTop = list.scrollHeight;
+}
+
+// Helpers
 let toastTimeout;
-function showToast(title, message, type = "success") {
+function showToast(title, message) {
     const toast = document.getElementById("toastNotification");
     const titleEl = document.getElementById("toastTitle");
     const msgEl = document.getElementById("toastMessage");
@@ -354,12 +588,10 @@ function showToast(title, message, type = "success") {
     }, 3500);
 }
 
-// Format Price helper
 function formatPrice(num) {
     return Number(num).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-// Star Rating String Helper
 function getStarRatingString(rating) {
     const fullStars = Math.floor(rating);
     const halfStar = rating % 1 >= 0.5 ? 1 : 0;

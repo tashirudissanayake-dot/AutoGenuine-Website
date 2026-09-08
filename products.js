@@ -664,6 +664,11 @@ function getWishlistItems() {
     }
 }
 
+function getWishlistProducts() {
+    const ids = getWishlistItems();
+    return ids.map(id => getProductById(id)).filter(p => p !== null);
+}
+
 function toggleWishlist(productId) {
     let items = getWishlistItems();
     const index = items.indexOf(productId);
@@ -685,6 +690,16 @@ function isProductInWishlist(productId) {
     return items.includes(productId);
 }
 
+function moveWishlistToCart(productId) {
+    addToCart(productId, 1);
+    toggleWishlist(productId);
+}
+
+function clearWishlist() {
+    localStorage.removeItem(WISHLIST_STORAGE_KEY);
+    updateWishlistBadges();
+}
+
 function updateWishlistBadges() {
     const count = getWishlistItems().length;
     document.querySelectorAll(".wishlist-badge-count, #wishlistCount").forEach(badge => {
@@ -692,10 +707,304 @@ function updateWishlistBadges() {
     });
 }
 
+// ==========================================
+// USER AUTHENTICATION & ORDER HISTORY SYSTEM
+// ==========================================
+const USERS_STORAGE_KEY = "autogenuine_registered_users";
+const CURRENT_USER_KEY = "autogenuine_current_user";
+const ORDERS_STORAGE_KEY = "autogenuine_orders_history";
+const QUOTATIONS_STORAGE_KEY = "autogenuine_quotations";
+
+function getRegisteredUsers() {
+    try {
+        const saved = localStorage.getItem(USERS_STORAGE_KEY);
+        return saved ? JSON.parse(saved) : [
+            { name: "Kasun Dharmasena", email: "kasun@gmail.com", phone: "0771234567", password: "123", vehicle: "Toyota Premio NZT260 (2016)" }
+        ];
+    } catch (e) {
+        return [];
+    }
+}
+
+function getCurrentUser() {
+    try {
+        const saved = localStorage.getItem(CURRENT_USER_KEY);
+        return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function registerUser(name, email, phone, password, vehicle) {
+    const users = getRegisteredUsers();
+    if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+        return { success: false, message: "An account with this email already exists." };
+    }
+    const newUser = { name, email, phone, password, vehicle: vehicle || "Not specified", registeredAt: new Date().toLocaleDateString() };
+    users.push(newUser);
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
+    updateHeaderAccountButton();
+    return { success: true, user: newUser, message: "Registration successful! Welcome to AutoGenuine." };
+}
+
+function loginUser(email, password) {
+    const users = getRegisteredUsers();
+    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+    if (user) {
+        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+        updateHeaderAccountButton();
+        return { success: true, user: user, message: `Welcome back, ${user.name}!` };
+    }
+    return { success: false, message: "Invalid email or password. Please try again." };
+}
+
+function logoutUser() {
+    localStorage.removeItem(CURRENT_USER_KEY);
+    updateHeaderAccountButton();
+}
+
+function saveOrder(orderData) {
+    try {
+        let orders = getOrdersHistory();
+        orders.unshift(orderData);
+        localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+    } catch (e) {}
+}
+
+function getOrdersHistory() {
+    try {
+        const saved = localStorage.getItem(ORDERS_STORAGE_KEY);
+        return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveQuotation(data) {
+    try {
+        let quotes = [];
+        const saved = localStorage.getItem(QUOTATIONS_STORAGE_KEY);
+        if (saved) quotes = JSON.parse(saved);
+        quotes.unshift(data);
+        localStorage.setItem(QUOTATIONS_STORAGE_KEY, JSON.stringify(quotes));
+    } catch (e) {}
+}
+
+function updateHeaderAccountButton() {
+    const user = getCurrentUser();
+    document.querySelectorAll(".account-btn-label, #accountBtnText").forEach(el => {
+        el.textContent = user ? user.name.split(" ")[0] : "Account";
+    });
+}
+
+// ==========================================
+// BLOG ARTICLES DATABASE
+// ==========================================
+const BLOG_ARTICLES = [
+    {
+        id: "1",
+        title: "How to Choose the Right Brake Parts",
+        category: "Maintenance",
+        date: "September 2026",
+        readTime: "4 min read",
+        image: "images/brake.jpg",
+        excerpt: "Simple tips for selecting suitable brake pads and disc rotors for your vehicle to guarantee stopping power and passenger safety.",
+        author: "Eng. Samantha Silva (Automotive Specialist)",
+        content: `
+            <p>Brakes are arguably the most critical safety system on any vehicle. When driving under tropical weather conditions and heavy traffic in Sri Lanka, having optimal stopping performance is non-negotiable.</p>
+            
+            <h4>1. Ceramic vs. Semi-Metallic Brake Pads</h4>
+            <p><strong>Ceramic Brake Pads:</strong> Composed of dense ceramic composite fibers and copper filaments. They produce almost zero black brake dust, eliminate squeaking noises, and offer smooth, progressive braking feel.</p>
+            <p><strong>Semi-Metallic Pads:</strong> Ideal for heavy commercial vehicles and aggressive high-speed track use, but can cause more disc wear and dust buildup.</p>
+
+            <h4>2. When Should You Inspect Your Rotors?</h4>
+            <ul>
+                <li>Steering wheel vibration or brake pedal pulsation at speeds above 60 km/h.</li>
+                <li>Deep circular grooves or uneven scoring on the rotor friction surface.</li>
+                <li>Rotor thickness wearing below the manufacturer minimum thickness stamping.</li>
+            </ul>
+
+            <h4>3. Expert Installation Tip</h4>
+            <p>Always replace brake pads in full axle sets (both Left and Right sides together) and ensure anti-rattle clips are freshly lubricated with high-temperature silicone brake grease.</p>
+        `,
+        relatedProductId: "brake-pad-set"
+    },
+    {
+        id: "2",
+        title: "Why Genuine Parts Matter For Engine Longevity",
+        category: "Tips & Guide",
+        date: "August 2026",
+        readTime: "5 min read",
+        image: "images/engine.jpg",
+        excerpt: "Learn why counterfeit parts compromise engine reliability, fuel efficiency, and void your warranty protection.",
+        author: "Ruwan Wickramasinghe (Senior Mechanical Tech)",
+        content: `
+            <p>Counterfeit and sub-standard automotive parts have flooded the local market. While they may appear identical on the outside, their internal engineering shortcuts can cause catastrophic engine failure.</p>
+            
+            <h4>1. Precise Tolerances & Metallurgy</h4>
+            <p>Genuine OEM parts (such as timing belts, water pumps, and spark plugs) undergo stringent metallurgical stress testing. Substandard rubber in timing belts can snap prematurely, causing pistons to collide with valves resulting in engine overhaul costs exceeding Rs. 250,000.</p>
+
+            <h4>2. Filtration Efficiency</h4>
+            <p>Genuine Toyota and Denso oil filters feature synthetic resin-bonded micro-pores that capture particles down to 10 microns, preventing abrasive metal shavings from circulating through bearings and camshaft journals.</p>
+
+            <h4>3. Official Warranty Protection</h4>
+            <p>Every genuine part sold by AutoGenuine comes with official stamped warranty documentation and hologram verification, providing complete peace of mind.</p>
+        `,
+        relatedProductId: "timing-belt-kit"
+    },
+    {
+        id: "3",
+        title: "When Should You Replace Your Vehicle Filters?",
+        category: "Service Guide",
+        date: "July 2026",
+        readTime: "3 min read",
+        image: "images/filter.jpg",
+        excerpt: "A practical guide to engine oil, air intake, and cabin AC filter replacement intervals under dusty road conditions.",
+        author: "Kasun Jayasundara (Fleet Maintenance Lead)",
+        content: `
+            <p>Filters are the lungs and kidneys of your vehicle. Neglecting filter replacements causes increased fuel consumption, sluggish acceleration, and foul cabin air conditioning smells.</p>
+            
+            <h4>1. Engine Oil Filter (Every 5,000 - 8,000 km)</h4>
+            <p>Always replace the oil filter at every engine oil change. Reusing an old filter contaminates fresh oil instantly and risks bypass valve sticking.</p>
+
+            <h4>2. Engine Air Filter (Every 15,000 - 20,000 km)</h4>
+            <p>A clogged engine air filter restricts airflow into the throttle body, causing the ECU to enrich fuel injection and dropping fuel economy by 10% - 15%.</p>
+
+            <h4>3. Activated Carbon Cabin AC Filter (Every 10,000 - 15,000 km)</h4>
+            <p>Crucial for tropical climates. Activated charcoal traps harmful PM2.5 exhaust soot, diesel smoke, and bacteria, preventing mold odors inside the vehicle cabin.</p>
+        `,
+        relatedProductId: "toyota-oil-filter"
+    }
+];
+
+function getAllBlogArticles() {
+    return BLOG_ARTICLES;
+}
+
+function getBlogArticleById(id) {
+    return BLOG_ARTICLES.find(a => a.id === String(id)) || BLOG_ARTICLES[0];
+}
+
+// ==========================================
+// INTERACTIVE LIVE CHATBOT ENGINE
+// ==========================================
+function getBotResponse(userMsg) {
+    const msg = userMsg.toLowerCase().trim();
+
+    if (msg.includes("hello") || msg.includes("hi") || msg.includes("hey") || msg.includes("ayubowan")) {
+        return "👋 Hello! Welcome to AutoGenuine. How can I assist you with genuine car spare parts today? You can ask about part fitment, prices, delivery, or warranty!";
+    }
+    if (msg.includes("delivery") || msg.includes("shipping") || msg.includes("courier") || msg.includes("time") || msg.includes("how long")) {
+        return "🚚 <strong>Delivery Timelines:</strong><br>• Colombo & Western Province: Within 24 hours<br>• Islandwide Outstation: 1 - 2 business days via Domex/PromptX.<br>• Free shipping on orders over Rs. 10,000!";
+    }
+    if (msg.includes("fit") || msg.includes("chassis") || msg.includes("vin") || msg.includes("compatible") || msg.includes("model")) {
+        return "🚗 <strong>Fitment Verification:</strong><br>Please type your <strong>Car Make, Model, and Year</strong> (e.g. <em>Toyota Premio 2016</em> or <em>Axio NZE161</em>). Our technical system will check exact OEM compatibility!";
+    }
+    if (msg.includes("warranty") || msg.includes("guarantee")) {
+        return "🛡️ <strong>Official Warranty:</strong><br>All our parts come with official stamped manufacturer warranty:<br>• Batteries: 30 - 36 Months replacement<br>• Brake Parts & Kits: 2 Years / 40,000 km<br>• Filters: 1 Year service warranty.";
+    }
+    if (msg.includes("payment") || msg.includes("pay") || msg.includes("cod") || msg.includes("card") || msg.includes("bank")) {
+        return "💳 <strong>Payment Options:</strong><br>• Cash on Delivery (COD) across Sri Lanka<br>• Direct Bank Transfer (Commercial Bank / HNB)<br>• Credit / Debit Card & Koko installment plans.";
+    }
+    if (msg.includes("brake") || msg.includes("rotor") || msg.includes("pad")) {
+        return "🛑 We have genuine <strong>Ceramic Brake Pads (Rs. 4,500)</strong> and <strong>Ventilated Brake Rotors (Rs. 14,800)</strong> in stock for Toyota, Nissan, and Honda vehicles. Would you like to view details?";
+    }
+    if (msg.includes("battery") || msg.includes("exide") || msg.includes("amaron")) {
+        return "🔋 We stock <strong>Exide Matrix 60Ah (Rs. 32,500)</strong> and <strong>Amaron Pro 70Ah (Rs. 36,800)</strong> maintenance-free batteries with up to 36 months replacement warranty!";
+    }
+    if (msg.includes("filter") || msg.includes("oil") || msg.includes("air")) {
+        return "🛢️ We have genuine <strong>Toyota Engine Oil Filters (Rs. 1,250)</strong>, <strong>High-Flow Air Filters (Rs. 2,150)</strong>, and <strong>Carbon Cabin Filters (Rs. 1,850)</strong> in stock.";
+    }
+    if (msg.includes("contact") || msg.includes("call") || msg.includes("phone") || msg.includes("whatsapp")) {
+        return "📞 You can contact our parts specialist hotline at <strong>+94 77 123 4567</strong> or email <strong>info@autogenuine.lk</strong>. Our showroom is located in Colombo, Sri Lanka.";
+    }
+
+    return "Thank you for your message! Our mechanical team has received your query regarding <em>\"" + userMsg + "\"</em> and will verify your vehicle specifications. You can also request a free part quotation via the Contact form!";
+}
+
+// Theme (Light / Dark Mode) Management
+const THEME_STORAGE_KEY = "autogenuine_theme";
+
+function getSavedTheme() {
+    try {
+        return localStorage.getItem(THEME_STORAGE_KEY) || "dark";
+    } catch (e) {
+        return "dark";
+    }
+}
+
+function applyTheme(theme) {
+    const isLight = theme === "light";
+    if (isLight) {
+        document.body.classList.add("light-theme");
+        document.documentElement.setAttribute("data-theme", "light");
+    } else {
+        document.body.classList.remove("light-theme");
+        document.documentElement.setAttribute("data-theme", "dark");
+    }
+    updateThemeButtons(theme);
+}
+
+function toggleTheme() {
+    const current = getSavedTheme();
+    const next = current === "light" ? "dark" : "light";
+    try {
+        localStorage.setItem(THEME_STORAGE_KEY, next);
+    } catch (e) {}
+    applyTheme(next);
+    return next;
+}
+
+function updateThemeButtons(theme) {
+    const isLight = theme === "light";
+    document.querySelectorAll(".theme-toggle-btn").forEach(btn => {
+        btn.innerHTML = isLight 
+            ? `<span class="theme-icon">☀️</span> <span class="theme-text">Light</span>` 
+            : `<span class="theme-icon">🌙</span> <span class="theme-text">Dark</span>`;
+        btn.setAttribute("title", isLight ? "Switch to Dark Mode" : "Switch to Light Mode");
+        btn.setAttribute("aria-label", isLight ? "Switch to Dark Mode" : "Switch to Light Mode");
+        btn.classList.toggle("is-light", isLight);
+    });
+}
+
+function initThemeToggle() {
+    const currentTheme = getSavedTheme();
+    applyTheme(currentTheme);
+
+    document.querySelectorAll(".theme-toggle-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            toggleTheme();
+        });
+    });
+}
+
+// Shared Modal Handler Helpers
+function openModal(modalId) {
+    const el = document.getElementById(modalId);
+    if (el) {
+        el.classList.add("active");
+        el.setAttribute("aria-hidden", "false");
+    }
+}
+
+function closeModal(modalId) {
+    const el = document.getElementById(modalId);
+    if (el) {
+        el.classList.remove("active");
+        el.setAttribute("aria-hidden", "true");
+    }
+}
+
 // Auto-run on DOM ready
 if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", () => {
         updateAllCartBadges();
         updateWishlistBadges();
+        updateHeaderAccountButton();
+        initThemeToggle();
     });
 }
+
+

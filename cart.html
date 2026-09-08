@@ -6,6 +6,17 @@
     <title>Shopping Cart | AutoGenuine Car Spare Parts</title>
     <link rel="stylesheet" href="homecss.css">
     <link rel="stylesheet" href="cart.css">
+    <script>
+        (function() {
+            try {
+                var saved = localStorage.getItem("autogenuine_theme");
+                if (saved === "light") {
+                    document.documentElement.setAttribute("data-theme", "light");
+                    document.documentElement.classList.add("light-theme");
+                }
+            } catch (e) {}
+        })();
+    </script>
 </head>
 <body>
 
@@ -20,12 +31,17 @@
         <a href="home.html#shop">Shop</a>
         <a href="home.html#about">About Us</a>
         <a href="home.html#blog">Blog</a>
-        <a href="home.html#contact">Contact Us</a>
+        <a href="javascript:void(0)" onclick="openModal('contactQuotationModal')">Request Quotation</a>
     </nav>
 
     <div class="header-actions">
-        <a href="#account">Account</a>
-        <a href="#wishlist">♡ Wishlist <b class="wishlist-badge-count">0</b></a>
+        <button class="theme-toggle-btn" id="themeToggleBtn" type="button" title="Switch to Light Mode" aria-label="Toggle Light / Dark Mode">
+            <span class="theme-icon">🌙</span> <span class="theme-text">Dark</span>
+        </button>
+        <button class="account-btn" id="accountHeaderBtn" type="button" onclick="openAccountModal()">
+            👤 <span id="accountBtnText">Account</span>
+        </button>
+        <a href="wishlist.html" id="wishlistHeaderBtn">♡ Wishlist <b class="wishlist-badge-count">0</b></a>
         <a href="cart.html" class="active" id="cartHeaderBtn">🛒 Cart <b class="cart-badge-count">0</b></a>
     </div>
 </header>
@@ -258,65 +274,170 @@
     </div>
     <div class="chat-body">
         <p>Hi! Need assistance with your spare parts order?</p>
-        <input type="text" placeholder="Type your message...">
-        <button id="chatSendBtn">Send</button>
+<!-- ACCOUNT MODAL -->
+<div class="modal-overlay" id="accountModal" aria-hidden="true">
+    <div class="modal-card account-modal-card">
+        <div class="modal-header">
+            <h3 id="accountModalTitle">My Account</h3>
+            <button class="modal-close" onclick="closeModal('accountModal')">✕</button>
+        </div>
+        
+        <div class="account-tabs-nav" id="accountTabsNav">
+            <button class="account-tab-btn active" data-tab="login" onclick="switchAccountTab('login')">Sign In</button>
+            <button class="account-tab-btn" data-tab="register" onclick="switchAccountTab('register')">Register</button>
+            <button class="account-tab-btn" data-tab="profile" id="profileTabBtn" style="display: none;" onclick="switchAccountTab('profile')">My Profile & Orders</button>
+        </div>
+
+        <!-- LOGIN TAB -->
+        <div class="account-tab-content active" id="accountLoginTab">
+            <form id="loginForm" onsubmit="handleUserLogin(event)">
+                <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" id="loginEmail" placeholder="e.g. kasun@gmail.com" required value="kasun@gmail.com">
+                </div>
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required value="123">
+                </div>
+                <button type="submit" class="btn-checkout">Sign In to Account →</button>
+                <div class="demo-login-hint">Demo Account: <strong>kasun@gmail.com</strong> / Pass: <strong>123</strong></div>
+            </form>
+        </div>
+
+        <!-- REGISTER TAB -->
+        <div class="account-tab-content" id="accountRegisterTab">
+            <form id="registerForm" onsubmit="handleUserRegister(event)">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="regName" placeholder="e.g. Kasun Dharmasena" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" id="regEmail" placeholder="kasun@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number *</label>
+                    <input type="tel" id="regPhone" placeholder="077 123 4567" required>
+                </div>
+                <div class="form-group">
+                    <label>Registered Vehicle Make/Model</label>
+                    <input type="text" id="regVehicle" placeholder="e.g. Toyota Premio NZT260 (2016)">
+                </div>
+                <div class="form-group">
+                    <label>Create Password *</label>
+                    <input type="password" id="regPassword" placeholder="Minimum 3 characters" required minlength="3">
+                </div>
+                <button type="submit" class="btn-checkout">Create Free Account →</button>
+            </form>
+        </div>
+
+        <!-- PROFILE & ORDERS TAB -->
+        <div class="account-tab-content" id="accountProfileTab">
+            <div class="profile-header-box">
+                <div class="profile-avatar-circle" id="profileAvatar">KD</div>
+                <div>
+                    <h4 id="profileName">Kasun Dharmasena</h4>
+                    <p id="profileEmail">kasun@gmail.com • <span id="profilePhone">077 123 4567</span></p>
+                    <div class="profile-vehicle-badge" id="profileVehicle">🚗 Toyota Premio NZT260</div>
+                </div>
+            </div>
+
+            <div class="orders-history-section">
+                <h4>Recent Orders & Deliveries</h4>
+                <div id="ordersListContainer" class="orders-list">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <div class="profile-actions-row">
+                <button type="button" class="btn-logout" onclick="handleUserLogout()">Sign Out</button>
+            </div>
+        </div>
     </div>
 </div>
 
-<button class="chat-toggle" id="chatToggle" aria-label="Open live chat">💬</button>
+<!-- PART QUOTATION & CONTACT MODAL -->
+<div class="modal-overlay" id="contactQuotationModal" aria-hidden="true">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Request Spare Part Quotation</h3>
+            <button class="modal-close" onclick="closeModal('contactQuotationModal')">✕</button>
+        </div>
+        <form id="quotationForm" onsubmit="handleQuotationSubmit(event)">
+            <p class="quotation-subtitle">Can't find your specific spare part? Fill in your vehicle details below and our mechanics will verify OEM stock and send a quotation.</p>
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label>Your Name *</label>
+                    <input type="text" id="quotName" placeholder="Kasun Perera" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone / WhatsApp *</label>
+                    <input type="tel" id="quotPhone" placeholder="077 123 4567" required>
+                </div>
+            </div>
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label>Vehicle Make & Model *</label>
+                    <input type="text" id="quotVehicle" placeholder="e.g. Honda Vezel RU1 / Axio NZE161" required>
+                </div>
+                <div class="form-group">
+                    <label>Manufacturing Year *</label>
+                    <input type="text" id="quotYear" placeholder="e.g. 2017" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Chassis / VIN Number (Optional)</label>
+                <input type="text" id="quotVIN" placeholder="e.g. NZT260-0048192">
+            </div>
+            <div class="form-group">
+                <label>Spare Parts Required & Details *</label>
+                <textarea id="quotDetails" rows="3" placeholder="e.g. Need front suspension shock absorbers and tie rod ends..." required></textarea>
+            </div>
+            <button type="submit" class="btn-checkout">Send Quotation Request →</button>
+        </form>
+    </div>
+</div>
 
-<!-- FOOTER -->
-<footer class="footer">
-    <div class="footer-container">
-        <div class="footer-column footer-about">
-            <a href="home.html" class="footer-logo">Auto<span>Genuine</span></a>
-            <p class="footer-description">
-                AutoGenuine is an online spare parts store created to make finding
-                reliable and genuine car parts simple, convenient and trustworthy.
-            </p>
-            <div class="footer-trust">
-                <span>✓ Genuine Parts</span>
-                <span>✓ Trusted Brands</span>
-                <span>✓ Islandwide Delivery</span>
+<!-- LIVE CHATBOT WIDGET -->
+<div class="chat-widget">
+    <button class="chat-toggle" id="chatToggle" aria-label="Open Live Chat">
+        💬 <span class="chat-bubble-label">Chat with Mechanics</span>
+    </button>
+    <div class="chat-box" id="chatBox" aria-hidden="true">
+        <div class="chat-header">
+            <div>
+                <h4>AutoGenuine Tech Support</h4>
+                <p><span class="online-indicator">●</span> Online • Typically replies in 1 min</p>
+            </div>
+            <button class="chat-close" id="chatClose">✕</button>
+        </div>
+        <div class="chat-body" id="chatMessageList">
+            <div class="chat-bubble bot-msg">
+                <p>👋 Ayubowan! Welcome to AutoGenuine Support. How can we assist you with car spare parts, vehicle fitment, or warranties today?</p>
+                <span class="chat-time">Just now</span>
             </div>
         </div>
-
-        <div class="footer-column">
-            <h3>QUICK LINKS</h3>
-            <a href="home.html">Home</a>
-            <a href="home.html#shop">Shop</a>
-            <a href="home.html#about">About Us</a>
-            <a href="home.html#blog">Blog</a>
-            <a href="home.html#contact">Contact Us</a>
+        <div class="chat-quick-suggestions">
+            <button type="button" class="quick-prompt-btn" onclick="sendQuickPrompt('Check Vehicle Fitment')">🚗 Fitment</button>
+            <button type="button" class="quick-prompt-btn" onclick="sendQuickPrompt('Delivery Timelines')">🚚 Delivery</button>
+            <button type="button" class="quick-prompt-btn" onclick="sendQuickPrompt('Warranty Details')">🛡️ Warranty</button>
+            <button type="button" class="quick-prompt-btn" onclick="sendQuickPrompt('Payment Options')">💳 Payments</button>
         </div>
-
-        <div class="footer-column">
-            <h3>CATEGORIES</h3>
-            <a href="home.html#shop">Engine Parts</a>
-            <a href="home.html#shop">Brake Systems</a>
-            <a href="home.html#shop">Filters & Oils</a>
-            <a href="home.html#shop">Batteries</a>
-            <a href="home.html#shop">Electrical & Lights</a>
-        </div>
-
-        <div class="footer-column">
-            <h3>CONTACT & SUPPORT</h3>
-            <p>📧 info@autogenuine.lk</p>
-            <p>☎ +94 7X XXX XXXX</p>
-            <p>📍 Colombo, Sri Lanka</p>
-            <p class="footer-hours">Mon – Sat: 8.30 AM – 6.00 PM</p>
-        </div>
+        <form class="chat-footer" id="chatForm" onsubmit="handleChatSubmit(event)">
+            <input type="text" id="chatInput" placeholder="Type part name, chassis no, or question..." required>
+            <button type="submit" aria-label="Send message">➔</button>
+        </form>
     </div>
+</div>
 
-    <div class="footer-bottom">
-        <p>© 2026 AutoGenuine. All Rights Reserved.</p>
-        <div class="footer-bottom-links">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms & Conditions</a>
-            <a href="#">Return Policy</a>
-        </div>
+<!-- TOAST NOTIFICATION -->
+<div class="toast-notification" id="toastNotification">
+    <div class="toast-icon">✓</div>
+    <div class="toast-content">
+        <strong id="toastTitle">Notification</strong>
+        <p id="toastMessage">Action completed successfully.</p>
     </div>
-</footer>
+</div>
 
 <script src="products.js"></script>
 <script src="cart.js"></script>
