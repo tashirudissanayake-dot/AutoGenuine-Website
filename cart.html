@@ -31,6 +31,7 @@
         <a href="home.html#shop">Shop</a>
         <a href="home.html#about">About Us</a>
         <a href="home.html#blog">Blog</a>
+        <a href="javascript:void(0)" onclick="openOrderTrackingModal()">🚚 Track Order</a>
         <a href="javascript:void(0)" onclick="openModal('contactQuotationModal')">Request Quotation</a>
     </nav>
 
@@ -156,6 +157,45 @@
         </div>
     </section>
 
+    <!-- PREVIOUS ORDERS & LIVE DISPATCH TRACKING SECTION -->
+    <section class="section cart-previous-orders-section" id="cartPreviousOrdersSection">
+        <div class="section-heading">
+            <div>
+                <p class="small-title">YOUR PURCHASE HISTORY & DISPATCH STATUS</p>
+                <h2>Active Deliveries & Previous Orders (<span id="cartOrdersCount">0</span>)</h2>
+            </div>
+            <div class="cart-orders-header-actions">
+                <button type="button" class="btn-track-lookup-trigger" onclick="openOrderTrackingModal()">
+                    🚚 Live Tracking Lookup
+                </button>
+            </div>
+        </div>
+
+        <div class="cart-orders-content-wrap">
+            <!-- Filter & Search Bar for Orders -->
+            <div class="cart-orders-search-bar">
+                <div class="search-input-group">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="cartOrderSearchInput" placeholder="Search by Order Ref (#AG-XXXXX), Part Name, or Phone..." oninput="handleCartOrderSearch()">
+                </div>
+                <div class="status-filter-group">
+                    <label for="cartOrderStatusFilter">Filter Status:</label>
+                    <select id="cartOrderStatusFilter" onchange="handleCartOrderSearch()">
+                        <option value="all">All Orders</option>
+                        <option value="Processing Dispatch">⏳ Processing Dispatch</option>
+                        <option value="Shipped">🚚 Shipped / In Transit</option>
+                        <option value="Delivered">✓ Delivered</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Orders Grid / List -->
+            <div id="cartRecentOrdersList" class="cart-recent-orders-grid">
+                <!-- Dynamically populated via cart.js -->
+            </div>
+        </div>
+    </section>
+
 </main>
 
 <!-- CHECKOUT MODAL POPUP -->
@@ -206,20 +246,187 @@
             </div>
 
             <div class="form-group">
-                <label>Payment Method *</label>
+                <label>Select Payment Method *</label>
                 <div class="payment-options">
                     <label class="pay-option">
-                        <input type="radio" name="payMethod" value="Cash on Delivery" checked>
-                        <span>💵 Cash on Delivery (COD)</span>
+                        <input type="radio" name="payMethod" value="Cash on Delivery" checked onchange="switchPaymentMethod('COD')">
+                        <span>💵 Cash on Delivery</span>
                     </label>
                     <label class="pay-option">
-                        <input type="radio" name="payMethod" value="Bank Transfer">
-                        <span>🏦 Direct Bank Transfer</span>
+                        <input type="radio" name="payMethod" value="Bank Transfer" onchange="switchPaymentMethod('Bank')">
+                        <span>🏦 Bank Transfer / Slip</span>
                     </label>
                     <label class="pay-option">
-                        <input type="radio" name="payMethod" value="Credit/Debit Card">
-                        <span>💳 Visa / MasterCard / Koko</span>
+                        <input type="radio" name="payMethod" value="Credit/Debit Card" onchange="switchPaymentMethod('Card')">
+                        <span>💳 Visa / MasterCard</span>
                     </label>
+                    <label class="pay-option">
+                        <input type="radio" name="payMethod" value="Koko Installments" onchange="switchPaymentMethod('Koko')">
+                        <span>🛍️ Koko (3x Pay)</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- PAYMENT DETAIL PANELS -->
+            <!-- 1. CASH ON DELIVERY PANEL -->
+            <div id="payDetailsCOD" class="payment-details-panel active">
+                <div class="pay-info-box">
+                    <span class="info-icon">💵</span>
+                    <div>
+                        <strong>Cash on Delivery (COD)</strong>
+                        <p>Pay with cash directly to the Domex courier delivery rider upon inspecting your package at your doorstep.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. DIRECT BANK TRANSFER / SLIP UPLOAD PANEL -->
+            <div id="payDetailsBank" class="payment-details-panel" style="display: none;">
+                <div class="bank-accounts-card">
+                    <div class="bank-accounts-header">
+                        <strong>🏛️ AutoGenuine Official Bank Accounts</strong>
+                        <small>Deposit the payable amount and enter your transaction ref / slip below</small>
+                    </div>
+                    <div class="bank-grid">
+                        <div class="bank-item">
+                            <span class="bank-name">Commercial Bank of Ceylon</span>
+                            <p>A/C Name: <b>AutoGenuine (Pvt) Ltd</b></p>
+                            <p>A/C Number: <code class="acc-num" onclick="navigator.clipboard.writeText('100048920184'); showToast('Copied!', 'Commercial Bank Account Number copied.');" title="Click to copy">1000 4892 0184 📋</code></p>
+                            <p>Branch: <b>Kollupitiya (004)</b></p>
+                        </div>
+                        <div class="bank-item">
+                            <span class="bank-name">Hatton National Bank (HNB)</span>
+                            <p>A/C Name: <b>AutoGenuine (Pvt) Ltd</b></p>
+                            <p>A/C Number: <code class="acc-num" onclick="navigator.clipboard.writeText('039010249912'); showToast('Copied!', 'HNB Account Number copied.');" title="Click to copy">0390 1024 9912 📋</code></p>
+                            <p>Branch: <b>Head Office (039)</b></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bank-form-fields">
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="bankNameSelect">Deposited / Transferred Bank *</label>
+                            <select id="bankNameSelect">
+                                <option value="Commercial Bank">Commercial Bank of Ceylon</option>
+                                <option value="Hatton National Bank (HNB)">Hatton National Bank (HNB)</option>
+                                <option value="Sampath Bank">Sampath Bank</option>
+                                <option value="Bank of Ceylon (BOC)">Bank of Ceylon (BOC)</option>
+                                <option value="People's Bank">People's Bank</option>
+                                <option value="Seylan Bank">Seylan Bank</option>
+                                <option value="Other Bank">Other Bank / Online Fund Transfer</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="bankRefNumber">Transaction Ref / Slip Number *</label>
+                            <input type="text" id="bankRefNumber" placeholder="e.g. TXN-8492018 or Slip No">
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="bankDepositorName">Depositor Full Name *</label>
+                            <input type="text" id="bankDepositorName" placeholder="e.g. Kasun Dharmasena">
+                        </div>
+                        <div class="form-group">
+                            <label for="bankTransferDate">Deposit Date *</label>
+                            <input type="date" id="bankTransferDate">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Upload Deposit Slip / Screenshot *</label>
+                        <div class="file-upload-box" id="bankSlipUploadBox" onclick="document.getElementById('bankSlipFile').click()">
+                            <div class="upload-icon">📄</div>
+                            <div class="upload-text">
+                                <strong id="slipFileName">Click to upload deposit slip / transfer receipt</strong>
+                                <small>Supports JPG, PNG, PDF (Max 5MB)</small>
+                            </div>
+                            <input type="file" id="bankSlipFile" accept="image/*,application/pdf" style="display:none;" onchange="handleSlipFileSelect(event)">
+                        </div>
+                        <div id="slipPreviewWrap" style="display:none; margin-top:8px; align-items:center; gap:10px;">
+                            <img id="slipImagePreview" style="max-height:80px; border-radius:6px; border:1px solid var(--line);" alt="Slip preview">
+                            <span id="slipAttachedBadge" style="font-size:0.8rem; color:#2abf7a; font-weight:700;">✓ Slip Attached</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. CREDIT / DEBIT CARD PANEL -->
+            <div id="payDetailsCard" class="payment-details-panel" style="display: none;">
+                <div class="card-payment-box">
+                    <div class="card-brand-badges">
+                        <span class="badge-visa">VISA</span>
+                        <span class="badge-mc">MasterCard</span>
+                        <span class="badge-amex">AMEX</span>
+                        <span class="badge-ssl">🔒 256-Bit SSL Encrypted</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cardHolderName">Cardholder Name (as printed on card) *</label>
+                        <input type="text" id="cardHolderName" placeholder="e.g. K. D. DHARMASENA" uppercase autocomplete="cc-name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cardNumber">Card Number (16 Digits) *</label>
+                        <div class="card-num-input-wrap">
+                            <input type="text" id="cardNumber" placeholder="4111 •••• •••• 1234" maxlength="19" autocomplete="cc-number" oninput="formatCardNumber(this)">
+                            <span id="cardTypeIcon" class="card-type-icon">💳</span>
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="cardExpiry">Expiry Date (MM/YY) *</label>
+                            <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp" oninput="formatCardExpiry(this)">
+                        </div>
+                        <div class="form-group">
+                            <label for="cardCvv">CVV / CVC (3 Digits) *</label>
+                            <input type="password" id="cardCvv" placeholder="•••" maxlength="4" autocomplete="cc-csc" oninput="formatCardCvv(this)">
+                        </div>
+                    </div>
+
+                    <div class="card-secure-note">
+                        🛡️ Authenticated with Bank 3D-Secure 2.0 (Verified by Visa / MasterCard Identity Check).
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. KOKO BUY NOW PAY LATER PANEL -->
+            <div id="payDetailsKoko" class="payment-details-panel" style="display: none;">
+                <div class="koko-payment-box">
+                    <div class="koko-brand-header">
+                        <span class="koko-logo">🛍️ Koko</span>
+                        <strong>Buy Now, Pay in 3 Interest-Free Installments</strong>
+                    </div>
+
+                    <div class="koko-installments-grid">
+                        <div class="koko-step active">
+                            <small>Today (1st Installment)</small>
+                            <strong id="kokoInst1">Rs. 0.00</strong>
+                        </div>
+                        <div class="koko-step">
+                            <small>In 30 Days (2nd)</small>
+                            <strong id="kokoInst2">Rs. 0.00</strong>
+                        </div>
+                        <div class="koko-step">
+                            <small>In 60 Days (3rd)</small>
+                            <strong id="kokoInst3">Rs. 0.00</strong>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top:14px;">
+                        <label for="kokoPhone">Koko Registered Mobile Number *</label>
+                        <div style="display:flex; gap:8px;">
+                            <input type="tel" id="kokoPhone" placeholder="07X XXX XXXX" style="flex:1;">
+                            <button type="button" id="kokoSendOtpBtn" class="secondary-btn" style="white-space:nowrap; padding:0 14px; font-size:0.85rem;" onclick="handleKokoSendOtp()">Send OTP</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="kokoOtpGroup" style="display:none;">
+                        <label for="kokoOtp">Enter 4-Digit Koko OTP Code *</label>
+                        <input type="password" id="kokoOtp" placeholder="••••" maxlength="4" style="letter-spacing:8px; font-size:1.2rem; text-align:center; max-width:180px;">
+                        <small style="color:var(--accent, #2a9d8f); display:block; margin-top:4px;">🔑 Demo OTP: <strong>1234</strong></small>
+                    </div>
                 </div>
             </div>
 
@@ -233,7 +440,7 @@
                 <strong id="modalPayableTotal">Rs. 0.00</strong>
             </div>
 
-            <button type="submit" class="primary-button place-order-btn">
+            <button type="submit" id="placeOrderSubmitBtn" class="primary-button place-order-btn">
                 Confirm & Place Order →
             </button>
         </form>
@@ -253,7 +460,16 @@
 
         <p class="dispatch-note">🚚 Our dispatch team will contact you shortly to verify vehicle chassis fitment and dispatch your genuine parts.</p>
 
-        <a href="home.html" class="primary-button back-home-btn">Return to Homepage →</a>
+        <div style="display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap;">
+            <button type="button" class="primary-button" style="flex: 1; min-width: 180px; background: #e65100; border-color: #e65100; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; padding: 12px 16px; border-radius: 8px; color: #fff; cursor: pointer;" onclick="openOrderTrackingModal(document.getElementById('orderRefNumber').textContent.trim())">
+                🚚 Track Order Live
+            </button>
+            <button type="button" class="secondary-btn" style="flex: 1; min-width: 180px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; border-radius: 8px; background: var(--bg-input, #1a2030); border: 1px solid var(--border-color, #242c42); color: var(--text-main, #fff); font-weight: 600; cursor: pointer;" onclick="printOrderInvoice(document.getElementById('orderRefNumber').textContent.trim())">
+                🧾 Download Tax Invoice
+            </button>
+        </div>
+
+        <a href="home.html" style="display: block; text-align: center; margin-top: 12px; text-decoration: none; padding: 10px; color: var(--text-muted, #8b9bb4); font-size: 0.9rem;">Return to Homepage →</a>
     </div>
 </div>
 
@@ -266,14 +482,6 @@
     </div>
 </div>
 
-<!-- LIVE CHAT -->
-<div class="chat-box" id="chatBox" aria-hidden="true">
-    <div class="chat-header">
-        AutoGenuine Support
-        <button id="chatClose" aria-label="Close chat">×</button>
-    </div>
-    <div class="chat-body">
-        <p>Hi! Need assistance with your spare parts order?</p>
 <!-- ACCOUNT MODAL -->
 <div class="modal-overlay" id="accountModal" aria-hidden="true">
     <div class="modal-card account-modal-card">
@@ -300,7 +508,10 @@
                     <input type="password" id="loginPassword" placeholder="••••••••" required value="123">
                 </div>
                 <button type="submit" class="btn-checkout">Sign In to Account →</button>
-                <div class="demo-login-hint">Demo Account: <strong>kasun@gmail.com</strong> / Pass: <strong>123</strong></div>
+                <div class="demo-login-hint">
+                    <div>👤 Customer: <strong>kasun@gmail.com</strong> / <strong>123</strong></div>
+                    <div>🛡️ Admin: <strong>admin@autogenuine.lk</strong> / <strong>admin123</strong> (PIN: <strong>8899</strong>)</div>
+                </div>
             </form>
         </div>
 
@@ -342,6 +553,15 @@
                 </div>
             </div>
 
+            <!-- Admin Shortcut Card if user is Admin -->
+            <div id="profileAdminBox" class="profile-admin-shortcut" style="display: none;">
+                <div>
+                    <strong>🛡️ Administrator Privileges</strong>
+                    <p>Access full spare parts CRUD, orders management & analytics dashboard.</p>
+                </div>
+                <a href="admin.html" class="btn-admin-cta">Open Admin Dashboard ➔</a>
+            </div>
+
             <div class="orders-history-section">
                 <h4>Recent Orders & Deliveries</h4>
                 <div id="ordersListContainer" class="orders-list">
@@ -353,6 +573,35 @@
                 <button type="button" class="btn-logout" onclick="handleUserLogout()">Sign Out</button>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- ADMIN 2-STEP PIN VERIFICATION MODAL -->
+<div class="modal-overlay" id="adminPinModal" aria-hidden="true">
+    <div class="modal-card admin-pin-modal-card">
+        <div class="modal-header">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:1.4rem;">🛡️</span>
+                <h3>Admin 2-Step Verification</h3>
+            </div>
+            <button class="modal-close" onclick="closeModal('adminPinModal')">✕</button>
+        </div>
+        <form id="adminPinForm" onsubmit="handleAdminPinSubmit(event)">
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:15px;">
+                Administrator account recognized for <strong>admin@autogenuine.lk</strong>.<br>
+                Please enter your <strong>4-digit Master Security PIN</strong> to verify and unlock administrative dashboard permissions.
+            </p>
+            <div style="display:flex; justify-content:center; margin:15px 0;">
+                <input type="password" id="adminSecurityPinInput" maxlength="4" placeholder="••••" pattern="[0-9]{4}" inputmode="numeric" required autofocus autocomplete="off" style="width:200px; font-size:2rem; letter-spacing:14px; text-align:center; padding:10px; border:2px solid var(--primary, #e63946); border-radius:8px; background:var(--bg-input, #1a2030); color:var(--text-main, #f0f4fc); font-weight:700;">
+            </div>
+            <div style="background:rgba(252,163,17,0.1); border:1px dashed #fca311; border-radius:6px; padding:8px 12px; font-size:0.82rem; color:#fca311; text-align:center; margin-bottom:20px;">
+                <span>🔑 Default Master PIN: <strong>8899</strong></span>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <button type="button" class="btn-cancel" onclick="closeModal('adminPinModal')">Cancel</button>
+                <button type="submit" class="btn-checkout">Verify & Open Admin Panel ➔</button>
+            </div>
+        </form>
     </div>
 </div>
 

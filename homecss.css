@@ -1411,5 +1411,326 @@ html[data-theme="light"] .quality-assurance-card p{
     color:#334155;
 }
 
+/* =========================================================
+   ADMIN HEADER & PROFILE SHORTCUT STYLES
+   ========================================================= */
+.admin-header-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #e63946, #c1121f);
+    color: #ffffff !important;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 7px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(230, 57, 70, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.25s ease;
+    animation: adminPulse 2s infinite ease-in-out;
+}
+
+.admin-header-btn:hover {
+    background: linear-gradient(135deg, #f04856, #d90429);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(230, 57, 70, 0.5);
+}
+
+@keyframes adminPulse {
+    0%, 100% { box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3); }
+    50% { box-shadow: 0 4px 18px rgba(230, 57, 70, 0.6); }
+}
+
+.profile-admin-shortcut {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, rgba(230, 57, 70, 0.15), rgba(18, 22, 34, 0.8));
+    border: 1px solid rgba(230, 57, 70, 0.4);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 15px 0;
+    gap: 12px;
+}
+
+.profile-admin-shortcut strong {
+    display: block;
+    color: var(--primary, #e63946);
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+}
+
+.profile-admin-shortcut p {
+    font-size: 0.8rem;
+    color: #8e9bb0;
+}
+
+body.light-theme .profile-admin-shortcut,
+html[data-theme="light"] .profile-admin-shortcut {
+    background: linear-gradient(135deg, rgba(230, 57, 70, 0.08), #ffffff);
+    border-color: rgba(230, 57, 70, 0.3);
+}
+
+body.light-theme .profile-admin-shortcut p,
+html[data-theme="light"] .profile-admin-shortcut p {
+    color: #475569;
+}
+
+.btn-admin-cta {
+    background: #e63946;
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: all 0.25s ease;
+}
+
+.btn-admin-cta:hover {
+    background: #f04856;
+    transform: translateY(-1px);
+}
+
+.admin-pin-modal-card {
+    max-width: 440px;
+}
+
+/* ==========================================
+   ORDER TRACKING MODAL & VISUAL STEPPER STYLES
+   ========================================== */
+.order-tracking-modal-card {
+    max-width: 620px;
+    width: 100%;
+}
+
+.tracking-status-banner {
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 22px;
+    border: 1px solid var(--border-color, #242c42);
+}
+
+.tracking-status-banner.processing {
+    background: rgba(252, 163, 17, 0.12);
+    border-color: #fca311;
+    color: #fca311;
+}
+
+.tracking-status-banner.shipped {
+    background: rgba(78, 147, 237, 0.14);
+    border-color: #4e93ed;
+    color: #4e93ed;
+}
+
+.tracking-status-banner.delivered {
+    background: rgba(42, 157, 143, 0.15);
+    border-color: #2a9d8f;
+    color: #2a9d8f;
+}
+
+.tracking-status-banner.cancelled {
+    background: rgba(230, 57, 70, 0.15);
+    border-color: #e63946;
+    color: #e63946;
+}
+
+.banner-status-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.92rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.status-pulse-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 10px currentColor;
+    animation: pulseGlow 1.8s infinite;
+}
+
+.banner-status-msg {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    color: var(--text-main, #f0f4fc);
+    line-height: 1.4;
+}
+
+body.light-theme .banner-status-msg,
+html[data-theme="light"] .banner-status-msg {
+    color: #1e293b;
+}
+
+/* Stepper */
+.tracking-stepper-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    padding: 10px 5px;
+    position: relative;
+}
+
+.stepper-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    flex: 1;
+}
+
+.step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg-input, #1a2030);
+    border: 2px solid var(--border-color, #242c42);
+    color: var(--text-muted, #8e9bb0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+    transition: all 0.3s ease;
+}
+
+.stepper-step.completed .step-circle {
+    background: #2a9d8f;
+    border-color: #2a9d8f;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(42, 157, 143, 0.4);
+}
+
+.stepper-step.active:last-child .step-circle {
+    background: #2a9d8f;
+    border-color: #2a9d8f;
+}
+
+.stepper-step:nth-child(5).active .step-circle {
+    background: #4e93ed;
+    border-color: #4e93ed;
+    color: #fff;
+    box-shadow: 0 0 12px rgba(78, 147, 237, 0.4);
+}
+
+.step-label strong {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-main, #f0f4fc);
+}
+
+body.light-theme .step-label strong,
+html[data-theme="light"] .step-label strong {
+    color: #1e293b;
+}
+
+.step-label small {
+    font-size: 0.68rem;
+    color: var(--text-muted, #8e9bb0);
+}
+
+.stepper-line {
+    flex: 1;
+    height: 3px;
+    background: var(--border-color, #242c42);
+    margin: 0 -10px 24px -10px;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.stepper-line.filled {
+    background: #2a9d8f;
+}
+
+/* Info Grid */
+.tracking-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.info-card {
+    background: var(--bg-input, #121622);
+    border: 1px solid var(--border-color, #242c42);
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+
+.info-card small {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-muted, #8e9bb0);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.info-card strong {
+    font-size: 0.88rem;
+    color: var(--text-main, #f0f4fc);
+}
+
+.info-card .track-code {
+    color: #fca311;
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+/* Recipient & Items Card */
+.tracking-recipient-card {
+    background: var(--bg-input, #121622);
+    border: 1px solid var(--border-color, #242c42);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.track-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 0.88rem;
+}
+
+.track-item-name strong {
+    display: block;
+    color: var(--text-main, #f0f4fc);
+}
+
+.track-item-name small {
+    color: var(--text-muted, #8e9bb0);
+    font-size: 0.78rem;
+}
+
+.track-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color, #242c42);
+    font-weight: 700;
+}
+
+.tracking-actions-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+
+
 
 

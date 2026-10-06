@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard & Control Center | AutoGenuine Sri Lanka</title>
+    <link rel="stylesheet" href="admin.css">
+    <script>
+        (function() {
+            try {
+                var saved = localStorage.getItem("autogenuine_theme");
+                if (saved === "light") {
+                    document.documentElement.setAttribute("data-theme", "light");
+                    document.documentElement.classList.add("light-theme");
+                }
+            } catch (e) {}
+        })();
+    </script>
+</head>
+<body>
+
+    <!-- ADMIN 2-STEP PIN LOCKSCREEN OVERLAY (Shown if not authenticated) -->
+    <div id="adminLockscreen" class="admin-lockscreen active">
+        <div class="lockscreen-card">
+            <div class="lockscreen-brand">
+                <span class="shield-badge">🛡️</span>
+                <h2>AutoGenuine Admin Portal</h2>
+                <p>2-Step Security Verification Required</p>
+            </div>
+
+            <!-- If user is not logged in at all, show login step -->
+            <div id="lockscreenLoginForm" class="lockscreen-step" style="display: none;">
+                <p class="lock-instruction">Please enter your Administrator credentials to proceed.</p>
+                <form onsubmit="handleLockscreenLogin(event)">
+                    <div class="form-group">
+                        <label>Admin Email Address</label>
+                        <input type="email" id="lockEmail" value="admin@autogenuine.lk" required placeholder="admin@autogenuine.lk">
+                    </div>
+                    <div class="form-group">
+                        <label>Admin Password</label>
+                        <input type="password" id="lockPassword" value="admin123" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn-lock-submit">Authenticate Admin ➔</button>
+                </form>
+            </div>
+
+            <!-- 2-Step PIN Step -->
+            <div id="lockscreenPinForm" class="lockscreen-step">
+                <div class="admin-user-pill">
+                    <span class="user-avatar">AD</span>
+                    <div>
+                        <strong id="lockAdminName">Admin Supervisor</strong>
+                        <small id="lockAdminEmail">admin@autogenuine.lk</small>
+                    </div>
+                </div>
+                <p class="lock-instruction">Enter your <strong>4-Digit Master Security PIN</strong> to unlock administrative management.</p>
+                <form onsubmit="handleLockscreenPin(event)">
+                    <div class="pin-digits-wrapper">
+                        <input type="password" id="lockPinInput" maxlength="4" placeholder="••••" pattern="[0-9]{4}" inputmode="numeric" required autofocus autocomplete="off">
+                    </div>
+                    <div class="lock-hint">
+                        <span>🔑 Default Master PIN: <strong>8899</strong></span>
+                    </div>
+                    <div class="lockscreen-actions">
+                        <button type="button" class="btn-lock-cancel" onclick="window.location.href='home.html'">← Back to Store</button>
+                        <button type="submit" class="btn-lock-submit">Unlock Dashboard ➔</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="lockscreen-quickfill">
+                <button type="button" onclick="quickFillAdminCredentials()">⚡ Auto-Fill Demo Credentials (admin@autogenuine.lk / 8899)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN ADMIN WRAPPER -->
+    <div id="adminApp" class="admin-wrapper" style="display: none;">
+        
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <a href="home.html" class="sidebar-logo">
+                    <span class="logo-shield">🛡️</span>
+                    <div class="logo-text">
+                        <h3>Auto<span>Genuine</span></h3>
+                        <small>ADMIN CONTROL CENTER</small>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="overview">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Overview & Metrics</span>
+                </button>
+                <button class="nav-item" data-tab="products">
+                    <span class="nav-icon">📦</span>
+                    <span class="nav-label">Products Inventory</span>
+                    <span class="nav-badge" id="sidebarProductCount">9</span>
+                </button>
+                <button class="nav-item" data-tab="orders">
+                    <span class="nav-icon">🛒</span>
+                    <span class="nav-label">Customer Orders</span>
+                    <span class="nav-badge order-badge" id="sidebarOrderCount">2</span>
+                </button>
+                <button class="nav-item" data-tab="quotations">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-label">Quotation Inquiries</span>
+                    <span class="nav-badge quote-badge" id="sidebarQuoteCount">2</span>
+                </button>
+                <button class="nav-item" data-tab="customers">
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-label">Registered Users</span>
+                </button>
+                <button class="nav-item" data-tab="coupons">
+                    <span class="nav-icon">🏷️</span>
+                    <span class="nav-label">Promo Coupons</span>
+                </button>
+                <button class="nav-item" data-tab="system">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">Settings & Reset</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="home.html" class="btn-store-link">
+                    <span>🌐</span> View Live Store
+                </a>
+                <div class="sidebar-admin-profile">
+                    <div class="admin-avatar">AD</div>
+                    <div class="admin-info">
+                        <strong id="sidebarAdminName">Admin Supervisor</strong>
+                        <small>Full Access</small>
+                    </div>
+                    <button class="btn-sidebar-logout" onclick="handleAdminLogout()" title="Logout Admin Session">⏻</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="admin-main">
+            
+            <!-- TOP BAR -->
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu-toggle" id="sidebarToggleBtn">☰</button>
+                    <div class="page-title-box">
+                        <h1 id="pageTitle">Dashboard Overview</h1>
+                        <p id="pageSubtitle">Real-time store metrics, inventory status, and order dispatch management</p>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <div id="dbStatusIndicator" class="db-status-pill offline" title="Live Database Status">
+                        <span class="status-dot offline"></span> <span class="status-label">Local Mode</span>
+                    </div>
+                    <div class="live-clock" id="liveClockDisplay">--:--:--</div>
+                    <button class="theme-toggle-btn" id="adminThemeToggle" type="button" title="Toggle Light/Dark Theme">
+                        <span class="theme-icon">🌙</span> <span class="theme-text">Dark</span>
+                    </button>
+                    <a href="home.html" class="topbar-store-btn" target="_blank">
+                        <span>🛍️</span> Open Storefront
+                    </a>
+                </div>
+            </header>
+
+            <!-- VIEW CONTAINER -->
+            <div class="admin-content-body">
+
+                <!-- 1. OVERVIEW VIEW -->
+                <section id="tab-overview" class="admin-tab-view active">
+                    
+                    <!-- KPI CARDS -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card revenue-card">
+                            <div class="kpi-icon">💰</div>
+                            <div class="kpi-data">
+                                <small>Total Revenue (Delivered / Shipped)</small>
+                                <h3 id="kpiTotalRevenue">Rs. 0.00</h3>
+                                <span class="kpi-trend positive">↑ Live Calculated from Orders</span>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon">📦</div>
+                            <div class="kpi-data">
+                                <small>Active Products</small>
+                                <h3 id="kpiTotalProducts">9</h3>
+                                <span class="kpi-trend neutral">Genuine Catalog Items</span>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon">🛒</div>
+                            <div class="kpi-data">
+                                <small>Total Orders</small>
+                                <h3 id="kpiTotalOrders">0</h3>
+                                <span class="kpi-trend positive" id="kpiPendingOrders">0 Processing</span>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon">📋</div>
+                            <div class="kpi-data">
+                                <small>Part Quotes</small>
+                                <h3 id="kpiTotalQuotes">0</h3>
+                                <span class="kpi-trend warning" id="kpiPendingQuotes">0 Pending</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QUICK ACTION SHORTCUTS -->
+                    <div class="quick-actions-bar">
+                        <h4>⚡ Quick Administrative Actions</h4>
+                        <div class="action-buttons">
+                            <button type="button" class="btn-primary-action" onclick="openAddProductModal()">
+                                <span>➕</span> Add New Spare Part
+                            </button>
+                            <button type="button" class="btn-secondary-action" onclick="openAddCouponModal()">
+                                <span>🏷️</span> Create Promo Coupon
+                            </button>
+                            <button type="button" class="btn-secondary-action" onclick="switchAdminTab('orders')">
+                                <span>🚚</span> Dispatch Orders
+                            </button>
+                            <button type="button" class="btn-danger-action" onclick="confirmResetCatalog()">
+                                <span>↺</span> Reset Catalog to Default
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- DASHBOARD TWO-COLUMN SECTION -->
+                    <div class="dashboard-split-grid">
+                        <!-- Recent Orders -->
+                        <div class="dashboard-panel">
+                            <div class="panel-header">
+                                <h3>🛒 Recent Customer Orders</h3>
+                                <button class="btn-text" onclick="switchAdminTab('orders')">View All Orders →</button>
+                            </div>
+                            <div class="panel-body">
+                                <div id="dashboardRecentOrders" class="recent-orders-list">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Low Stock & Catalog Alerts -->
+                        <div class="dashboard-panel">
+                            <div class="panel-header">
+                                <h3>⚠️ Inventory Stock Alerts</h3>
+                                <button class="btn-text" onclick="switchAdminTab('products')">Manage Inventory →</button>
+                            </div>
+                            <div class="panel-body">
+                                <div id="dashboardStockAlerts" class="stock-alerts-list">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. PRODUCT INVENTORY VIEW (CRUD) -->
+                <section id="tab-products" class="admin-tab-view">
+                    <div class="section-toolbar">
+                        <div class="toolbar-left">
+                            <div class="search-box-admin">
+                                <span>🔍</span>
+                                <input type="text" id="productSearchInput" placeholder="Search by name, OEM, SKU, or brand..." oninput="filterAdminProducts()">
+                            </div>
+                            <select id="productCategoryFilter" class="admin-select" onchange="filterAdminProducts()">
+                                <option value="all">All Categories</option>
+                                <option value="engine-parts">Engine Parts</option>
+                                <option value="brake-parts">Brake Parts</option>
+                                <option value="filters">Filters</option>
+                                <option value="batteries">Batteries</option>
+                                <option value="lights">Lights & Electrical</option>
+                                <option value="suspension">Suspension & Steering</option>
+                                <option value="accessories">Accessories</option>
+                            </select>
+                        </div>
+                        <div class="toolbar-right">
+                            <button type="button" class="btn-primary-action" onclick="openAddProductModal()">
+                                <span>➕</span> Add New Spare Part
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- PRODUCTS TABLE -->
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Photo</th>
+                                    <th>Part Name & SKU</th>
+                                    <th>Category</th>
+                                    <th>OEM Number</th>
+                                    <th>Unit Price</th>
+                                    <th>Stock Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminProductsTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 3. CUSTOMER ORDERS VIEW -->
+                <section id="tab-orders" class="admin-tab-view">
+                    <div class="section-toolbar">
+                        <div class="toolbar-left">
+                            <div class="search-box-admin">
+                                <span>🔍</span>
+                                <input type="text" id="orderSearchInput" placeholder="Search by Order #, customer name, phone..." oninput="filterAdminOrders()">
+                            </div>
+                            <select id="orderStatusFilter" class="admin-select" onchange="filterAdminOrders()">
+                                <option value="all">All Dispatch Statuses</option>
+                                <option value="Processing Dispatch">Processing Dispatch</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="toolbar-right">
+                            <span class="order-count-indicator" id="orderCountIndicator">Total Orders: 0</span>
+                        </div>
+                    </div>
+
+                    <!-- ORDERS TABLE -->
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Date</th>
+                                    <th>Customer & Phone</th>
+                                    <th>Items Ordered</th>
+                                    <th>Total (LKR)</th>
+                                    <th>Payment</th>
+                                    <th>Dispatch Status (Live Update)</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminOrdersTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 4. QUOTATION INQUIRIES VIEW -->
+                <section id="tab-quotations" class="admin-tab-view">
+                    <div class="section-toolbar">
+                        <div class="toolbar-left">
+                            <div class="search-box-admin">
+                                <span>🔍</span>
+                                <input type="text" id="quoteSearchInput" placeholder="Search by VIN, Chassis, customer name..." oninput="filterAdminQuotes()">
+                            </div>
+                            <select id="quoteStatusFilter" class="admin-select" onchange="filterAdminQuotes()">
+                                <option value="all">All Statuses</option>
+                                <option value="Pending Review">Pending Review</option>
+                                <option value="Quoted">Quoted / Sent</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Declined">Declined</option>
+                            </select>
+                        </div>
+                        <div class="toolbar-right">
+                            <span class="order-count-indicator" id="quoteCountIndicator">Total Requests: 0</span>
+                        </div>
+                    </div>
+
+                    <!-- QUOTATIONS TABLE -->
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Quote #</th>
+                                    <th>Date</th>
+                                    <th>Customer Name & Contact</th>
+                                    <th>Vehicle & Year</th>
+                                    <th>Chassis / VIN</th>
+                                    <th>Parts Required</th>
+                                    <th>Status (Live Update)</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminQuotesTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 5. REGISTERED CUSTOMERS VIEW -->
+                <section id="tab-customers" class="admin-tab-view">
+                    <div class="section-toolbar">
+                        <div class="toolbar-left">
+                            <div class="search-box-admin">
+                                <span>🔍</span>
+                                <input type="text" id="customerSearchInput" placeholder="Search customers by name, email..." oninput="filterAdminCustomers()">
+                            </div>
+                        </div>
+                        <div class="toolbar-right">
+                            <span class="order-count-indicator" id="customerCountIndicator">Total Registered: 0</span>
+                        </div>
+                    </div>
+
+                    <!-- CUSTOMERS TABLE -->
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Email Address</th>
+                                    <th>Phone</th>
+                                    <th>Registered Vehicle</th>
+                                    <th>Role</th>
+                                    <th>Registered Date</th>
+                                    <th>Total Orders</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminCustomersTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 6. PROMO COUPONS VIEW -->
+                <section id="tab-coupons" class="admin-tab-view">
+                    <div class="section-toolbar">
+                        <div class="toolbar-left">
+                            <h3>🏷️ Active Promo Coupons & Discounts</h3>
+                        </div>
+                        <div class="toolbar-right">
+                            <button type="button" class="btn-primary-action" onclick="openAddCouponModal()">
+                                <span>➕</span> Create New Coupon Code
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Coupon Code</th>
+                                    <th>Discount %</th>
+                                    <th>Min Order (LKR)</th>
+                                    <th>Description</th>
+                                    <th>Expiry Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminCouponsTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 7. SETTINGS & RESET VIEW -->
+                <section id="tab-system" class="admin-tab-view">
+                    <div class="system-settings-card">
+                        <h3>⚙️ System Administration & Presentation Tools</h3>
+                        <p>Manage project demo state, reset database catalog to defaults, or review database architecture schema.</p>
+
+                        <div class="setting-item">
+                            <div>
+                                <strong>↺ Reset Product Catalog to Default (9 Genuine Parts)</strong>
+                                <p>Removes any test items and restores default OEM parts catalogue.</p>
+                            </div>
+                            <button type="button" class="btn-danger-action" onclick="confirmResetCatalog()">Reset Catalog</button>
+                        </div>
+
+                        <div class="setting-item">
+                            <div>
+                                <strong>🗄️ Relational Database Schema & Documentation</strong>
+                                <p>View full 3NF SQL schema (17 tables) and database documentation created for university viva.</p>
+                            </div>
+                            <div class="setting-links">
+                                <a href="database.sql" download class="btn-secondary-action">Download database.sql</a>
+                                <a href="DATABASE_DOCUMENTATION.md" target="_blank" class="btn-secondary-action">View Documentation.md</a>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div>
+                                <strong>🚀 1-Click MySQL Database Installer & Health Check</strong>
+                                <p>Automatically create <code>autogenuine_db</code> database and initialize all 17 tables via PHP PDO.</p>
+                            </div>
+                            <div class="setting-links">
+                                <a href="setup_database.php" target="_blank" class="btn-primary-action" style="padding: 9px 16px; border-radius: var(--radius-sm); text-decoration: none; font-weight: 700; background: #2a9d8f; color: #fff;">⚡ Run Database Setup</a>
+                                <a href="api/status.php" target="_blank" class="btn-secondary-action">Check MySQL Status API</a>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div>
+                                <strong>🛡️ Admin 2-Step PIN Configuration</strong>
+                                <p>Master Admin PIN: <code>8899</code> (Default demo security key).</p>
+                            </div>
+                            <span class="pin-active-pill">Status: Active & Enforced</span>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- PRODUCT ADD / EDIT MODAL -->
+    <div class="modal-overlay" id="adminProductModal" aria-hidden="true">
+        <div class="modal-card admin-modal-card">
+            <div class="modal-header">
+                <h3 id="productModalTitle">Add New Spare Part</h3>
+                <button class="modal-close" onclick="closeModal('adminProductModal')">✕</button>
+            </div>
+            <form id="adminProductForm" onsubmit="handleProductFormSubmit(event)">
+                <input type="hidden" id="editProductId" value="">
+                
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Product / Part Title *</label>
+                        <input type="text" id="prodName" required placeholder="e.g. Front Brake Disc Rotor Set">
+                    </div>
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select id="prodCategory" required>
+                            <option value="Engine Parts">Engine Parts</option>
+                            <option value="Brake Parts">Brake Parts</option>
+                            <option value="Filters">Filters</option>
+                            <option value="Batteries">Batteries</option>
+                            <option value="Lights & Electrical">Lights & Electrical</option>
+                            <option value="Suspension">Suspension & Steering</option>
+                            <option value="Accessories">Accessories</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid-3">
+                    <div class="form-group">
+                        <label>OEM Number *</label>
+                        <input type="text" id="prodOem" required placeholder="e.g. 43512-02250">
+                    </div>
+                    <div class="form-group">
+                        <label>Part SKU *</label>
+                        <input type="text" id="prodSku" required placeholder="e.g. AG-BRK-5012">
+                    </div>
+                    <div class="form-group">
+                        <label>Brand / Manufacturer *</label>
+                        <input type="text" id="prodBrand" required placeholder="e.g. Brembo / Toyota OEM">
+                    </div>
+                </div>
+
+                <div class="form-grid-3">
+                    <div class="form-group">
+                        <label>Selling Price (Rs.) *</label>
+                        <input type="number" id="prodPrice" required min="0" step="10" placeholder="14500.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Original / MSRP Price (Rs.)</label>
+                        <input type="number" id="prodOriginalPrice" min="0" step="10" placeholder="17500.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Stock Quantity (Units) *</label>
+                        <input type="number" id="prodStock" required min="0" step="1" value="10">
+                    </div>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Country of Origin</label>
+                        <input type="text" id="prodOrigin" placeholder="e.g. Japan / Germany">
+                    </div>
+                    <div class="form-group">
+                        <label>Warranty Terms</label>
+                        <input type="text" id="prodWarranty" placeholder="e.g. 2 Years / 40,000 km">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Main Image URL / Path *</label>
+                    <div class="img-input-row">
+                        <input type="text" id="prodImage" required placeholder="images/brake.jpg or URL" value="images/brake.jpg">
+                        <select id="prodPresetImageSelect" onchange="selectPresetImage(this.value)">
+                            <option value="">Preset Images ▾</option>
+                            <option value="images/brake-pad.jpg">Brake Pads (images/brake-pad.jpg)</option>
+                            <option value="images/brake.jpg">Brake Rotor (images/brake.jpg)</option>
+                            <option value="images/oil-filter.jpg">Oil Filter (images/oil-filter.jpg)</option>
+                            <option value="images/filter.jpg">Air Filter (images/filter.jpg)</option>
+                            <option value="images/engine.jpg">Engine Timing Belt (images/engine.jpg)</option>
+                            <option value="images/battery.jpg">Exide Battery (images/battery.jpg)</option>
+                            <option value="images/battery2.jpg">Amaron Battery (images/battery2.jpg)</option>
+                            <option value="images/light.jpg">LED Headlight Bulb (images/light.jpg)</option>
+                            <option value="images/spark-plug.jpg">Iridium Spark Plug (images/spark-plug.jpg)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Short Description *</label>
+                    <textarea id="prodShortDesc" rows="2" required placeholder="Brief highlight of the spare part..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Vehicle Compatibility (e.g. Toyota Premio, Axio, Vezel) *</label>
+                    <input type="text" id="prodCompatibility" required placeholder="e.g. Toyota Premio NZT260, Axio NZE161 (2012-2020)">
+                </div>
+
+                <div class="modal-form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('adminProductModal')">Cancel</button>
+                    <button type="submit" class="btn-checkout" id="productSaveBtn">Save Spare Part ➔</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CREATE COUPON MODAL -->
+    <div class="modal-overlay" id="adminCouponModal" aria-hidden="true">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Create New Promo Coupon</h3>
+                <button class="modal-close" onclick="closeModal('adminCouponModal')">✕</button>
+            </div>
+            <form id="adminCouponForm" onsubmit="handleCouponFormSubmit(event)">
+                <div class="form-group">
+                    <label>Coupon Code *</label>
+                    <input type="text" id="couponCodeInput" required placeholder="e.g. FESTIVE25" style="text-transform: uppercase;">
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Discount Percentage (%) *</label>
+                        <input type="number" id="couponDiscountInput" required min="1" max="90" placeholder="15">
+                    </div>
+                    <div class="form-group">
+                        <label>Minimum Order Amount (Rs.)</label>
+                        <input type="number" id="couponMinOrderInput" min="0" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Expiry Date</label>
+                    <input type="date" id="couponExpiryInput" value="2026-12-31">
+                </div>
+                <div class="form-group">
+                    <label>Description / Notes</label>
+                    <input type="text" id="couponDescInput" placeholder="e.g. Festive seasonal discount promotion">
+                </div>
+                <div class="modal-form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('adminCouponModal')">Cancel</button>
+                    <button type="submit" class="btn-checkout">Create Coupon ➔</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ORDER RECEIPT / INVOICE MODAL -->
+    <div class="modal-overlay" id="adminOrderReceiptModal" aria-hidden="true">
+        <div class="modal-card receipt-modal-card">
+            <div class="modal-header">
+                <h3>Customer Order Invoice</h3>
+                <button class="modal-close" onclick="closeModal('adminOrderReceiptModal')">✕</button>
+            </div>
+            <div class="receipt-body" id="receiptModalBody">
+                <!-- Populated dynamically -->
+            </div>
+            <div class="modal-form-actions">
+                <button type="button" class="btn-secondary-action" onclick="window.print()">🖨️ Print Invoice</button>
+                <button type="button" class="btn-checkout" onclick="closeModal('adminOrderReceiptModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast-notification" id="adminToast">
+        <div class="toast-icon">✓</div>
+        <div class="toast-content">
+            <strong id="adminToastTitle">Updated</strong>
+            <p id="adminToastMsg">Action completed successfully.</p>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="products.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

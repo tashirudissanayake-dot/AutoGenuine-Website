@@ -319,3 +319,91 @@ body.light-theme .empty-wishlist-card h3,
 html[data-theme="light"] .empty-wishlist-card h3 {
     color: #0f172a;
 }
+
+/* =========================================================
+   ADMIN HEADER & PROFILE SHORTCUT STYLES
+   ========================================================= */
+.admin-header-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #e63946, #c1121f);
+    color: #ffffff !important;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 7px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(230, 57, 70, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.25s ease;
+    animation: adminPulse 2s infinite ease-in-out;
+}
+
+.admin-header-btn:hover {
+    background: linear-gradient(135deg, #f04856, #d90429);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(230, 57, 70, 0.5);
+}
+
+@keyframes adminPulse {
+    0%, 100% { box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3); }
+    50% { box-shadow: 0 4px 18px rgba(230, 57, 70, 0.6); }
+}
+
+.profile-admin-shortcut {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, rgba(230, 57, 70, 0.15), rgba(18, 22, 34, 0.8));
+    border: 1px solid rgba(230, 57, 70, 0.4);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 15px 0;
+    gap: 12px;
+}
+
+.profile-admin-shortcut strong {
+    display: block;
+    color: var(--primary, #e63946);
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+}
+
+.profile-admin-shortcut p {
+    font-size: 0.8rem;
+    color: #8e9bb0;
+}
+
+body.light-theme .profile-admin-shortcut,
+html[data-theme="light"] .profile-admin-shortcut {
+    background: linear-gradient(135deg, rgba(230, 57, 70, 0.08), #ffffff);
+    border-color: rgba(230, 57, 70, 0.3);
+}
+
+body.light-theme .profile-admin-shortcut p,
+html[data-theme="light"] .profile-admin-shortcut p {
+    color: #475569;
+}
+
+.btn-admin-cta {
+    background: #e63946;
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: all 0.25s ease;
+}
+
+.btn-admin-cta:hover {
+    background: #f04856;
+    transform: translateY(-1px);
+}
+
+.admin-pin-modal-card {
+    max-width: 440px;
+}
+

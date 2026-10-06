@@ -26,6 +26,16 @@ document.addEventListener("DOMContentLoaded", function () {
     initRelatedProducts(product);
     initLiveChat();
     initHeaderCart();
+
+    // Re-sync wishlist button state when user signs in or signs out
+    window.addEventListener("autogenuine:authchanged", () => {
+        const btn = document.getElementById("wishlistFloatBtn");
+        if (btn && product) {
+            const inWish = isProductInWishlist(product.id);
+            btn.classList.toggle("active", inWish);
+            btn.textContent = inWish ? "♥" : "♡";
+        }
+    });
 });
 
 // Render all product data to DOM
@@ -537,16 +547,32 @@ function populateUserProfile(user) {
     }
     if (vehicleEl) vehicleEl.textContent = `🚗 ${user.vehicle || 'Standard Vehicle'}`;
 
+    // Admin Shortcut Box
+    const adminBox = document.getElementById("profileAdminBox");
+    if (adminBox) {
+        const isAdmin = user.role === "admin";
+        adminBox.style.display = isAdmin ? "flex" : "none";
+    }
+
     if (ordersList) {
-        const orders = getOrdersHistory();
-        if (orders.length === 0) {
+        const allOrders = getOrdersHistory();
+        const userOrders = (user.role === "admin")
+            ? allOrders
+            : allOrders.filter(o => {
+                const matchEmail = o.customerEmail && o.customerEmail.toLowerCase() === user.email.toLowerCase();
+                const matchPhone = o.customerPhone && user.phone && o.customerPhone === user.phone;
+                const matchName = o.customerName && user.name && o.customerName.toLowerCase() === user.name.toLowerCase();
+                return matchEmail || matchPhone || matchName;
+            });
+
+        if (userOrders.length === 0) {
             ordersList.innerHTML = `<p class="no-orders-msg">No past orders found yet. Orders placed on cart checkout will appear here!</p>`;
         } else {
-            ordersList.innerHTML = orders.map(o => `
+            ordersList.innerHTML = userOrders.map(o => `
                 <div class="order-history-card">
                     <div class="order-hist-header">
                         <strong>${o.orderId || '#AG-ORDER'}</strong>
-                        <span class="order-status-badge">Processing Dispatch</span>
+                        <span class="order-status-badge">${o.status || 'Processing Dispatch'}</span>
                     </div>
                     <div class="order-hist-details">
                         <p>Date: ${o.date || 'Recent'}</p>
@@ -559,22 +585,76 @@ function populateUserProfile(user) {
     }
 }
 
-function handleUserLogin(e) {
+async function handleUserLogin(e) {
     e.preventDefault();
     const email = document.getElementById("loginEmail").value.trim();
     const pass = document.getElementById("loginPassword").value.trim();
 
-    const res = loginUser(email, pass);
-    if (res.success) {
-        showToast("Signed In", res.message);
-        switchAccountTab('profile');
-    } else {
-        alert(res.message);
+    const submitBtn = e.target.querySelector("button[type='submit']");
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Signing in...";
+    }
+
+    try {
+        const res = await loginUser(email, pass);
+        if (res.success) {
+            if (res.requiresAdminPin) {
+                closeModal('accountModal');
+                openAdminPinModal();
+            } else {
+                showToast("Signed In", res.message);
+                switchAccountTab('profile');
+            }
+        } else {
+            alert(res.message);
+        }
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Sign In to My Account →";
+        }
     }
 }
 window.handleUserLogin = handleUserLogin;
 
-function handleUserRegister(e) {
+function openAdminPinModal() {
+    const input = document.getElementById("adminSecurityPinInput");
+    if (input) input.value = "";
+    openModal('adminPinModal');
+    setTimeout(() => {
+        if (input) input.focus();
+    }, 150);
+}
+window.openAdminPinModal = openAdminPinModal;
+
+async function handleAdminPinSubmit(e) {
+    e.preventDefault();
+    const input = document.getElementById("adminSecurityPinInput");
+    const pin = input ? input.value.trim() : "";
+    const res = await verifyAdminPin(pin);
+
+    if (res.success) {
+        closeModal('adminPinModal');
+        showToast("Admin Authenticated 🛡️", res.message);
+        setTimeout(() => {
+            if (confirm("2-Step Verification Successful! Access the Admin Dashboard now?")) {
+                window.location.href = "admin.html";
+            } else {
+                openAccountModal();
+            }
+        }, 300);
+    } else {
+        alert(res.message);
+        if (input) {
+            input.value = "";
+            input.focus();
+        }
+    }
+}
+window.handleAdminPinSubmit = handleAdminPinSubmit;
+
+async function handleUserRegister(e) {
     e.preventDefault();
     const name = document.getElementById("regName").value.trim();
     const email = document.getElementById("regEmail").value.trim();
@@ -582,12 +662,25 @@ function handleUserRegister(e) {
     const vehicle = document.getElementById("regVehicle").value.trim();
     const pass = document.getElementById("regPassword").value.trim();
 
-    const res = registerUser(name, email, phone, pass, vehicle);
-    if (res.success) {
-        showToast("Account Created", res.message);
-        switchAccountTab('profile');
-    } else {
-        alert(res.message);
+    const submitBtn = e.target.querySelector("button[type='submit']");
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Creating Account...";
+    }
+
+    try {
+        const res = await registerUser(name, email, phone, pass, vehicle);
+        if (res.success) {
+            showToast("Account Created", res.message);
+            switchAccountTab('profile');
+        } else {
+            alert(res.message);
+        }
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Complete Registration →";
+        }
     }
 }
 window.handleUserRegister = handleUserRegister;

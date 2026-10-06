@@ -1,6 +1,6 @@
 // products.js - AutoGenuine Central Product Database & Utilities
 
-const PRODUCTS = [
+const DEFAULT_PRODUCTS = [
     {
         id: "brake-pad-set",
         name: "Front Ceramic Brake Pad Set",
@@ -519,39 +519,355 @@ Precision beam engineering ensures zero glare to oncoming traffic, while aircraf
     }
 ];
 
-// Helper Functions
+// ==========================================
+// CENTRAL CATALOG PERSISTENCE & MYSQL BACKEND INTEGRATION
+// ==========================================
+const PRODUCTS_STORAGE_KEY = "autogenuine_custom_products";
+const API_BASE_URL = (function() {
+    try {
+        if (typeof window !== 'undefined' && window.location) {
+            const loc = window.location;
+            if (loc.protocol.startsWith('http')) {
+                const path = loc.pathname;
+                if (path.includes('/ProjectY/')) {
+                    return loc.origin + '/ProjectY/api/';
+                }
+                return './api/';
+            } else if (loc.protocol === 'file:') {
+                return 'http://localhost/ProjectY/api/';
+            }
+        }
+    } catch (e) {}
+    return 'http://localhost/ProjectY/api/';
+})();
+
+let isMySQLActive = false;
+
+function getStoredProducts() {
+    try {
+        const saved = localStorage.getItem(PRODUCTS_STORAGE_KEY);
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                return parsed;
+            }
+        }
+    } catch (e) {
+        console.error("Error reading stored products:", e);
+    }
+    try {
+        localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(DEFAULT_PRODUCTS));
+    } catch (e) {}
+    return [...DEFAULT_PRODUCTS];
+}
+
+function saveStoredProducts(productsList) {
+    try {
+        localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(productsList));
+        PRODUCTS = productsList;
+        return true;
+    } catch (e) {
+        console.error("Error saving products:", e);
+        return false;
+    }
+}
+
+// In-memory reference for backward compatibility
+let PRODUCTS = getStoredProducts();
+
 function getAllProducts() {
-    return PRODUCTS;
+    return getStoredProducts();
 }
 
 function getProductById(id) {
     if (!id) return null;
-    return PRODUCTS.find(p => p.id.toLowerCase() === id.toLowerCase().trim()) || null;
+    const all = getAllProducts();
+    return all.find(p => p.id.toLowerCase() === id.toLowerCase().trim()) || null;
 }
 
 function getProductsByCategory(categorySlug) {
-    if (!categorySlug || categorySlug === "all") return PRODUCTS;
-    return PRODUCTS.filter(p => p.categorySlug.toLowerCase() === categorySlug.toLowerCase() || p.category.toLowerCase().includes(categorySlug.toLowerCase()));
+    const all = getAllProducts();
+    if (!categorySlug || categorySlug === "all") return all;
+    return all.filter(p => 
+        (p.categorySlug && p.categorySlug.toLowerCase() === categorySlug.toLowerCase()) || 
+        (p.category && p.category.toLowerCase().includes(categorySlug.toLowerCase()))
+    );
 }
 
 function getRelatedProducts(currentId, limit = 3) {
+    const all = getAllProducts();
     const current = getProductById(currentId);
-    if (!current) return PRODUCTS.slice(0, limit);
-    return PRODUCTS.filter(p => p.id !== current.id).slice(0, limit);
+    if (!current) return all.slice(0, limit);
+    return all.filter(p => p.id !== current.id).slice(0, limit);
 }
 
-// Cart & Wishlist Storage Handlers
-const CART_STORAGE_KEY = "autogenuine_cart_items";
-const WISHLIST_STORAGE_KEY = "autogenuine_wishlist_items";
-const COUPON_STORAGE_KEY = "autogenuine_active_coupon";
+// Admin Catalog Operations (Synchronized with MySQL & LocalStorage)
+function addNewProduct(productData) {
+    const products = getStoredProducts();
+    const id = productData.id || productData.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + "-" + Date.now().toString().slice(-4);
+    const category = productData.category || "Engine Parts";
+    const categorySlug = productData.categorySlug || category.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const price = parseFloat(productData.price) || 0;
+    const originalPrice = parseFloat(productData.originalPrice) || Math.round(price * 1.2);
+    const discount = productData.discountPercent !== undefined 
+        ? parseInt(productData.discountPercent) 
+        : (originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0);
+
+    const newProduct = {
+        id: id,
+        name: productData.name || "New Spare Part",
+        category: category,
+        categorySlug: categorySlug,
+        price: price,
+        originalPrice: originalPrice,
+        discountPercent: discount,
+        rating: parseFloat(productData.rating) || 5.0,
+        reviewsCount: parseInt(productData.reviewsCount) || 1,
+        inStock: productData.inStock !== false && (parseInt(productData.stockCount) > 0 || productData.stockCount === undefined),
+        stockCount: parseInt(productData.stockCount) || 15,
+        sku: productData.sku || `AG-PRT-${Math.floor(1000 + Math.random() * 9000)}`,
+        oemNumber: productData.oemNumber || "OEM-GENUINE",
+        brand: productData.brand || "AutoGenuine Certified",
+        warranty: productData.warranty || "1 Year Manufacturer Warranty",
+        origin: productData.origin || "Japan OEM",
+        mainImage: productData.mainImage || "images/engine.jpg",
+        gallery: productData.gallery && productData.gallery.length > 0 ? productData.gallery : [productData.mainImage || "images/engine.jpg"],
+        shortDescription: productData.shortDescription || "Genuine high-grade automotive replacement component.",
+        fullDescription: productData.fullDescription || "Engineered to strict OEM quality specifications. Provides seamless fitment and prolonged service longevity.",
+        features: Array.isArray(productData.features) && productData.features.length > 0 ? productData.features : [
+            "100% Genuine Certified Component",
+            "Direct OEM bolt-on fitment",
+            "Factory tested for high performance"
+        ],
+        specs: productData.specs || {
+            "Material": "OEM Spec Alloy / Composite",
+            "Part Position": "Standard Fitment",
+            "Warranty": "1 Year Stamped Warranty",
+            "Condition": "Brand New Genuine"
+        },
+        compatibility: Array.isArray(productData.compatibility) && productData.compatibility.length > 0 ? productData.compatibility : [
+            { make: "Toyota / Multi-brand", model: "Universal Compatible", years: "2010 - 2026", engine: "Standard" }
+        ],
+        reviews: [
+            {
+                author: "Quality Inspector",
+                avatar: "QI",
+                location: "Colombo",
+                rating: 5,
+                date: "Verified Stock",
+                title: "Certified Genuine Stock",
+                comment: "Inspected and certified for high reliability and safety standards."
+            }
+        ]
+    };
+
+    products.unshift(newProduct);
+    saveStoredProducts(products);
+
+    // Sync to MySQL via PHP API
+    if (API_BASE_URL) {
+        fetch(API_BASE_URL + 'products.php?action=add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newProduct)
+        }).catch(err => console.warn('MySQL Product Add sync notice:', err));
+    }
+
+    return { success: true, product: newProduct, message: `Product "${newProduct.name}" added successfully!` };
+}
+
+function updateProduct(productId, updatedFields) {
+    const products = getStoredProducts();
+    const index = products.findIndex(p => p.id === productId);
+    if (index === -1) {
+        return { success: false, message: "Product not found." };
+    }
+    
+    // Merge
+    const existing = products[index];
+    const category = updatedFields.category || existing.category;
+    const categorySlug = updatedFields.categorySlug || (updatedFields.category ? updatedFields.category.toLowerCase().replace(/[^a-z0-9]+/g, "-") : existing.categorySlug);
+    const price = updatedFields.price !== undefined ? parseFloat(updatedFields.price) : existing.price;
+    const originalPrice = updatedFields.originalPrice !== undefined ? parseFloat(updatedFields.originalPrice) : existing.originalPrice;
+    const stockCount = updatedFields.stockCount !== undefined ? parseInt(updatedFields.stockCount) : existing.stockCount;
+
+    products[index] = {
+        ...existing,
+        ...updatedFields,
+        category: category,
+        categorySlug: categorySlug,
+        price: price,
+        originalPrice: originalPrice,
+        stockCount: stockCount,
+        inStock: stockCount > 0
+    };
+
+    saveStoredProducts(products);
+
+    // Sync to MySQL via PHP API
+    if (API_BASE_URL) {
+        fetch(API_BASE_URL + 'products.php?action=update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: productId, ...updatedFields })
+        }).catch(err => console.warn('MySQL Product Update sync notice:', err));
+    }
+
+    return { success: true, product: products[index], message: `Product "${products[index].name}" updated successfully!` };
+}
+
+function deleteProduct(productId) {
+    let products = getStoredProducts();
+    const initialLen = products.length;
+    products = products.filter(p => p.id !== productId);
+    if (products.length === initialLen) {
+        return { success: false, message: "Product not found." };
+    }
+    saveStoredProducts(products);
+
+    // Sync to MySQL via PHP API
+    if (API_BASE_URL) {
+        fetch(API_BASE_URL + 'products.php?action=delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: productId })
+        }).catch(err => console.warn('MySQL Product Delete sync notice:', err));
+    }
+
+    return { success: true, message: "Product removed from catalog successfully!" };
+}
+
+function resetCatalogToDefault() {
+    saveStoredProducts(DEFAULT_PRODUCTS);
+
+    // Sync to MySQL via PHP API
+    if (API_BASE_URL) {
+        fetch(API_BASE_URL + 'products.php?action=reset', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }).catch(err => console.warn('MySQL Product Reset sync notice:', err));
+    }
+
+    return { success: true, count: DEFAULT_PRODUCTS.length, message: "Catalog reset to default 9 items successfully!" };
+}
+
+function formatPrice(num) {
+    if (isNaN(num)) return "0.00";
+    return Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// ==========================================
+// USER-SCOPED STORAGE KEY HELPERS (Cart, Wishlist & Coupon Isolation)
+// ==========================================
+function getUserStorageSuffix() {
+    try {
+        const user = getCurrentUser();
+        if (user && user.email) {
+            return "u_" + user.email.toLowerCase().trim().replace(/[^a-z0-9]/g, "_");
+        }
+    } catch (e) {}
+    return "guest";
+}
+
+function getCartStorageKey() {
+    return "autogenuine_cart_items_" + getUserStorageSuffix();
+}
+
+function getWishlistStorageKey() {
+    return "autogenuine_wishlist_items_" + getUserStorageSuffix();
+}
+
+function getCouponStorageKey() {
+    return "autogenuine_active_coupon_" + getUserStorageSuffix();
+}
+
+function transferGuestCartToUser(userEmail) {
+    if (!userEmail) return;
+    try {
+        const guestKey = "autogenuine_cart_items_guest";
+        const guestWishlistKey = "autogenuine_wishlist_items_guest";
+        const guestCouponKey = "autogenuine_active_coupon_guest";
+
+        const userSuffix = "u_" + userEmail.toLowerCase().trim().replace(/[^a-z0-9]/g, "_");
+        const userCartKey = "autogenuine_cart_items_" + userSuffix;
+        const userWishlistKey = "autogenuine_wishlist_items_" + userSuffix;
+        const userCouponKey = "autogenuine_active_coupon_" + userSuffix;
+
+        // 1. Transfer Cart items
+        const guestCartSaved = localStorage.getItem(guestKey);
+        if (guestCartSaved) {
+            const guestItems = JSON.parse(guestCartSaved);
+            if (Array.isArray(guestItems) && guestItems.length > 0) {
+                const userSaved = localStorage.getItem(userCartKey);
+                let userItems = userSaved ? JSON.parse(userSaved) : [];
+
+                guestItems.forEach(gItem => {
+                    const existingIdx = userItems.findIndex(u => u.id === gItem.id);
+                    if (existingIdx > -1) {
+                        userItems[existingIdx].quantity = (userItems[existingIdx].quantity || 1) + (gItem.quantity || 1);
+                    } else {
+                        userItems.push(gItem);
+                    }
+                });
+
+                localStorage.setItem(userCartKey, JSON.stringify(userItems));
+                localStorage.removeItem(guestKey);
+            }
+        }
+
+        // 2. Transfer Wishlist items
+        const guestWishSaved = localStorage.getItem(guestWishlistKey);
+        if (guestWishSaved) {
+            const guestWish = JSON.parse(guestWishSaved);
+            if (Array.isArray(guestWish) && guestWish.length > 0) {
+                const userWishSaved = localStorage.getItem(userWishlistKey);
+                let userWish = userWishSaved ? JSON.parse(userWishSaved) : [];
+                guestWish.forEach(id => {
+                    if (!userWish.includes(id)) {
+                        userWish.push(id);
+                    }
+                });
+                localStorage.setItem(userWishlistKey, JSON.stringify(userWish));
+                localStorage.removeItem(guestWishlistKey);
+            }
+        }
+
+        // 3. Transfer active coupon
+        const guestCoupon = localStorage.getItem(guestCouponKey);
+        if (guestCoupon && !localStorage.getItem(userCouponKey)) {
+            localStorage.setItem(userCouponKey, guestCoupon);
+            localStorage.removeItem(guestCouponKey);
+        }
+
+        // 4. Clean up legacy shared keys
+        localStorage.removeItem("autogenuine_cart_items");
+        localStorage.removeItem("autogenuine_wishlist_items");
+        localStorage.removeItem("autogenuine_active_coupon");
+    } catch (e) {
+        console.warn("Guest data transfer notice:", e);
+    }
+}
 
 function getCartItems() {
     try {
-        const saved = localStorage.getItem(CART_STORAGE_KEY);
-        return saved ? JSON.parse(saved) : [];
+        const key = getCartStorageKey();
+        const saved = localStorage.getItem(key);
+        if (saved) return JSON.parse(saved);
+
+        // One-time migration for legacy single-cart storage
+        const legacy = localStorage.getItem("autogenuine_cart_items");
+        if (legacy) {
+            const parsed = JSON.parse(legacy);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                localStorage.setItem(key, JSON.stringify(parsed));
+                localStorage.removeItem("autogenuine_cart_items");
+                return parsed;
+            }
+        }
     } catch (e) {
         return [];
     }
+    return [];
 }
 
 function getCartCount() {
@@ -585,7 +901,7 @@ function addToCart(productId, quantity = 1) {
     }
 
     try {
-        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+        localStorage.setItem(getCartStorageKey(), JSON.stringify(items));
         updateAllCartBadges();
         return { success: true, count: getCartCount(), product: product };
     } catch (e) {
@@ -602,7 +918,7 @@ function updateCartItemQuantity(productId, newQty) {
         } else {
             items[index].quantity = newQty;
         }
-        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+        localStorage.setItem(getCartStorageKey(), JSON.stringify(items));
         updateAllCartBadges();
         return true;
     }
@@ -612,32 +928,68 @@ function updateCartItemQuantity(productId, newQty) {
 function removeCartItem(productId) {
     let items = getCartItems();
     items = items.filter(item => item.id !== productId);
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+    localStorage.setItem(getCartStorageKey(), JSON.stringify(items));
     updateAllCartBadges();
     return true;
 }
 
 function clearCart() {
-    localStorage.removeItem(CART_STORAGE_KEY);
-    localStorage.removeItem(COUPON_STORAGE_KEY);
+    localStorage.removeItem(getCartStorageKey());
+    localStorage.removeItem(getCouponStorageKey());
+    localStorage.removeItem("autogenuine_cart_items");
     updateAllCartBadges();
+}
+
+// ==========================================
+// PROMO COUPONS MANAGEMENT
+// ==========================================
+const COUPONS_LIST_KEY = "autogenuine_available_coupons";
+const DEFAULT_COUPONS = [
+    { code: "WELCOME10", discountPercent: 10, minOrder: 0, description: "Welcome Discount (10% Off)", active: true, expiryDate: "2026-12-31" },
+    { code: "AUTO20", discountPercent: 20, minOrder: 5000, description: "Special Seasonal Discount (20% Off)", active: true, expiryDate: "2026-12-31" },
+    { code: "GENUINE15", discountPercent: 15, minOrder: 3000, description: "Genuine Club Discount (15% Off)", active: true, expiryDate: "2026-12-31" }
+];
+
+function getAvailableCoupons() {
+    try {
+        const saved = localStorage.getItem(COUPONS_LIST_KEY);
+        if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    try {
+        localStorage.setItem(COUPONS_LIST_KEY, JSON.stringify(DEFAULT_COUPONS));
+    } catch (e) {}
+    return [...DEFAULT_COUPONS];
+}
+
+function saveAvailableCoupons(coupons) {
+    try {
+        localStorage.setItem(COUPONS_LIST_KEY, JSON.stringify(coupons));
+    } catch (e) {}
 }
 
 function applyCouponCode(code) {
     if (!code) return { success: false, message: "Please enter a coupon code" };
     const cleaned = code.trim().toUpperCase();
-    if (cleaned === "WELCOME10") {
-        const coupon = { code: "WELCOME10", discountPercent: 10 };
-        localStorage.setItem(COUPON_STORAGE_KEY, JSON.stringify(coupon));
-        return { success: true, discountPercent: 10, message: "10% Discount Coupon Applied!" };
+    const coupons = getAvailableCoupons();
+    const found = coupons.find(c => c.code.toUpperCase() === cleaned && c.active !== false);
+
+    if (found) {
+        const couponObj = { 
+            code: found.code, 
+            discountPercent: found.discountPercent, 
+            minOrder: found.minOrder || 0,
+            description: found.description || `${found.discountPercent}% Discount`
+        };
+        localStorage.setItem(getCouponStorageKey(), JSON.stringify(couponObj));
+        return { success: true, discountPercent: found.discountPercent, coupon: couponObj, message: `${found.discountPercent}% Discount Coupon (${found.code}) Applied!` };
     } else {
-        return { success: false, message: "Invalid or expired coupon code. Try WELCOME10" };
+        return { success: false, message: `Invalid or inactive coupon code "${cleaned}". Try WELCOME10 or AUTO20` };
     }
 }
 
 function getActiveCoupon() {
     try {
-        const saved = localStorage.getItem(COUPON_STORAGE_KEY);
+        const saved = localStorage.getItem(getCouponStorageKey());
         return saved ? JSON.parse(saved) : null;
     } catch (e) {
         return null;
@@ -645,7 +997,77 @@ function getActiveCoupon() {
 }
 
 function removeCouponCode() {
-    localStorage.removeItem(COUPON_STORAGE_KEY);
+    localStorage.removeItem(getCouponStorageKey());
+    localStorage.removeItem("autogenuine_active_coupon");
+}
+
+function addNewCoupon(couponData) {
+    const coupons = getAvailableCoupons();
+    const code = (couponData.code || "").trim().toUpperCase();
+    if (!code) return { success: false, message: "Coupon code is required." };
+    if (coupons.some(c => c.code.toUpperCase() === code)) {
+        return { success: false, message: `Coupon code "${code}" already exists!` };
+    }
+    const newCoupon = {
+        code: code,
+        discountPercent: parseInt(couponData.discountPercent) || 10,
+        minOrder: parseFloat(couponData.minOrder) || 0,
+        description: couponData.description || `${couponData.discountPercent}% Special Discount`,
+        active: couponData.active !== false,
+        expiryDate: couponData.expiryDate || "2026-12-31",
+        createdAt: new Date().toLocaleDateString()
+    };
+    coupons.push(newCoupon);
+    saveAvailableCoupons(coupons);
+
+    // Sync to MySQL via PHP API
+    if (API_BASE_URL) {
+        fetch(API_BASE_URL + 'coupons.php?action=create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newCoupon)
+        }).catch(err => console.warn('MySQL Coupon Add sync notice:', err));
+    }
+
+    return { success: true, coupon: newCoupon, message: `Coupon "${code}" created successfully!` };
+}
+
+function deleteCoupon(code) {
+    let coupons = getAvailableCoupons();
+    coupons = coupons.filter(c => c.code.toUpperCase() !== code.trim().toUpperCase());
+    saveAvailableCoupons(coupons);
+
+    // Sync to MySQL via PHP API
+    if (API_BASE_URL) {
+        fetch(API_BASE_URL + 'coupons.php?action=delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: code })
+        }).catch(err => console.warn('MySQL Coupon Delete sync notice:', err));
+    }
+
+    return { success: true, message: `Coupon "${code}" deleted.` };
+}
+
+function toggleCouponStatus(code) {
+    const coupons = getAvailableCoupons();
+    const c = coupons.find(item => item.code.toUpperCase() === code.trim().toUpperCase());
+    if (c) {
+        c.active = !c.active;
+        saveAvailableCoupons(coupons);
+
+        // Sync to MySQL via PHP API
+        if (API_BASE_URL) {
+            fetch(API_BASE_URL + 'coupons.php?action=toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: code, active: c.active })
+            }).catch(err => console.warn('MySQL Coupon Toggle sync notice:', err));
+        }
+
+        return { success: true, active: c.active, message: `Coupon "${code}" is now ${c.active ? 'Active' : 'Disabled'}.` };
+    }
+    return { success: false, message: "Coupon not found." };
 }
 
 function updateAllCartBadges() {
@@ -657,11 +1079,23 @@ function updateAllCartBadges() {
 
 function getWishlistItems() {
     try {
-        const saved = localStorage.getItem(WISHLIST_STORAGE_KEY);
-        return saved ? JSON.parse(saved) : [];
+        const key = getWishlistStorageKey();
+        const saved = localStorage.getItem(key);
+        if (saved) return JSON.parse(saved);
+
+        const legacy = localStorage.getItem("autogenuine_wishlist_items");
+        if (legacy) {
+            const parsed = JSON.parse(legacy);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                localStorage.setItem(key, JSON.stringify(parsed));
+                localStorage.removeItem("autogenuine_wishlist_items");
+                return parsed;
+            }
+        }
     } catch (e) {
         return [];
     }
+    return [];
 }
 
 function getWishlistProducts() {
@@ -680,7 +1114,7 @@ function toggleWishlist(productId) {
         items.push(productId);
         isAdded = true;
     }
-    localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(items));
+    localStorage.setItem(getWishlistStorageKey(), JSON.stringify(items));
     updateWishlistBadges();
     return isAdded;
 }
@@ -696,7 +1130,8 @@ function moveWishlistToCart(productId) {
 }
 
 function clearWishlist() {
-    localStorage.removeItem(WISHLIST_STORAGE_KEY);
+    localStorage.removeItem(getWishlistStorageKey());
+    localStorage.removeItem("autogenuine_wishlist_items");
     updateWishlistBadges();
 }
 
@@ -708,22 +1143,65 @@ function updateWishlistBadges() {
 }
 
 // ==========================================
-// USER AUTHENTICATION & ORDER HISTORY SYSTEM
+// USER AUTHENTICATION & ADMIN 2-STEP SYSTEM
 // ==========================================
 const USERS_STORAGE_KEY = "autogenuine_registered_users";
 const CURRENT_USER_KEY = "autogenuine_current_user";
 const ORDERS_STORAGE_KEY = "autogenuine_orders_history";
 const QUOTATIONS_STORAGE_KEY = "autogenuine_quotations";
+const ADMIN_AUTH_KEY = "autogenuine_admin_verified";
+const ADMIN_MASTER_PIN = "8899";
+
+const DEFAULT_REGISTERED_USERS = [
+    { 
+        name: "Admin Supervisor", 
+        email: "admin@autogenuine.lk", 
+        phone: "0771234567", 
+        password: "admin123", 
+        role: "admin", 
+        vehicle: "Workshop HQ / Fleet Control", 
+        registeredAt: "01/01/2026" 
+    },
+    { 
+        name: "Kasun Dharmasena", 
+        email: "kasun@gmail.com", 
+        phone: "0771234567", 
+        password: "123", 
+        role: "customer", 
+        vehicle: "Toyota Premio NZT260 (2016)", 
+        registeredAt: "10/09/2026" 
+    }
+];
 
 function getRegisteredUsers() {
     try {
         const saved = localStorage.getItem(USERS_STORAGE_KEY);
-        return saved ? JSON.parse(saved) : [
-            { name: "Kasun Dharmasena", email: "kasun@gmail.com", phone: "0771234567", password: "123", vehicle: "Toyota Premio NZT260 (2016)" }
-        ];
-    } catch (e) {
-        return [];
-    }
+        if (saved) {
+            let users = JSON.parse(saved);
+            if (Array.isArray(users) && users.length > 0) {
+                // Ensure default admin account exists with password
+                const adminIdx = users.findIndex(u => u.email && u.email.toLowerCase() === "admin@autogenuine.lk");
+                if (adminIdx === -1) {
+                    users.unshift({ ...DEFAULT_REGISTERED_USERS[0] });
+                } else if (!users[adminIdx].password) {
+                    users[adminIdx].password = "admin123";
+                }
+                
+                // Ensure default kasun account exists with password
+                const kasunIdx = users.findIndex(u => u.email && u.email.toLowerCase() === "kasun@gmail.com");
+                if (kasunIdx === -1) {
+                    users.push({ ...DEFAULT_REGISTERED_USERS[1] });
+                } else if (!users[kasunIdx].password) {
+                    users[kasunIdx].password = "123";
+                }
+                
+                localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+                return users;
+            }
+        }
+    } catch (e) {}
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(DEFAULT_REGISTERED_USERS));
+    return [...DEFAULT_REGISTERED_USERS];
 }
 
 function getCurrentUser() {
@@ -735,67 +1213,495 @@ function getCurrentUser() {
     }
 }
 
-function registerUser(name, email, phone, password, vehicle) {
+function isAdminAuthenticated() {
+    const user = getCurrentUser();
+    const verified = localStorage.getItem(ADMIN_AUTH_KEY) === "true";
+    return !!(user && user.role === "admin" && verified);
+}
+
+async function verifyAdminPin(pin) {
+    const cleanPin = String(pin).trim();
+    if (cleanPin === ADMIN_MASTER_PIN) {
+        localStorage.setItem(ADMIN_AUTH_KEY, "true");
+        updateHeaderAccountButton();
+
+        // Sync to MySQL via PHP API
+        if (API_BASE_URL) {
+            try {
+                await fetch(API_BASE_URL + 'auth.php?action=verify_admin_pin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pin: cleanPin })
+                });
+            } catch (err) {
+                console.warn('MySQL Admin PIN verify sync notice:', err);
+            }
+        }
+
+        return { success: true, message: "Security PIN verified successfully! Full administrative access granted." };
+    }
+    return { success: false, message: "Invalid Security PIN! Please enter the correct 4-digit PIN (Demo: 8899)." };
+}
+
+function logoutAdmin() {
+    localStorage.removeItem(ADMIN_AUTH_KEY);
+    updateHeaderAccountButton();
+}
+
+async function registerUser(name, email, phone, password, vehicle) {
+    const cleanName = (name || '').trim();
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanPhone = (phone || '').trim();
+    const cleanPass = (password || '').trim();
+    const cleanVehicle = (vehicle || '').trim() || "Not specified";
+
+    if (!cleanName || !cleanEmail || !cleanPass) {
+        return { success: false, message: "Name, email, and password are required." };
+    }
+
     const users = getRegisteredUsers();
-    if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+    if (users.some(u => u.email && u.email.toLowerCase() === cleanEmail)) {
         return { success: false, message: "An account with this email already exists." };
     }
-    const newUser = { name, email, phone, password, vehicle: vehicle || "Not specified", registeredAt: new Date().toLocaleDateString() };
+
+    const newUser = { 
+        id: Date.now(),
+        user_id: Date.now(),
+        name: cleanName, 
+        full_name: cleanName,
+        email: cleanEmail, 
+        phone: cleanPhone, 
+        password: cleanPass, 
+        role: "customer", 
+        vehicle: cleanVehicle, 
+        registered_vehicle: cleanVehicle,
+        registeredAt: new Date().toLocaleDateString('en-GB')
+    };
+
     users.push(newUser);
     localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
     localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
+    localStorage.removeItem(ADMIN_AUTH_KEY);
     updateHeaderAccountButton();
+
+    // Sync to MySQL via PHP API
+    if (API_BASE_URL) {
+        try {
+            const res = await fetch(API_BASE_URL + 'auth.php?action=register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    name: cleanName, 
+                    email: cleanEmail, 
+                    phone: cleanPhone, 
+                    password: cleanPass, 
+                    vehicle: cleanVehicle 
+                })
+            });
+            const data = await res.json();
+            if (data && data.success && data.data && data.data.user) {
+                const dbUser = data.data.user;
+                newUser.id = dbUser.id || dbUser.user_id || newUser.id;
+                newUser.user_id = newUser.id;
+                localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
+                
+                // Update in users list
+                const uIdx = users.findIndex(u => u.email.toLowerCase() === cleanEmail);
+                if (uIdx > -1) {
+                    users[uIdx].id = newUser.id;
+                    users[uIdx].user_id = newUser.id;
+                    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+                }
+            } else if (data && !data.success) {
+                console.warn('MySQL User Register warning:', data.message);
+            }
+        } catch (err) {
+            console.warn('MySQL User Register sync notice:', err);
+        }
+    }
+
+    // Transfer any guest cart items to newly registered user
+    transferGuestCartToUser(cleanEmail);
+    updateAllCartBadges();
+    updateWishlistBadges();
+
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('autogenuine:authchanged', { detail: { user: newUser } }));
+    }
+
     return { success: true, user: newUser, message: "Registration successful! Welcome to AutoGenuine." };
 }
 
-function loginUser(email, password) {
-    const users = getRegisteredUsers();
-    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
-    if (user) {
-        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
-        updateHeaderAccountButton();
-        return { success: true, user: user, message: `Welcome back, ${user.name}!` };
+async function loginUser(email, password) {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanPass = (password || '').trim();
+
+    if (!cleanEmail || !cleanPass) {
+        return { success: false, message: "Please enter both email and password." };
     }
-    return { success: false, message: "Invalid email or password. Please try again." };
+
+    // 1. Check PHP / MySQL backend API first if available
+    if (API_BASE_URL) {
+        try {
+            const response = await fetch(API_BASE_URL + 'auth.php?action=login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: cleanEmail, password: cleanPass })
+            });
+            const resData = await response.json();
+            if (resData && resData.success && resData.data && resData.data.user) {
+                const apiUser = resData.data.user;
+                const userToStore = {
+                    ...apiUser,
+                    password: cleanPass
+                };
+
+                // Merge and persist into local registered users
+                const users = getRegisteredUsers();
+                const existingIdx = users.findIndex(u => u.email && u.email.toLowerCase() === cleanEmail);
+                if (existingIdx > -1) {
+                    users[existingIdx] = { ...users[existingIdx], ...userToStore };
+                } else {
+                    users.push(userToStore);
+                }
+                localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+                localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userToStore));
+
+                // Transfer guest cart items into this user's isolated cart
+                transferGuestCartToUser(cleanEmail);
+                updateAllCartBadges();
+                updateWishlistBadges();
+
+                if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('autogenuine:authchanged', { detail: { user: userToStore } }));
+                }
+
+                if (userToStore.role === "admin") {
+                    const isPinVerified = localStorage.getItem(ADMIN_AUTH_KEY) === "true";
+                    updateHeaderAccountButton();
+                    return { 
+                        success: true, 
+                        user: userToStore, 
+                        requiresAdminPin: !isPinVerified, 
+                        message: isPinVerified ? `Welcome back, Administrator ${userToStore.name}!` : "Admin credentials recognized. Step 2 Security PIN required."
+                    };
+                } else {
+                    localStorage.removeItem(ADMIN_AUTH_KEY);
+                    updateHeaderAccountButton();
+                    return { 
+                        success: true, 
+                        user: userToStore, 
+                        requiresAdminPin: false, 
+                        message: resData.message || `Welcome back, ${userToStore.name}!` 
+                    };
+                }
+            } else if (resData && !resData.success && resData.message && !resData.message.includes('Database connection')) {
+                // If the backend specifically rejected password, check if local offline user matches
+                console.warn('Backend login rejected:', resData.message);
+            }
+        } catch (apiErr) {
+            console.warn('API Auth fetch error (using local storage fallback):', apiErr);
+        }
+    }
+
+    // 2. Local Storage Fallback Authentication
+    const users = getRegisteredUsers();
+    const user = users.find(u => {
+        if (!u.email || u.email.toLowerCase() !== cleanEmail) return false;
+        if (u.password && u.password === cleanPass) return true;
+        if (cleanEmail === 'admin@autogenuine.lk' && cleanPass === 'admin123') return true;
+        if (cleanEmail === 'kasun@gmail.com' && cleanPass === '123') return true;
+        return false;
+    });
+
+    if (user) {
+        user.password = cleanPass;
+        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+
+        // Transfer guest cart items into this user's isolated cart
+        transferGuestCartToUser(cleanEmail);
+        updateAllCartBadges();
+        updateWishlistBadges();
+
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('autogenuine:authchanged', { detail: { user: user } }));
+        }
+
+        if (user.role === "admin") {
+            const isPinVerified = localStorage.getItem(ADMIN_AUTH_KEY) === "true";
+            updateHeaderAccountButton();
+            return { 
+                success: true, 
+                user: user, 
+                requiresAdminPin: !isPinVerified, 
+                message: isPinVerified ? `Welcome back, Administrator ${user.name}!` : "Admin credentials recognized. Step 2 Security PIN required."
+            };
+        } else {
+            localStorage.removeItem(ADMIN_AUTH_KEY);
+            updateHeaderAccountButton();
+            return { success: true, user: user, requiresAdminPin: false, message: `Welcome back, ${user.name}!` };
+        }
+    }
+
+    return { success: false, message: "Invalid email or password. Please check your credentials or register a new account." };
 }
 
 function logoutUser() {
     localStorage.removeItem(CURRENT_USER_KEY);
+    localStorage.removeItem(ADMIN_AUTH_KEY);
     updateHeaderAccountButton();
+    updateAllCartBadges();
+    updateWishlistBadges();
+
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('autogenuine:authchanged', { detail: { user: null } }));
+    }
+}
+
+// ==========================================
+// ORDERS & QUOTATIONS PERSISTENCE
+// ==========================================
+function getOrdersHistory() {
+    try {
+        const saved = localStorage.getItem(ORDERS_STORAGE_KEY);
+        if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    const demoOrders = [
+        {
+            orderId: "#AG-90412",
+            date: "14/09/2026",
+            customerName: "Kasun Dharmasena",
+            customerEmail: "kasun@gmail.com",
+            customerPhone: "0771234567",
+            address: "No. 45/2, Galle Road, Colombo 03",
+            city: "Colombo",
+            paymentMethod: "Cash on Delivery (COD)",
+            subtotal: 5750,
+            discount: 575,
+            shipping: 450,
+            total: 5625,
+            status: "Shipped",
+            itemCount: 2,
+            items: [
+                { id: "brake-pad-set", name: "Front Ceramic Brake Pad Set", price: 4500, quantity: 1 },
+                { id: "toyota-oil-filter", name: "Toyota Genuine Engine Oil Filter", price: 1250, quantity: 1 }
+            ]
+        },
+        {
+            orderId: "#AG-88210",
+            date: "12/09/2026",
+            customerName: "Saman Kumara",
+            customerEmail: "saman.k@yahoo.com",
+            customerPhone: "0719876543",
+            address: "Peradeniya Road, Kandy",
+            city: "Kandy",
+            paymentMethod: "Bank Transfer",
+            subtotal: 32500,
+            discount: 0,
+            shipping: 0,
+            total: 32500,
+            status: "Delivered",
+            itemCount: 1,
+            items: [
+                { id: "exide-battery-60ah", name: "Exide Matrix 60Ah Maintenance-Free Battery", price: 32500, quantity: 1 }
+            ]
+        }
+    ];
+    try {
+        localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(demoOrders));
+    } catch (e) {}
+    return demoOrders;
 }
 
 function saveOrder(orderData) {
     try {
         let orders = getOrdersHistory();
+        if (!orderData.status) {
+            orderData.status = "Processing Dispatch";
+        }
         orders.unshift(orderData);
         localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
-    } catch (e) {}
+
+        // Sync to MySQL via PHP API
+        if (API_BASE_URL) {
+            fetch(API_BASE_URL + 'orders.php?action=create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            }).then(res => res.json()).then(resData => {
+                if (resData.success) {
+                    console.log('✅ Order saved to MySQL database:', orderData.orderId);
+                }
+            }).catch(err => console.warn('MySQL Order Create sync notice:', err));
+        }
+
+        return { success: true, order: orderData };
+    } catch (e) {
+        return { success: false, message: "Error saving order" };
+    }
 }
 
-function getOrdersHistory() {
-    try {
-        const saved = localStorage.getItem(ORDERS_STORAGE_KEY);
-        return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-        return [];
+function updateOrderStatus(orderId, newStatus) {
+    let orders = getOrdersHistory();
+    const order = orders.find(o => o.orderId === orderId);
+    if (order) {
+        order.status = newStatus;
+        localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+
+        // Sync to MySQL via PHP API
+        if (API_BASE_URL) {
+            fetch(API_BASE_URL + 'orders.php?action=update_status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: orderId, status: newStatus })
+            }).catch(err => console.warn('MySQL Order Status Update sync notice:', err));
+        }
+
+        return { success: true, message: `Order ${orderId} status changed to "${newStatus}".` };
     }
+    return { success: false, message: "Order not found." };
+}
+
+function deleteOrder(orderId) {
+    let orders = getOrdersHistory();
+    orders = orders.filter(o => o.orderId !== orderId);
+    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+
+    // Sync to MySQL via PHP API
+    if (API_BASE_URL) {
+        fetch(API_BASE_URL + 'orders.php?action=delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId: orderId })
+        }).catch(err => console.warn('MySQL Order Delete sync notice:', err));
+    }
+
+    return { success: true, message: `Order ${orderId} removed.` };
+}
+
+function getQuotationsList() {
+    try {
+        const saved = localStorage.getItem(QUOTATIONS_STORAGE_KEY);
+        if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    const demoQuotes = [
+        {
+            quoteId: "#QUOT-4819",
+            name: "Nimal Ranatunga",
+            phone: "0778899112",
+            vehicle: "Toyota Land Cruiser Prado",
+            year: "2018",
+            vin: "GDJ150-003418",
+            details: "Need genuine front & rear shock absorbers (KYB/Toyota) and front lower control arms with bushes.",
+            status: "Pending Review",
+            date: "13/09/2026"
+        },
+        {
+            quoteId: "#QUOT-3092",
+            name: "Praveen Fernando",
+            phone: "0765544332",
+            vehicle: "Honda Grace Hybrid",
+            year: "2016",
+            vin: "GM4-1029381",
+            details: "Dual clutch actuator assembly and original Honda ATF-DW1 fluid quotation.",
+            status: "Quoted",
+            date: "11/09/2026"
+        }
+    ];
+    try {
+        localStorage.setItem(QUOTATIONS_STORAGE_KEY, JSON.stringify(demoQuotes));
+    } catch (e) {}
+    return demoQuotes;
 }
 
 function saveQuotation(data) {
     try {
-        let quotes = [];
-        const saved = localStorage.getItem(QUOTATIONS_STORAGE_KEY);
-        if (saved) quotes = JSON.parse(saved);
+        let quotes = getQuotationsList();
+        if (!data.status) data.status = "Pending Review";
         quotes.unshift(data);
         localStorage.setItem(QUOTATIONS_STORAGE_KEY, JSON.stringify(quotes));
-    } catch (e) {}
+
+        // Sync to MySQL via PHP API
+        if (API_BASE_URL) {
+            fetch(API_BASE_URL + 'quotations.php?action=create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(res => res.json()).then(resData => {
+                if (resData.success) {
+                    console.log('✅ Quotation saved to MySQL database:', data.quoteId);
+                }
+            }).catch(err => console.warn('MySQL Quotation Create sync notice:', err));
+        }
+
+        return { success: true, quote: data };
+    } catch (e) {
+        return { success: false };
+    }
+}
+
+function updateQuotationStatus(quoteId, newStatus) {
+    let quotes = getQuotationsList();
+    const q = quotes.find(item => item.quoteId === quoteId);
+    if (q) {
+        q.status = newStatus;
+        localStorage.setItem(QUOTATIONS_STORAGE_KEY, JSON.stringify(quotes));
+
+        // Sync to MySQL via PHP API
+        if (API_BASE_URL) {
+            fetch(API_BASE_URL + 'quotations.php?action=update_status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ quoteId: quoteId, status: newStatus })
+            }).catch(err => console.warn('MySQL Quotation Status Update sync notice:', err));
+        }
+
+        return { success: true, message: `Quotation ${quoteId} updated to "${newStatus}".` };
+    }
+    return { success: false, message: "Quotation not found." };
+}
+
+function deleteQuotation(quoteId) {
+    let quotes = getQuotationsList();
+    quotes = quotes.filter(q => q.quoteId !== quoteId);
+    localStorage.setItem(QUOTATIONS_STORAGE_KEY, JSON.stringify(quotes));
+
+    // Sync to MySQL via PHP API
+    if (API_BASE_URL) {
+        fetch(API_BASE_URL + 'quotations.php?action=delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quoteId: quoteId })
+        }).catch(err => console.warn('MySQL Quotation Delete sync notice:', err));
+    }
+
+    return { success: true, message: `Quotation ${quoteId} removed.` };
 }
 
 function updateHeaderAccountButton() {
     const user = getCurrentUser();
+    const isAdmin = isAdminAuthenticated();
+    
     document.querySelectorAll(".account-btn-label, #accountBtnText").forEach(el => {
-        el.textContent = user ? user.name.split(" ")[0] : "Account";
+        el.textContent = user ? (isAdmin ? "Admin 🛡️" : user.name.split(" ")[0]) : "Account";
     });
+
+    // Update or insert Admin Panel header button
+    const adminHeaderBtns = document.querySelectorAll(".admin-header-btn");
+    if (isAdmin) {
+        if (adminHeaderBtns.length === 0) {
+            document.querySelectorAll(".header-actions").forEach(container => {
+                const adminBtn = document.createElement("a");
+                adminBtn.href = "admin.html";
+                adminBtn.className = "admin-header-btn";
+                adminBtn.innerHTML = "🛡️ Admin Panel";
+                adminBtn.title = "Open Admin Management Dashboard";
+                container.insertBefore(adminBtn, container.firstChild);
+            });
+        }
+    } else {
+        adminHeaderBtns.forEach(btn => btn.remove());
+    }
 }
 
 // ==========================================
@@ -917,7 +1823,7 @@ function getBotResponse(userMsg) {
         return "🛢️ We have genuine <strong>Toyota Engine Oil Filters (Rs. 1,250)</strong>, <strong>High-Flow Air Filters (Rs. 2,150)</strong>, and <strong>Carbon Cabin Filters (Rs. 1,850)</strong> in stock.";
     }
     if (msg.includes("contact") || msg.includes("call") || msg.includes("phone") || msg.includes("whatsapp")) {
-        return "📞 You can contact our parts specialist hotline at <strong>+94 77 123 4567</strong> or email <strong>info@autogenuine.lk</strong>. Our showroom is located in Colombo, Sri Lanka.";
+        return "📞 You can contact our parts specialist hotline at <strong>+94 78 628 7337</strong> or chat on WhatsApp directly at <a href='https://wa.me/94786287337' target='_blank' style='color:#25d366; font-weight:700;'>+94 78 628 7337 (Click to Chat)</a>.";
     }
 
     return "Thank you for your message! Our mechanical team has received your query regarding <em>\"" + userMsg + "\"</em> and will verify your vehicle specifications. You can also request a free part quotation via the Contact form!";
@@ -997,6 +1903,530 @@ function closeModal(modalId) {
     }
 }
 
+// ==========================================
+// LIVE MYSQL DATABASE SYNCHRONIZATION ENGINE
+// ==========================================
+async function checkDatabaseConnection() {
+    if (!API_BASE_URL) {
+        isMySQLActive = false;
+        updateDatabaseStatusUI(false, "Local Offline Mode (LocalStorage)");
+        return false;
+    }
+    try {
+        const response = await fetch(API_BASE_URL + 'status.php', { cache: 'no-store' });
+        const data = await response.json();
+        if (data && data.success && data.data && data.data.connected) {
+            isMySQLActive = true;
+            updateDatabaseStatusUI(true, `MySQL Connected (${data.data.database})`);
+            return true;
+        } else {
+            isMySQLActive = false;
+            updateDatabaseStatusUI(false, "MySQL Disconnected (Fallback active)");
+            return false;
+        }
+    } catch (err) {
+        isMySQLActive = false;
+        updateDatabaseStatusUI(false, "API Server Offline (LocalStorage active)");
+        return false;
+    }
+}
+
+function updateDatabaseStatusUI(connected, statusText) {
+    document.querySelectorAll('.db-status-pill, .mysql-status-indicator, #dbStatusIndicator').forEach(el => {
+        el.className = connected ? 'db-status-pill online' : 'db-status-pill offline';
+        el.innerHTML = connected 
+            ? `<span class="status-dot online"></span> <span class="status-label">MySQL Live: ${statusText || 'Connected'}</span>` 
+            : `<span class="status-dot offline"></span> <span class="status-label">${statusText || 'Local Mode'}</span>`;
+        el.title = connected ? "Live MySQL Database connection active via PHP PDO" : "Running on LocalStorage / Offline Fallback";
+    });
+}
+
+async function syncWithBackendDatabase() {
+    if (!API_BASE_URL) return;
+    const isConnected = await checkDatabaseConnection();
+    if (!isConnected) return;
+
+    try {
+        // 1. Fetch fresh products from MySQL
+        const prodRes = await fetch(API_BASE_URL + 'products.php', { cache: 'no-store' });
+        const prodData = await prodRes.json();
+        if (prodData && prodData.success && Array.isArray(prodData.data) && prodData.data.length > 0) {
+            saveStoredProducts(prodData.data);
+        }
+
+        // 2. Fetch fresh users from MySQL (Safe Merge preserving passwords)
+        const usersRes = await fetch(API_BASE_URL + 'auth.php?action=get_users', { cache: 'no-store' });
+        const usersData = await usersRes.json();
+        if (usersData && usersData.success && Array.isArray(usersData.data) && usersData.data.length > 0) {
+            const localUsers = getRegisteredUsers();
+            const merged = [...localUsers];
+            usersData.data.forEach(dbUser => {
+                if (!dbUser || !dbUser.email) return;
+                const dbEmail = dbUser.email.toLowerCase();
+                const existingIdx = merged.findIndex(u => u.email && u.email.toLowerCase() === dbEmail);
+                if (existingIdx > -1) {
+                    merged[existingIdx] = {
+                        ...merged[existingIdx],
+                        ...dbUser,
+                        password: merged[existingIdx].password || (dbEmail === 'admin@autogenuine.lk' ? 'admin123' : (dbEmail === 'kasun@gmail.com' ? '123' : ''))
+                    };
+                } else {
+                    merged.push({
+                        ...dbUser,
+                        password: dbEmail === 'admin@autogenuine.lk' ? 'admin123' : (dbEmail === 'kasun@gmail.com' ? '123' : '')
+                    });
+                }
+            });
+            localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(merged));
+        }
+
+        // 3. Fetch fresh orders from MySQL
+        const ordersRes = await fetch(API_BASE_URL + 'orders.php', { cache: 'no-store' });
+        const ordersData = await ordersRes.json();
+        if (ordersData && ordersData.success && Array.isArray(ordersData.data)) {
+            localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(ordersData.data));
+        }
+
+        // 4. Fetch fresh quotes from MySQL
+        const quotesRes = await fetch(API_BASE_URL + 'quotations.php', { cache: 'no-store' });
+        const quotesData = await quotesRes.json();
+        if (quotesData && quotesData.success && Array.isArray(quotesData.data)) {
+            localStorage.setItem(QUOTATIONS_STORAGE_KEY, JSON.stringify(quotesData.data));
+        }
+
+        // 5. Fetch fresh coupons from MySQL
+        const couponsRes = await fetch(API_BASE_URL + 'coupons.php', { cache: 'no-store' });
+        const couponsData = await couponsRes.json();
+        if (couponsData && couponsData.success && Array.isArray(couponsData.data)) {
+            saveAvailableCoupons(couponsData.data);
+        }
+
+        // Dispatch sync event for any active page views (Admin tables, Catalog grids)
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('autogenuine:dbsynced', { detail: { timestamp: Date.now() } }));
+        }
+    } catch (e) {
+        console.warn('Background MySQL synchronization notice:', e);
+    }
+}
+
+// ==========================================
+// LIVE ORDER TRACKING & DISPATCH STATUS ENGINE
+// ==========================================
+function getOrderTrackingDetails(orderRef) {
+    const orders = getOrdersHistory();
+    const cleanRef = String(orderRef || "").trim().toUpperCase();
+    const cleanNoHash = cleanRef.replace(/^#/, "");
+
+    const found = orders.find(o => 
+        (o.orderId && (o.orderId.toUpperCase() === cleanRef || o.orderId.toUpperCase() === '#' + cleanNoHash)) ||
+        (o.customerPhone && o.customerPhone.replace(/[^0-9]/g, "").includes(cleanNoHash))
+    );
+
+    if (!found) return null;
+
+    const status = found.status || "Processing Dispatch";
+    let step = 1;
+    let statusMsg = "Your order has been received and is being prepared for dispatch.";
+    const courier = found.courierName || "Domex Islandwide Express Courier";
+    const trackingNo = found.trackingNumber || ("DX-" + Math.abs(hashCode(found.orderId || "AG")).toString().substring(0, 7) + "LK");
+    const estDelivery = found.estimatedDelivery || "Within 24 - 48 Hours";
+
+    const s = status.toLowerCase();
+    if (s.includes("delivered") || s.includes("completed")) {
+        step = 4;
+        statusMsg = "Package successfully delivered to customer destination.";
+    } else if (s.includes("out for delivery")) {
+        step = 3.5;
+        statusMsg = "Courier delivery rider is out for delivery to your address today.";
+    } else if (s.includes("shipped") || s.includes("transit") || (s.includes("dispatch") && !s.includes("processing"))) {
+        step = 3;
+        statusMsg = "Dispatched via islandwide express courier! Handed over to Domex central sorting hub.";
+    } else if (s.includes("inspect") || s.includes("quality")) {
+        step = 2;
+        statusMsg = "Genuine OEM fitment and quality inspection passed. Package sealed for dispatch.";
+    } else if (s.includes("cancel")) {
+        step = 0;
+        statusMsg = "This order was cancelled. Please contact customer support.";
+    }
+
+    return {
+        ...found,
+        status: status,
+        trackingStep: step,
+        statusMessage: statusMsg,
+        courierName: courier,
+        trackingNumber: trackingNo,
+        estimatedDelivery: estDelivery
+    };
+}
+
+function hashCode(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+    }
+    return Math.abs(hash);
+}
+
+function ensureOrderTrackingModalExists() {
+    if (document.getElementById("orderTrackingModal")) return;
+
+    const modalHtml = `
+    <div class="modal-overlay" id="orderTrackingModal" aria-hidden="true">
+        <div class="modal-card order-tracking-modal-card">
+            <div class="modal-header">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.5rem;">🚚</span>
+                    <div>
+                        <h3 id="trackModalOrderRef">Live Order Tracking</h3>
+                        <small style="color:var(--text-muted); font-size:0.8rem;">AutoGenuine Real-Time Dispatch Network</small>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="closeModal('orderTrackingModal')">✕</button>
+            </div>
+            
+            <div id="trackModalBody" class="tracking-modal-body">
+                <!-- Filled dynamically by renderTrackingContent -->
+            </div>
+        </div>
+    </div>
+    `;
+    document.body.insertAdjacentHTML("beforeend", modalHtml);
+}
+
+function openOrderTrackingModal(orderRef) {
+    ensureOrderTrackingModalExists();
+    const modal = document.getElementById("orderTrackingModal");
+    const body = document.getElementById("trackModalBody");
+    const refTitle = document.getElementById("trackModalOrderRef");
+
+    if (!modal || !body) return;
+
+    const cleanInput = orderRef ? String(orderRef).trim() : "";
+
+    // If no order reference is provided, show search & recent orders screen
+    if (!cleanInput) {
+        refTitle.textContent = "Live Order Tracking";
+        const currentUser = getCurrentUser();
+        const allOrders = getOrdersHistory();
+        let userOrders = [];
+
+        if (currentUser && currentUser.role !== "admin") {
+            userOrders = allOrders.filter(o => 
+                (o.customerEmail && o.customerEmail.toLowerCase() === currentUser.email.toLowerCase()) ||
+                (o.customerPhone && currentUser.phone && o.customerPhone.replace(/[^0-9]/g, "") === currentUser.phone.replace(/[^0-9]/g, ""))
+            );
+        }
+
+        let userOrdersHtml = "";
+        if (userOrders.length > 0) {
+            userOrdersHtml = `
+                <div style="margin-top:20px; text-align:left;">
+                    <h4 style="font-size:0.95rem; margin-bottom:10px; color:var(--text-main, #f0f4fc);">Your Recent Orders (${currentUser.name})</h4>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        ${userOrders.map(o => `
+                            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-input, #1a2030); border:1px solid var(--border-color, #242c42); padding:10px 14px; border-radius:8px;">
+                                <div>
+                                    <strong style="color:var(--text-main, #fff); font-size:0.9rem;">${o.orderId}</strong>
+                                    <span style="font-size:0.8rem; color:var(--text-muted); margin-left:8px;">${o.date} • Rs. ${formatPrice(o.total)}</span>
+                                    <div style="font-size:0.75rem; color:var(--accent, #2a9d8f); margin-top:2px;">Status: <b>${o.status || 'Processing'}</b></div>
+                                </div>
+                                <button type="button" onclick="openOrderTrackingModal('${o.orderId}')" style="background:#e63946; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:0.8rem; font-weight:600; cursor:pointer;">
+                                    Track Live 🚚
+                                </button>
+                            </div>
+                        `).join("")}
+                    </div>
+                </div>
+            `;
+        }
+
+        body.innerHTML = `
+            <div style="padding:10px 0; text-align:center;">
+                <div style="font-size:3rem; margin-bottom:10px;">🚚</div>
+                <h3 style="margin-bottom:6px; font-size:1.2rem;">Track Your AutoGenuine Dispatch</h3>
+                <p style="color:var(--text-muted); font-size:0.88rem; max-width:440px; margin:0 auto 20px auto;">
+                    Enter your Order Reference Number (e.g. <code>#AG-84920</code>) or registered contact phone number to track live status.
+                </p>
+
+                <form onsubmit="event.preventDefault(); const val = document.getElementById('trackingSearchInput').value.trim(); if(val) openOrderTrackingModal(val);" style="display:flex; gap:8px; max-width:450px; margin:0 auto;">
+                    <input type="text" id="trackingSearchInput" placeholder="Order Ref # (e.g. #AG-84920) or Phone" required style="flex:1; padding:12px 14px; border-radius:8px; border:1px solid var(--border-color, #242c42); background:var(--bg-input, #1a2030); color:var(--text-main, #fff); font-size:0.95rem;">
+                    <button type="submit" style="background:#e63946; color:#fff; border:none; padding:12px 20px; border-radius:8px; font-weight:700; cursor:pointer;">
+                        Track →
+                    </button>
+                </form>
+
+                ${userOrdersHtml}
+            </div>
+        `;
+        openModal("orderTrackingModal");
+        return;
+    }
+
+    const order = getOrderTrackingDetails(cleanInput);
+
+    if (!order) {
+        refTitle.textContent = "Order Not Found";
+        body.innerHTML = `
+            <div class="tracking-error-box" style="text-align:center; padding:20px 10px;">
+                <div style="font-size:2.5rem; margin-bottom:10px;">⚠️</div>
+                <h4 style="margin-bottom:8px; font-size:1.1rem;">No Order Found</h4>
+                <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:20px;">We couldn't locate any order matching <strong>"${escapeQuotes(cleanInput)}"</strong>. Please check your order reference number or contact number.</p>
+                
+                <form onsubmit="event.preventDefault(); const val = document.getElementById('trackingRetryInput').value.trim(); if(val) openOrderTrackingModal(val);" style="display:flex; gap:8px; max-width:420px; margin:0 auto;">
+                    <input type="text" id="trackingRetryInput" placeholder="e.g. #AG-84920 or 077..." value="${escapeQuotes(cleanInput)}" required style="flex:1; padding:10px 12px; border-radius:8px; border:1px solid var(--border-color, #242c42); background:var(--bg-input, #1a2030); color:var(--text-main, #fff);">
+                    <button type="submit" style="background:#e63946; color:#fff; border:none; padding:10px 18px; border-radius:8px; font-weight:600; cursor:pointer;">Retry Track</button>
+                </form>
+            </div>
+        `;
+        openModal("orderTrackingModal");
+        return;
+    }
+
+    refTitle.textContent = `Order ${order.orderId || '#AG-ORDER'}`;
+
+    const step = order.trackingStep;
+    const isCancelled = step === 0;
+
+    let itemsListHtml = "";
+    if (Array.isArray(order.items) && order.items.length > 0) {
+        itemsListHtml = order.items.map(item => `
+            <div class="track-item-row">
+                <div class="track-item-name">
+                    <strong>${typeof item === 'string' ? item : item.name}</strong>
+                    ${typeof item === 'object' && item.quantity ? `<small>Qty: ${item.quantity} × Rs. ${formatPrice(item.price || 0)}</small>` : ''}
+                </div>
+                ${typeof item === 'object' && item.subtotal ? `<strong class="track-item-price">Rs. ${formatPrice(item.subtotal)}</strong>` : ''}
+            </div>
+        `).join("");
+    } else if (typeof order.items === 'string') {
+        itemsListHtml = `<div class="track-item-row"><div class="track-item-name"><strong>${order.items}</strong></div></div>`;
+    }
+
+    const whatsappText = encodeURIComponent(`Hello AutoGenuine Support, I would like to check on my Order ${order.orderId} (${order.customerName}). Status: ${order.status}.`);
+
+    body.innerHTML = `
+        <!-- REAL-TIME STATUS BANNER -->
+        <div class="tracking-status-banner ${isCancelled ? 'cancelled' : step >= 4 ? 'delivered' : step >= 3 ? 'shipped' : 'processing'}">
+            <div class="banner-status-badge">
+                <span class="status-pulse-dot"></span>
+                <strong>STATUS: ${order.status.toUpperCase()}</strong>
+            </div>
+            <p class="banner-status-msg">${order.statusMessage}</p>
+        </div>
+
+        <!-- 4-STEP VISUAL PROGRESS STEPPER -->
+        ${!isCancelled ? `
+        <div class="tracking-stepper-wrapper">
+            <div class="stepper-step ${step >= 1 ? 'completed active' : ''}">
+                <div class="step-circle">${step > 1 ? '✓' : '1'}</div>
+                <div class="step-label">
+                    <strong>Order Placed</strong>
+                    <small>${order.date || 'Confirmed'}</small>
+                </div>
+            </div>
+            <div class="stepper-line ${step >= 2 ? 'filled' : ''}"></div>
+            <div class="stepper-step ${step >= 2 ? 'completed active' : ''}">
+                <div class="step-circle">${step > 2 ? '✓' : '2'}</div>
+                <div class="step-label">
+                    <strong>Fitment Inspection</strong>
+                    <small>OEM Verified</small>
+                </div>
+            </div>
+            <div class="stepper-line ${step >= 3 ? 'filled' : ''}"></div>
+            <div class="stepper-step ${step >= 3 ? 'completed active' : ''}">
+                <div class="step-circle">${step >= 3 ? '🚚' : '3'}</div>
+                <div class="step-label">
+                    <strong>Dispatched / Shipped</strong>
+                    <small>${order.courierName ? 'Domex Courier' : 'In Transit'}</small>
+                </div>
+            </div>
+            <div class="stepper-line ${step >= 4 ? 'filled' : ''}"></div>
+            <div class="stepper-step ${step >= 4 ? 'completed active' : ''}">
+                <div class="step-circle">${step >= 4 ? '✓' : '4'}</div>
+                <div class="step-label">
+                    <strong>Delivered</strong>
+                    <small>Destination</small>
+                </div>
+            </div>
+        </div>
+        ` : `
+        <div style="background:rgba(230,57,70,0.1); border:1px solid #e63946; padding:15px; border-radius:8px; text-align:center; color:#e63946; margin-bottom:20px;">
+            <strong>Order Cancelled</strong>
+        </div>
+        `}
+
+        <!-- COURIER & LOGISTICS DETAILS -->
+        <div class="tracking-info-grid">
+            <div class="info-card">
+                <small>Courier Partner</small>
+                <strong>📦 ${order.courierName}</strong>
+            </div>
+            <div class="info-card">
+                <small>Tracking Reference Code</small>
+                <code class="track-code">${order.trackingNumber}</code>
+            </div>
+            <div class="info-card">
+                <small>Estimated Delivery</small>
+                <strong>⏱️ ${order.estimatedDelivery}</strong>
+            </div>
+            <div class="info-card">
+                <small>Payment Method</small>
+                <strong>💳 ${order.paymentMethod || 'Cash on Delivery'}</strong>
+            </div>
+        </div>
+
+        <!-- RECIPIENT & ITEMS CARD -->
+        <div class="tracking-recipient-card">
+            <div class="recipient-header">
+                <div>
+                    <strong>Deliver To: ${order.customerName || 'Customer'}</strong>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">📍 ${order.address || 'Sri Lanka'} • ☎ ${order.customerPhone || 'Verified'}</p>
+                </div>
+            </div>
+
+            <hr style="border:0; border-top:1px solid var(--border-color, #242c42); margin:12px 0;">
+
+            <div class="track-items-summary">
+                <h5 style="margin-bottom:8px; font-size:0.85rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Purchased Spare Parts</h5>
+                ${itemsListHtml}
+            </div>
+
+            <div class="track-total-row">
+                <span>Total Amount Paid / Due:</span>
+                <strong style="color:var(--accent, #2a9d8f); font-size:1.15rem;">Rs. ${formatPrice(order.total || 0)}</strong>
+            </div>
+        </div>
+
+        <!-- ACTIONS ROW -->
+        <div class="tracking-actions-footer">
+            <a href="https://wa.me/94786287337?text=${whatsappText}" target="_blank" class="btn-track-whatsapp" style="display:inline-flex; align-items:center; gap:8px; background:#25d366; color:#fff; text-decoration:none; padding:10px 18px; border-radius:6px; font-weight:700; font-size:0.88rem;">
+                <span>💬</span> WhatsApp Dispatch Support
+            </a>
+            <button type="button" class="btn-track-print" onclick="printOrderInvoice('${order.orderId}')" style="display:inline-flex; align-items:center; gap:8px; background:var(--bg-input, #1a2030); border:1px solid var(--border-color, #242c42); color:var(--text-main, #f0f4fc); padding:10px 18px; border-radius:6px; font-weight:600; cursor:pointer;">
+                <span>🖨️</span> Print Invoice
+            </button>
+        </div>
+    `;
+
+    openModal("orderTrackingModal");
+}
+window.openOrderTrackingModal = openOrderTrackingModal;
+
+function openQuickTrackerPrompt() {
+    const inputRef = prompt("Enter your Order Reference Number (e.g. #AG-90412) or Phone Number:");
+    if (inputRef && inputRef.trim()) {
+        openOrderTrackingModal(inputRef.trim());
+    }
+}
+window.openQuickTrackerPrompt = openQuickTrackerPrompt;
+
+function printOrderInvoice(orderRef) {
+    const order = getOrderTrackingDetails(orderRef);
+    if (!order) return;
+
+    let itemsRows = "";
+    if (Array.isArray(order.items) && order.items.length > 0) {
+        itemsRows = order.items.map(i => `
+            <tr>
+                <td style="padding:8px; border-bottom:1px solid #ddd;">${typeof i === 'string' ? i : i.name}</td>
+                <td style="padding:8px; border-bottom:1px solid #ddd; text-align:center;">${i.quantity || 1}</td>
+                <td style="padding:8px; border-bottom:1px solid #ddd; text-align:right;">Rs. ${formatPrice(i.price || 0)}</td>
+                <td style="padding:8px; border-bottom:1px solid #ddd; text-align:right;"><strong>Rs. ${formatPrice(i.subtotal || i.price || 0)}</strong></td>
+            </tr>
+        `).join("");
+    } else {
+        itemsRows = `<tr><td colspan="4" style="padding:8px;">${order.items || 'Genuine Automotive Spare Parts'}</td></tr>`;
+    }
+
+    const printHtml = `
+    <html>
+    <head>
+        <title>AutoGenuine Invoice - ${order.orderId}</title>
+        <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; color: #111; padding: 40px; }
+            .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #e63946; padding-bottom: 15px; margin-bottom: 25px; }
+            .logo h2 { margin: 0; color: #e63946; font-size: 24px; }
+            .meta p { margin: 3px 0; font-size: 13px; color: #555; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+            th { background: #f4f6f8; padding: 10px 8px; text-align: left; border-bottom: 2px solid #ccc; }
+            .totals { margin-top: 25px; text-align: right; }
+            .totals p { margin: 5px 0; font-size: 14px; }
+            .totals strong { font-size: 18px; color: #e63946; }
+            .footer { margin-top: 40px; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 15px; text-align: center; }
+        </style>
+    </head>
+    <body>
+        <div class="invoice-header">
+            <div class="logo">
+                <h2>AutoGenuine Sri Lanka</h2>
+                <p style="margin:4px 0; font-size:12px; color:#666;">Official OEM Automotive Parts Distributor</p>
+                <p style="margin:2px 0; font-size:12px; color:#666;">Hotline / WhatsApp: +94 78 628 7337 | info@autogenuine.lk</p>
+            </div>
+            <div class="meta" style="text-align:right;">
+                <h3 style="margin:0 0 5px 0; color:#333;">TAX INVOICE</h3>
+                <p><strong>Order Ref:</strong> ${order.orderId}</p>
+                <p><strong>Date:</strong> ${order.date}</p>
+                <p><strong>Status:</strong> ${order.status}</p>
+                <p><strong>Tracking:</strong> ${order.trackingNumber}</p>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-size:13px;">
+            <div>
+                <strong>Billed & Delivered To:</strong>
+                <p style="margin:3px 0;">${order.customerName}</p>
+                <p style="margin:3px 0;">${order.address}</p>
+                <p style="margin:3px 0;">Phone: ${order.customerPhone}</p>
+            </div>
+            <div style="text-align:right;">
+                <strong>Logistics & Courier:</strong>
+                <p style="margin:3px 0;">${order.courierName}</p>
+                <p style="margin:3px 0;">Payment: ${order.paymentMethod}</p>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Spare Part Description</th>
+                    <th style="text-align:center;">Qty</th>
+                    <th style="text-align:right;">Unit Price</th>
+                    <th style="text-align:right;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${itemsRows}
+            </tbody>
+        </table>
+
+        <div class="totals">
+            <p>Subtotal: Rs. ${formatPrice(order.subtotal || order.total)}</p>
+            ${order.discount > 0 ? `<p>Discount: - Rs. ${formatPrice(order.discount)}</p>` : ''}
+            <p>Shipping / Islandwide Delivery: ${order.shipping > 0 ? `Rs. ${formatPrice(order.shipping)}` : 'FREE'}</p>
+            <p><strong>Grand Total: Rs. ${formatPrice(order.total)}</strong></p>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for choosing AutoGenuine! All genuine OEM parts come with stamped manufacturer warranty.</p>
+            <p>For warranty claims or vehicle fitment support, contact +94 78 628 7337 (WhatsApp available).</p>
+        </div>
+        <script>window.print();</script>
+    </body>
+    </html>
+    `;
+
+    const printWin = window.open("", "_blank", "width=800,height=700");
+    if (printWin) {
+        printWin.document.open();
+        printWin.document.write(printHtml);
+        printWin.document.close();
+    }
+}
+window.printOrderInvoice = printOrderInvoice;
+
 // Auto-run on DOM ready
 if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", () => {
@@ -1004,7 +2434,11 @@ if (typeof document !== "undefined") {
         updateWishlistBadges();
         updateHeaderAccountButton();
         initThemeToggle();
+        ensureOrderTrackingModalExists();
+        syncWithBackendDatabase();
     });
 }
+
+
 
 
