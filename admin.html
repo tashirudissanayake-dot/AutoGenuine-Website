@@ -395,10 +395,13 @@
                         <div class="toolbar-left">
                             <div class="search-box-admin">
                                 <span>🔍</span>
-                                <input type="text" id="customerSearchInput" placeholder="Search customers by name, email..." oninput="filterAdminCustomers()">
+                                <input type="text" id="customerSearchInput" placeholder="Search customers by name, email, phone..." oninput="filterAdminCustomers()">
                             </div>
                         </div>
-                        <div class="toolbar-right">
+                        <div class="toolbar-right" style="display:flex; align-items:center; gap:12px;">
+                            <button type="button" class="btn-primary-action" onclick="openAddCustomerModal()">
+                                <span>➕</span> Add New User
+                            </button>
                             <span class="order-count-indicator" id="customerCountIndicator">Total Registered: 0</span>
                         </div>
                     </div>
@@ -413,8 +416,10 @@
                                     <th>Phone</th>
                                     <th>Registered Vehicle</th>
                                     <th>Role</th>
+                                    <th>Status</th>
                                     <th>Registered Date</th>
                                     <th>Total Orders</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="adminCustomersTableBody">
@@ -465,7 +470,7 @@
 
                         <div class="setting-item">
                             <div>
-                                <strong>↺ Reset Product Catalog to Default (9 Genuine Parts)</strong>
+                                <strong>↺ Reset Product Catalog to Default (24 Genuine Parts)</strong>
                                 <p>Removes any test items and restores default OEM parts catalogue.</p>
                             </div>
                             <button type="button" class="btn-danger-action" onclick="confirmResetCatalog()">Reset Catalog</button>
@@ -500,6 +505,7 @@
                             </div>
                             <span class="pin-active-pill">Status: Active & Enforced</span>
                         </div>
+
                     </div>
                 </section>
 
@@ -582,16 +588,31 @@
                     <div class="img-input-row">
                         <input type="text" id="prodImage" required placeholder="images/brake.jpg or URL" value="images/brake.jpg">
                         <select id="prodPresetImageSelect" onchange="selectPresetImage(this.value)">
-                            <option value="">Preset Images ▾</option>
-                            <option value="images/brake-pad.jpg">Brake Pads (images/brake-pad.jpg)</option>
-                            <option value="images/brake.jpg">Brake Rotor (images/brake.jpg)</option>
-                            <option value="images/oil-filter.jpg">Oil Filter (images/oil-filter.jpg)</option>
-                            <option value="images/filter.jpg">Air Filter (images/filter.jpg)</option>
-                            <option value="images/engine.jpg">Engine Timing Belt (images/engine.jpg)</option>
-                            <option value="images/battery.jpg">Exide Battery (images/battery.jpg)</option>
-                            <option value="images/battery2.jpg">Amaron Battery (images/battery2.jpg)</option>
-                            <option value="images/light.jpg">LED Headlight Bulb (images/light.jpg)</option>
-                            <option value="images/spark-plug.jpg">Iridium Spark Plug (images/spark-plug.jpg)</option>
+                            <option value="">Preset Images (24 Parts) ▾</option>
+                            <option value="images/brake-pad.jpg">1. Ceramic Brake Pads (images/brake-pad.jpg)</option>
+                            <option value="images/oil-filter.jpg">2. Toyota Oil Filter (images/oil-filter.jpg)</option>
+                            <option value="images/air-filter.jpg">3. Engine Air Filter (images/air-filter.jpg)</option>
+                            <option value="images/car-battery.jpg">4. Exide 60Ah Battery (images/car-battery.jpg)</option>
+                            <option value="images/brake.jpg">5. Disc Brake Rotors (images/brake.jpg)</option>
+                            <option value="images/cabin-filter.jpg">6. Cabin AC Filter (images/cabin-filter.jpg)</option>
+                            <option value="images/amaron-battery.jpg">7. Amaron 70Ah Battery (images/amaron-battery.jpg)</option>
+                            <option value="images/timing-belt-kit.jpg">8. Timing Belt Kit (images/timing-belt-kit.jpg)</option>
+                            <option value="images/led-headlight.jpg">9. LED Headlight Kit (images/led-headlight.jpg)</option>
+                            <option value="images/spark-plugs.jpg">10. Iridium Spark Plugs (images/spark-plugs.jpg)</option>
+                            <option value="images/engine-mount.jpg">11. Hydraulic Engine Mount (images/engine-mount.jpg)</option>
+                            <option value="images/serpentine-belt.jpg">12. Serpentine Belt (images/serpentine-belt.jpg)</option>
+                            <option value="images/fuel-pump.jpg">13. In-Tank Fuel Pump (images/fuel-pump.jpg)</option>
+                            <option value="images/brake-shoes.jpg">14. Rear Brake Shoes (images/brake-shoes.jpg)</option>
+                            <option value="images/brake-fluid.jpg">15. DOT 4 Brake Fluid (images/brake-fluid.jpg)</option>
+                            <option value="images/abs-sensor.jpg">16. ABS Speed Sensor (images/abs-sensor.jpg)</option>
+                            <option value="images/motor-oil-5w30.jpg">17. Toyota Motor Oil 5W-30 (images/motor-oil-5w30.jpg)</option>
+                            <option value="images/atf-ws-fluid.jpg">18. Toyota ATF WS Fluid (images/atf-ws-fluid.jpg)</option>
+                            <option value="images/fuel-filter.jpg">19. In-Tank Fuel Filter (images/fuel-filter.jpg)</option>
+                            <option value="images/hybrid-battery.jpg">20. Hybrid AGM Battery (images/hybrid-battery.jpg)</option>
+                            <option value="images/alternator.jpg">21. 100A Alternator (images/alternator.jpg)</option>
+                            <option value="images/car-horn.jpg">22. Denso Snail Horns (images/car-horn.jpg)</option>
+                            <option value="images/fog-lights.jpg">23. Crystal Fog Lights (images/fog-lights.jpg)</option>
+                            <option value="images/ignition-coil.jpg">24. Denso Ignition Coil (images/ignition-coil.jpg)</option>
                         </select>
                     </div>
                 </div>
@@ -663,9 +684,80 @@
                 <!-- Populated dynamically -->
             </div>
             <div class="modal-form-actions">
-                <button type="button" class="btn-secondary-action" onclick="window.print()">🖨️ Print Invoice</button>
+                <button type="button" class="btn-secondary-action" onclick="printAdminOrderInvoice()">🖨️ Print Invoice</button>
                 <button type="button" class="btn-checkout" onclick="closeModal('adminOrderReceiptModal')">Close</button>
             </div>
+        </div>
+    </div>
+
+    <!-- BANK SLIP INSPECTION & APPROVAL MODAL -->
+    <div class="modal-overlay" id="adminBankSlipModal" aria-hidden="true">
+        <div class="modal-card bank-slip-modal-card">
+            <div class="modal-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:1.3rem;">🏦</span>
+                    <h3 id="bankSlipModalTitle">Customer Bank Deposit Slip</h3>
+                </div>
+                <button class="modal-close" onclick="closeModal('adminBankSlipModal')">✕</button>
+            </div>
+            <div class="bank-slip-modal-body" id="bankSlipModalBody">
+                <!-- Dynamically populated -->
+            </div>
+            <div class="modal-form-actions" id="bankSlipModalActions">
+                <button type="button" class="btn-primary-action" id="verifySlipBtn" onclick="handleVerifyBankSlip()">✓ Approve Slip & Mark as Paid</button>
+                <a id="downloadSlipBtn" href="#" download="BankDepositSlip.jpg" class="btn-secondary-action" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">⬇️ Download Slip</a>
+                <button type="button" class="btn-checkout" onclick="closeModal('adminBankSlipModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD / EDIT CUSTOMER ACCOUNT MODAL -->
+    <div class="modal-overlay" id="adminCustomerModal" aria-hidden="true">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:1.3rem;">👤</span>
+                    <h3 id="adminCustomerModalTitle">Add New User Account</h3>
+                </div>
+                <button class="modal-close" onclick="closeModal('adminCustomerModal')">✕</button>
+            </div>
+            <form id="adminCustomerForm" onsubmit="handleSaveCustomer(event)">
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="custFormName" placeholder="e.g. Nimal Perera" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input type="email" id="custFormEmail" placeholder="nimal@gmail.com" required>
+                    </div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" id="custFormPhone" placeholder="077 123 4567" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Account Role</label>
+                        <select id="custFormRole">
+                            <option value="customer" selected>Customer</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Registered Vehicle Make & Model</label>
+                    <input type="text" id="custFormVehicle" placeholder="e.g. Honda Civic FK7 / Toyota Premio">
+                </div>
+                <div class="form-group">
+                    <label>Initial Account Password *</label>
+                    <input type="password" id="custFormPassword" placeholder="Minimum 3 characters" minlength="3" value="123456" required>
+                </div>
+                <div class="modal-form-actions">
+                    <button type="button" class="btn-checkout" onclick="closeModal('adminCustomerModal')" style="background:var(--border-subtle); color:var(--text-main);">Cancel</button>
+                    <button type="submit" class="btn-primary-action" id="custSaveBtn">Create Account</button>
+                </div>
+            </form>
         </div>
     </div>
 

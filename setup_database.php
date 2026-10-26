@@ -218,7 +218,7 @@ if (isset($_POST['install_db']) || isset($_GET['auto'])) {
             <li><strong>Database Name:</strong> <?php echo DB_NAME; ?></li>
             <li><strong>Database User:</strong> <?php echo DB_USER; ?></li>
             <li><strong>Tables Included:</strong> 17 Normalized Tables (3NF Schema)</li>
-            <li><strong>Initial Data:</strong> 9 Genuine Spare Parts, Demo Admin & Customer, 3 Promo Coupons, Orders & Quotations</li>
+            <li><strong>Initial Data:</strong> 24 Genuine Spare Parts, Demo Admin & Customer, 3 Promo Coupons, Orders & Quotations</li>
         </div>
 
         <form method="POST">

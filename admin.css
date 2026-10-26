@@ -1514,3 +1514,125 @@ body {
         display: none;
     }
 }
+
+/* ==========================================
+   BANK SLIP INSPECTION & BADGES
+   ========================================== */
+.btn-slip-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-slip-pill.pending {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.btn-slip-pill.pending:hover {
+    background: #f59e0b;
+    color: #111;
+}
+
+.btn-slip-pill.verified {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.btn-slip-pill.verified:hover {
+    background: #10b981;
+    color: #fff;
+}
+
+.btn-tbl-slip {
+    background: rgba(0, 180, 216, 0.12);
+    color: var(--primary);
+    border: 1px solid rgba(0, 180, 216, 0.35);
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-tbl-slip:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+.bank-slip-modal-card {
+    max-width: 780px !important;
+    width: 95%;
+}
+
+.bank-slip-modal-body {
+    padding: 20px 24px;
+    max-height: 75vh;
+    overflow-y: auto;
+}
+
+/* ==========================================
+   CLEAN A4 PRINT OVERRIDES (FALLBACK)
+   ========================================== */
+@media print {
+    body {
+        background: #ffffff !important;
+        color: #111111 !important;
+    }
+
+    .admin-sidebar, 
+    .admin-topbar, 
+    .mobile-menu-toggle, 
+    .admin-tabs-content, 
+    .admin-toast-container,
+    .modal-overlay:not(#adminOrderReceiptModal),
+    .modal-header,
+    .modal-form-actions,
+    .modal-close,
+    .table-actions,
+    button {
+        display: none !important;
+    }
+
+    .modal-overlay#adminOrderReceiptModal {
+        position: static !important;
+        background: none !important;
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .modal-card {
+        background: #ffffff !important;
+        box-shadow: none !important;
+        border: none !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 0 !important;
+        color: #111111 !important;
+    }
+
+    .receipt-box {
+        background: #ffffff !important;
+        color: #111111 !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+
+    .receipt-box * {
+        color: #111111 !important;
+    }
+}
+

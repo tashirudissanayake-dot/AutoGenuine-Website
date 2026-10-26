@@ -173,7 +173,7 @@ CREATE TABLE orders (
     delivery_address TEXT NOT NULL,
     city VARCHAR(100) NOT NULL,
     district VARCHAR(100) NOT NULL,
-    payment_method ENUM('Cash on Delivery', 'Direct Bank Transfer', 'Credit / Debit Card') NOT NULL DEFAULT 'Cash on Delivery',
+    payment_method ENUM('Cash on Delivery', 'Direct Bank Transfer', 'Credit / Debit Card', 'Koko Installments') NOT NULL DEFAULT 'Cash on Delivery',
     payment_status ENUM('Pending', 'Paid', 'Failed') DEFAULT 'Pending',
     subtotal DECIMAL(10, 2) NOT NULL,
     coupon_id INT DEFAULT NULL,
@@ -351,7 +351,7 @@ INSERT INTO products (
     '1 Year / 20,000 km Warranty'
 ),
 (
-    4, 'car-battery', 'AG-BAT-6012', 'DIN60 / 55D23L / MF60',
+    4, 'exide-car-battery', 'AG-BAT-6012', 'DIN60 / 55D23L / MF60',
     'Exide Matrix Car Battery 60Ah', 4, 'Exide Industries', 'India / Sri Lanka',
     32500.00, 36000.00, 10, 4.9, 15, 8, TRUE, 'images/car-battery.jpg',
     'Maintenance-free heavy-duty 60Ah sealed automotive battery with advanced silver-calcium alloy plates and exceptional cranking power in tropical conditions.',
@@ -369,7 +369,7 @@ INSERT INTO products (
 (
     6, 'cabin-air-filter', 'AG-FLT-3091', '87139-30040 / 87139-0K010',
     'Activated Carbon Cabin AC Filter', 3, 'Denso OEM / Bosch', 'Japan / Germany',
-    1850.00, 2400.00, 23, 4.8, 11, 30, TRUE, 'images/filter.jpg',
+    1850.00, 2400.00, 23, 4.8, 11, 30, TRUE, 'images/cabin-filter.jpg',
     'Multi-layer activated charcoal cabin AC filter that purifies vehicle interior air by trapping PM2.5 dust, diesel soot, pollen, and eliminating AC odors.',
     'Breathe clean and fresh air inside your car cabin with this Activated Carbon Cabin AC Filter.',
     '1 Year / 15,000 km Warranty'
@@ -377,7 +377,7 @@ INSERT INTO products (
 (
     7, 'amaron-battery', 'AG-BAT-7088', '80D26L / 85D26L / PRO-70',
     'Amaron Pro Heavy Duty 70Ah Battery', 4, 'Amaron Genuine (Johnson Controls)', 'India / USA',
-    36800.00, 41500.00, 11, 5.0, 16, 6, TRUE, 'images/battery.jpg',
+    36800.00, 41500.00, 11, 5.0, 16, 6, TRUE, 'images/amaron-battery.jpg',
     'Zero-maintenance 70Ah heavy-duty automotive battery engineered with patented Silven-X alloy grids for ultra-long lifespan in commercial vehicles & SUVs.',
     'Built for extreme endurance, the Amaron Pro 70Ah delivers class-leading Cold Cranking Amps (580 CCA).',
     '36 Months Replacement Warranty'
@@ -385,7 +385,7 @@ INSERT INTO products (
 (
     8, 'timing-belt-kit', 'AG-ENG-5021', '13568-19106 / 16100-19235',
     'Engine Timing Belt & Water Pump Complete Kit', 1, 'Gates / Aisin Japan Genuine', 'Japan / USA',
-    24500.00, 29800.00, 18, 4.9, 14, 9, TRUE, 'images/engine.jpg',
+    24500.00, 29800.00, 18, 4.9, 14, 9, TRUE, 'images/timing-belt-kit.jpg',
     'Complete OEM engine overhaul timing kit including high-strength aramid timing belt, tensioner pulley, idler bearings, and heavy-duty water pump with gasket.',
     'Ensure total engine reliability and avoid valve-to-piston collision with the AutoGenuine Complete Timing Belt & Water Pump Overhaul Kit.',
     '2 Years / 100,000 km Warranty'
@@ -393,10 +393,130 @@ INSERT INTO products (
 (
     9, 'led-headlights', 'AG-LGT-9014', 'H4 / H11 / HB3 LED 6500K',
     'Super White High-Power LED Headlight Kit', 5, 'Philips / Osram Genuine', 'Germany / Japan',
-    8900.00, 11500.00, 23, 4.9, 21, 15, TRUE, 'images/lights.jpg',
+    8900.00, 11500.00, 23, 4.9, 21, 15, TRUE, 'images/led-headlight.jpg',
     'High-lumen 6500K crystal white LED headlight conversion kit featuring aviation aluminum heatsinks and active turbo cooling fans for superior night visibility.',
     'Upgrade nighttime road safety with the Super White High-Power LED Headlight Conversion Kit producing 12,000 Lumens per pair.',
     '18 Months Replacement Warranty'
+),
+(
+    10, 'ngk-iridium-spark-plugs', 'AG-ENG-5101', 'ILKAR7B11 / 90919-01253',
+    'NGK Laser Iridium Spark Plugs Set (4 Pcs)', 1, 'NGK Spark Plug Japan', 'Japan',
+    8500.00, 10500.00, 19, 4.9, 28, 22, TRUE, 'images/spark-plugs.jpg',
+    'Original Japanese laser welded fine-wire iridium spark plugs delivering rapid cold starts, superior throttle response, and maximum fuel efficiency.',
+    'NGK Laser Iridium spark plugs provide superior ignitability and long service life with 0.6mm fine-wire laser welded center electrode.',
+    '1 Year / 60,000 km Warranty'
+),
+(
+    11, 'toyota-hydraulic-engine-mount', 'AG-ENG-5102', '12305-21220 / 12305-0M060',
+    'Toyota Genuine Hydraulic Engine Mount (RH)', 1, 'Toyota Genuine Parts', 'Japan',
+    16500.00, 19800.00, 17, 4.8, 15, 9, TRUE, 'images/engine-mount.jpg',
+    'Factory OEM fluid-filled right side engine motor mount designed to eliminate cabin vibration, gear shudder, and engine rocking under acceleration.',
+    'Filled with specially formulated hydraulic damping fluid to absorb natural engine harmonics and eliminate dashboard vibrations.',
+    '2 Years / 50,000 km Warranty'
+),
+(
+    12, 'bando-serpentine-belt', 'AG-ENG-5103', '6PK1230 / 90916-02600',
+    'Bando Heavy Duty 6PK Serpentine Alternator Belt', 1, 'Bando Chemical Japan', 'Japan',
+    3800.00, 4800.00, 21, 4.9, 34, 30, TRUE, 'images/serpentine-belt.jpg',
+    'OEM supplier EPDM ribbed serpentine fan & alternator drive belt engineered to resist high thermal cracking, stretching, and belt squeal.',
+    'Features precision molded ribs and high-modulus polyester cords to ensure zero slip and maintenance-free operation across high engine RPM ranges.',
+    '2 Years / 50,000 km Warranty'
+),
+(
+    13, 'denso-fuel-pump-module', 'AG-ENG-5104', '23220-21132 / 195130-7050',
+    'Denso Electric In-Tank Fuel Pump Assembly', 1, 'Denso Japan Genuine', 'Japan',
+    14200.00, 17500.00, 19, 4.8, 19, 12, TRUE, 'images/fuel-pump.jpg',
+    'Genuine Japanese high-pressure in-tank electronic turbine fuel pump delivering stable 3.5 bar fuel rail pressure and ultra-low noise operation.',
+    'Denso turbine fuel pump technology utilizes a low-pulsation impeller that operates quietly and delivers consistent fuel flow to your EFI injectors.',
+    '2 Years Stamped Warranty'
+),
+(
+    14, 'rear-brake-shoe-set', 'AG-BRK-4093', '04495-52040 / 04495-52090',
+    'Advics Rear Brake Drum Shoe Set Pair', 2, 'Advics / Aisin Japan', 'Japan',
+    4200.00, 5200.00, 19, 4.8, 16, 20, TRUE, 'images/brake-shoes.jpg',
+    'High-friction rear brake drum shoe set providing rock-solid parking brake hold on steep hill starts and smooth, balanced deceleration.',
+    'Engineered using high-shear bonded friction linings that match the exact curve of OEM brake drums for reliable parking hold.',
+    '2 Years / 40,000 km Warranty'
+),
+(
+    15, 'bosch-brake-fluid-dot4', 'AG-BRK-4094', '1987476036 / DOT4-HP',
+    'Bosch DOT 4 High-Performance Synthetic Brake Fluid (1L)', 2, 'Bosch Automotive Germany', 'Germany',
+    2600.00, 3200.00, 19, 4.9, 42, 35, TRUE, 'images/brake-fluid.jpg',
+    'Premium synthetic glycol-ether brake and hydraulic clutch fluid with 265°C high dry boiling point to prevent brake fade and pedal sponginess.',
+    'Protects critical ABS valves, master cylinders, and caliper seals against internal corrosion and moisture contamination.',
+    'Guaranteed 100% Genuine Sealed Bottle'
+),
+(
+    16, 'abs-wheel-speed-sensor', 'AG-BRK-4095', '89542-52030 / 89543-52030',
+    'Front Wheel ABS Speed Sensor Assembly', 2, 'Denso Certified OEM', 'Japan',
+    5800.00, 7200.00, 19, 4.7, 11, 14, TRUE, 'images/abs-sensor.jpg',
+    'Precision magnetic pulse ABS wheel speed sensor designed to immediately clear dashboard ABS, Traction Control, and Brake warning lights.',
+    'Accurately reads magnetic encoder rings in wheel bearings and communicates wheel RPM seamlessly with your vehicles ABS ECU.',
+    '1 Year Replacement Warranty'
+),
+(
+    17, 'toyota-motor-oil-5w30', 'AG-FLT-3094', '08880-13705 / SP 5W-30',
+    'Toyota Genuine Motor Oil 5W-30 SP Fully Synthetic (4L)', 3, 'Toyota Genuine Motor Oil Japan', 'Japan',
+    18500.00, 21500.00, 14, 5.0, 56, 25, TRUE, 'images/motor-oil-5w30.jpg',
+    'API SP / ILSAC GF-6A factory fill Japanese fully synthetic engine oil engineered to prevent low-speed pre-ignition (LSPI) and timing chain wear.',
+    'Advanced synthetic base stock maintains uniform film strength under extreme engine heat, providing unmatched sludge protection.',
+    '100% Genuine Imported Tin Can with Security Seal'
+),
+(
+    18, 'toyota-atf-ws-fluid', 'AG-FLT-3095', '08886-02305 / ATF-WS',
+    'Toyota Genuine ATF WS Transmission Fluid (4L)', 3, 'Toyota Genuine Fluid Japan', 'Japan',
+    19800.00, 23500.00, 16, 4.9, 31, 18, TRUE, 'images/atf-ws-fluid.jpg',
+    'Ultra-low viscosity automatic transmission fluid designed to eliminate shift hesitation, gear slips, and protect planetary gear sets in modern transmissions.',
+    'The only approved fluid for Toyota and Lexus electronically controlled automatic transmissions and hybrid e-CVT transaxles.',
+    '100% Genuine Sealed Steel Canister'
+),
+(
+    19, 'in-tank-fuel-filter', 'AG-FLT-3096', '23300-21010 / 23300-23030',
+    'In-Tank High-Efficiency Fuel Filter Assembly', 3, 'Vic / Micro Filters Japan', 'Japan',
+    6200.00, 7800.00, 21, 4.8, 14, 16, TRUE, 'images/fuel-filter.jpg',
+    'Ultra-fine multi-layer in-tank fuel filter canister that traps microscopic rust, water droplets, and sediment before reaching fuel injectors.',
+    'Fits inside the fuel tank sending unit and features reinforced resin casing tested to 10 bar pressure.',
+    '1 Year / 40,000 km Warranty'
+),
+(
+    20, 'yuasa-hybrid-aux-battery', 'AG-BAT-2093', 'S34B20R / ENJ-340LN0',
+    'GS Yuasa Hybrid Auxiliary 12V AGM Battery S34B20R', 4, 'GS Yuasa Japan', 'Japan',
+    32500.00, 38000.00, 14, 5.0, 22, 11, TRUE, 'images/hybrid-battery.jpg',
+    'Specialized AGM sealed 12V auxiliary boot battery with internal gas exhaust port designed for Toyota Hybrid vehicles (Aqua, Prius, Axio Hybrid).',
+    'Features Absorbent Glass Mat valve-regulated technology and a specialized exterior gas vent tube connection for interior vehicle safety.',
+    '2 Years Comprehensive Replacement Warranty'
+),
+(
+    21, 'denso-high-output-alternator', 'AG-BAT-2094', '27060-21150 / 104210-8230',
+    'Denso 12V 100A High-Output Alternator Assembly', 4, 'Denso Japan Genuine', 'Japan',
+    45000.00, 52000.00, 13, 4.9, 8, 6, TRUE, 'images/alternator.jpg',
+    'Original Japanese high-current 100 Amp internal regulator alternator equipped with decoupling clutch pulley for quiet and reliable vehicle electrical power.',
+    'Hairpin stator winding technology delivers higher output at low idle RPM, keeping battery voltage rock steady at 14.2V.',
+    '2 Years Stamped Warranty'
+),
+(
+    22, 'denso-dual-snail-horn', 'AG-ELE-1092', 'JK272000-6900 / 12V 4A',
+    'Denso Dual Snail High/Low Tone Premium Horn Set', 5, 'Denso Japan', 'Japan',
+    4900.00, 6200.00, 21, 4.9, 65, 40, TRUE, 'images/car-horn.jpg',
+    'Authoritative European luxury car dual trumpet tone (400Hz / 480Hz) at 110dB for maximum road presence and safety in congested traffic.',
+    'Engineered with weather-sealed acoustic trumpets to project a commanding, deep harmonic horn tone.',
+    '1 Year Replacement Warranty'
+),
+(
+    23, 'crystal-fog-light-kit', 'AG-ELE-1093', '81210-0D042 / 81220-0D042',
+    'Front Bumper Crystal Fog Light Kit with Wiring & Switch', 5, 'Koito / Stanley OEM Spec', 'Taiwan',
+    8900.00, 11500.00, 23, 4.8, 18, 15, TRUE, 'images/fog-lights.jpg',
+    'Complete bolt-in front bumper crystal glass fog lamp pair equipped with H11 halogen bulbs, waterproof wiring relay harness, and OEM interior dash switch.',
+    'Features optical glass lenses that resist rock chips and wont turn yellow under sunlight like cheap plastic lenses.',
+    '1 Year Warranty'
+),
+(
+    24, 'denso-ignition-coil-pack', 'AG-ELE-1094', '90919-02260 / 099700-2500',
+    'Denso Genuine Ignition Coil Pack 1NZ/2ZR', 5, 'Denso Japan Certified', 'Japan',
+    7400.00, 9200.00, 20, 4.9, 29, 24, TRUE, 'images/ignition-coil.jpg',
+    'Original Japanese high-energy electronic pencil ignition coil pack to immediately cure engine misfires, erratic idling, and check engine codes.',
+    'Features premium copper windings and high-temperature silicone spark plug boot to ensure complete combustion and instant power delivery.',
+    '2 Years Stamped Warranty'
 );
 
 -- 3. Insert Product Features
@@ -446,7 +566,82 @@ INSERT INTO product_features (product_id, feature_text, display_order) VALUES
 (9, '12,000 Lumens ultra-bright 6500K pure white light beam', 1),
 (9, '1:1 Halogen filament focal point for sharp cut-off without blinding', 2),
 (9, '12,000 RPM high-speed silent dual-ball bearing turbo fan', 3),
-(9, 'IP68 waterproof and dustproof sealed aluminum aviation casing', 4);
+(9, 'IP68 waterproof and dustproof sealed aluminum aviation casing', 4),
+
+(10, 'Laser welded 0.6mm fine-wire Iridium center electrode', 1),
+(10, 'Platinum disc welded to backside of ground electrode for long life', 2),
+(10, 'Faster starts, smooth idling and quicker throttle acceleration', 3),
+(10, 'Trivalent metal plating for anti-corrosion and anti-seize', 4),
+
+(11, 'Genuine OEM fluid-filled hydraulic damping chamber', 1),
+(11, 'Eliminates dashboard vibrations, idle shudder and steering buzz', 2),
+(11, 'Reinforced high-tensile cast aluminum bracket', 3),
+(11, 'Natural rubber compound resistant to engine heat', 4),
+
+(12, 'Heat and ozone-resistant synthetic EPDM rubber construction', 1),
+(12, 'Aramid fiber reinforced tensile cords for zero stretch', 2),
+(12, 'Eliminates annoying belt squeal upon AC compressor activation', 3),
+(12, 'Precision ground rib profile for exact pulley grip', 4),
+
+(13, 'Ultra-quiet precision balanced turbine impeller design', 1),
+(13, 'Delivers constant 3.5 - 3.8 bar fuel rail pressure', 2),
+(13, 'Includes pre-filter strainer and rubber isolator grommet', 3),
+(13, 'Direct OEM plug fitment with zero wiring modification', 4),
+
+(14, 'Non-asbestos organic friction lining for long drum life', 1),
+(14, 'Radius ground for immediate contact without lengthy break-in', 2),
+(14, 'Exceptional handbrake hold on steep hill inclines', 3),
+(14, 'Includes 4 shoes for both left and right rear drums', 4),
+
+(15, 'Ultra-high dry boiling point of 265C prevents brake fade', 1),
+(15, 'High wet boiling point of 165C prevents vapor lock', 2),
+(15, 'Compatible with all ABS, ESP, and conventional hydraulic systems', 3),
+(15, 'Factory sealed 1 Liter container', 4),
+
+(16, 'High-precision Hall-effect magnetic sensor element', 1),
+(16, 'Waterproof silicone sealed wire harness with factory clips', 2),
+(16, 'Instant resolution for ABS, VSC and Slip dashboard warning lights', 3),
+(16, 'Direct OEM bracket fitment into wheel knuckle', 4),
+
+(17, 'Official API SP and ILSAC GF-6A resource conserving rating', 1),
+(17, 'Advanced LSPI protection for modern turbo and direct injection engines', 2),
+(17, 'Exceptional detergent dispersants keep valve train sludge-free', 3),
+(17, 'Directly imported in 4-liter steel tin canister with security seal', 4),
+
+(18, 'Official Toyota factory specification ATF WS fluid', 1),
+(18, 'Prevents shift shock, gear hunting, and delayed engagement', 2),
+(18, 'Essential for Toyota Hybrid planetary gear transaxles', 3),
+(18, 'Imported in original 4-Liter Japanese metal container', 4),
+
+(19, 'Traps contaminants down to 3 microns to safeguard EFI injectors', 1),
+(19, 'Prevents high-RPM engine hesitation and flat spots during overtaking', 2),
+(19, 'Direct fitment inside factory in-tank fuel pump carrier cradle', 3),
+(19, 'Includes new high-pressure internal sealing O-rings', 4),
+
+(20, '100% Sealed AGM VRLA spill-proof design', 1),
+(20, 'Integrated external gas vent nozzle for interior vehicle safety', 2),
+(20, 'Equipped with built-in battery temperature sensor bracket', 3),
+(20, 'Zero maintenance required with ultra-low self-discharge chemistry', 4),
+
+(21, 'Compact high-efficiency hairpin segmented stator winding', 1),
+(21, 'Delivers full 100 Amp charging current with 70A at idle', 2),
+(21, 'Overrunning alternator decoupler clutch pulley reduces belt strain', 3),
+(21, 'Internal solid-state electronic voltage regulator (14.2V constant)', 4),
+
+(22, 'Dual acoustic harmony: 400 Hz Low Tone + 480 Hz High Tone', 1),
+(22, 'Powerful 110 dB sound pressure projection up to 100 meters', 2),
+(22, 'Waterproof labyrinth design prevents rain and pressure wash entry', 3),
+(22, 'Includes heavy-gauge steel mounting brackets and wiring terminals', 4),
+
+(23, 'Clear tempered optical glass lenses with cast aluminum heat sink body', 1),
+(23, 'Includes pre-installed high-output H11 55W halogen bulbs', 2),
+(23, 'Complete plug-and-play wiring relay harness with waterproof fuse', 3),
+(23, 'OEM dashboard push button switch with illuminated indicator', 4),
+
+(24, 'Precision laminated silicon steel core delivers maximum secondary voltage', 1),
+(24, 'High-temp silicone spark plug boot prevents spark flashover and arcing', 2),
+(24, 'Direct solution for engine jerking, rough idle, and misfire codes', 3),
+(24, 'Tested to withstand continuous 130C cylinder head temperatures', 4);
 
 -- 4. Insert Technical Specifications
 INSERT INTO product_specifications (product_id, spec_name, spec_value) VALUES
@@ -556,10 +751,25 @@ INSERT INTO product_gallery (product_id, image_url, display_order) VALUES
 (3, 'images/air-filter.jpg', 1),
 (4, 'images/car-battery.jpg', 1),
 (5, 'images/brake.jpg', 1),
-(6, 'images/filter.jpg', 1),
-(7, 'images/battery.jpg', 1),
-(8, 'images/engine.jpg', 1),
-(9, 'images/lights.jpg', 1);
+(6, 'images/cabin-filter.jpg', 1),
+(7, 'images/amaron-battery.jpg', 1),
+(8, 'images/timing-belt-kit.jpg', 1),
+(9, 'images/led-headlight.jpg', 1),
+(10, 'images/spark-plugs.jpg', 1),
+(11, 'images/engine-mount.jpg', 1),
+(12, 'images/serpentine-belt.jpg', 1),
+(13, 'images/fuel-pump.jpg', 1),
+(14, 'images/brake-shoes.jpg', 1),
+(15, 'images/brake-fluid.jpg', 1),
+(16, 'images/abs-sensor.jpg', 1),
+(17, 'images/motor-oil-5w30.jpg', 1),
+(18, 'images/atf-ws-fluid.jpg', 1),
+(19, 'images/fuel-filter.jpg', 1),
+(20, 'images/hybrid-battery.jpg', 1),
+(21, 'images/alternator.jpg', 1),
+(22, 'images/car-horn.jpg', 1),
+(23, 'images/fog-lights.jpg', 1),
+(24, 'images/ignition-coil.jpg', 1);
 
 -- 7. Insert Demo Users (Passwords: Kasun: '123', Dilshan: '123', Admin: 'admin123')
 INSERT INTO users (user_id, full_name, email, phone, password_hash, registered_vehicle, role) VALUES

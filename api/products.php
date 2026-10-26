@@ -266,7 +266,7 @@ function handleResetProducts($db) {
     if (file_exists($sqlFile)) {
         $sql = file_get_contents($sqlFile);
         $db->exec($sql);
-        sendJsonResponse(true, [], 'Catalog successfully reset to default 9 items in MySQL database.');
+        sendJsonResponse(true, [], 'Catalog successfully reset to default 24 items in MySQL database.');
     } else {
         sendJsonResponse(false, [], 'database.sql not found.');
     }

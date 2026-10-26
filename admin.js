@@ -507,6 +507,9 @@ window.handleDeleteProduct = handleDeleteProduct;
 // ==========================================
 // 5. CUSTOMER ORDERS MANAGEMENT
 // ==========================================
+let activeReceiptOrderId = null;
+let activeSlipOrderId = null;
+
 function renderOrdersTable() {
     const tableBody = document.getElementById("adminOrdersTableBody");
     if (!tableBody) return;
@@ -536,24 +539,35 @@ function renderOrdersTable() {
         return;
     }
 
+    const esc = (s) => (typeof window.escapeHtml === "function" ? window.escapeHtml(s) : String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"));
+
     tableBody.innerHTML = orders.map(o => {
         const status = o.status || "Processing Dispatch";
         const statusClass = status === "Shipped" ? "shipped" : status === "Delivered" ? "delivered" : status === "Cancelled" ? "cancelled" : "processing";
         const itemsSummary = o.items ? o.items.map(i => `${i.quantity}x ${i.name}`).join(", ") : `${o.itemCount || 1} Part(s)`;
+        const hasSlip = !!(o.bankSlipUrl || o.paymentSlip);
+        const isVerified = !!(o.paymentStatus && o.paymentStatus.includes("Verified"));
 
         return `
             <tr>
-                <td><strong>${o.orderId}</strong></td>
-                <td><small>${o.date}</small></td>
+                <td><strong>${esc(o.orderId)}</strong></td>
+                <td><small>${esc(o.date)}</small></td>
                 <td>
-                    <strong>${o.customerName || 'Customer'}</strong><br>
-                    <small style="color:var(--text-muted);">${o.customerPhone || '077 123 4567'}</small>
+                    <strong>${esc(o.customerName || 'Customer')}</strong><br>
+                    <small style="color:var(--text-muted);">${esc(o.customerPhone || '077 123 4567')}</small>
                 </td>
-                <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${itemsSummary}">
-                    <small>${itemsSummary}</small>
+                <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${esc(itemsSummary)}">
+                    <small>${esc(itemsSummary)}</small>
                 </td>
                 <td><strong>Rs. ${formatPrice(o.total)}</strong></td>
-                <td><small>${o.paymentMethod || 'COD'}</small></td>
+                <td>
+                    <small>${esc(o.paymentMethod || 'COD')}</small>
+                    ${hasSlip ? `
+                        <br><button type="button" class="btn-slip-pill ${isVerified ? 'verified' : 'pending'}" onclick="viewBankSlipModal('${o.orderId}')" title="${isVerified ? 'Bank Transfer Verified' : 'Click to inspect customer bank deposit slip'}">
+                            📎 ${isVerified ? 'Slip Verified' : 'View Slip'}
+                        </button>
+                    ` : ''}
+                </td>
                 <td>
                     <select class="status-selector ${statusClass}" onchange="handleOrderStatusChange('${o.orderId}', this.value)">
                         <option value="Processing Dispatch" ${status === "Processing Dispatch" ? "selected" : ""}>⏳ Processing Dispatch</option>
@@ -565,6 +579,7 @@ function renderOrdersTable() {
                 <td>
                     <div class="table-actions">
                         <button class="btn-tbl-view" onclick="openOrderReceipt('${o.orderId}')" title="View Full Itemized Receipt">📄 Invoice</button>
+                        ${hasSlip ? `<button class="btn-tbl-slip" onclick="viewBankSlipModal('${o.orderId}')" title="Inspect Customer Bank Slip">📎 Slip</button>` : ''}
                         <button class="btn-tbl-delete" onclick="handleDeleteOrder('${o.orderId}')" title="Remove Order">🗑️</button>
                     </div>
                 </td>
@@ -604,6 +619,7 @@ function handleDeleteOrder(orderId) {
 window.handleDeleteOrder = handleDeleteOrder;
 
 function openOrderReceipt(orderId) {
+    activeReceiptOrderId = orderId;
     const orders = getOrdersHistory();
     const order = orders.find(o => o.orderId === orderId);
     if (!order) {
@@ -614,6 +630,10 @@ function openOrderReceipt(orderId) {
     const modalBody = document.getElementById("receiptModalBody");
     if (!modalBody) return;
 
+    const esc = (s) => (typeof window.escapeHtml === "function" ? window.escapeHtml(s) : String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"));
+    const hasSlip = !!(order.bankSlipUrl || order.paymentSlip);
+    const isVerified = !!(order.paymentStatus && order.paymentStatus.includes("Verified"));
+
     modalBody.innerHTML = `
         <div class="receipt-box">
             <div class="receipt-header-row">
@@ -622,32 +642,57 @@ function openOrderReceipt(orderId) {
                     <small>Official Order Receipt / Commercial Invoice</small>
                 </div>
                 <div style="text-align:right;">
-                    <strong style="font-size:1.1rem; color:var(--text-main);">${order.orderId}</strong>
-                    <p style="font-size:0.8rem; color:var(--text-muted);">${order.date}</p>
+                    <strong style="font-size:1.1rem; color:var(--text-main);">${esc(order.orderId)}</strong>
+                    <p style="font-size:0.8rem; color:var(--text-muted);">${esc(order.date)}</p>
                 </div>
             </div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px; font-size:0.88rem;">
                 <div>
                     <strong>Customer Details:</strong>
-                    <p>${order.customerName || 'N/A'}</p>
-                    <p>${order.customerEmail || ''}</p>
-                    <p>Phone: ${order.customerPhone || 'N/A'}</p>
+                    <p>${esc(order.customerName || 'N/A')}</p>
+                    <p>${esc(order.customerEmail || '')}</p>
+                    <p>Phone: ${esc(order.customerPhone || 'N/A')}</p>
                 </div>
                 <div>
                     <strong>Delivery Destination:</strong>
-                    <p>${order.address || 'Sri Lanka'}</p>
-                    <p>City: ${order.city || 'Colombo'}</p>
-                    <p>Payment: <strong>${order.paymentMethod || 'COD'}</strong></p>
+                    <p>${esc(order.address || 'Sri Lanka')}</p>
+                    <p>City: ${esc(order.city || 'Colombo')}</p>
+                    <p>Payment: <strong>${esc(order.paymentMethod || 'COD')}</strong></p>
                 </div>
             </div>
+
+            ${hasSlip ? `
+                <div class="receipt-bank-slip-card" style="margin-bottom:16px; padding:12px 14px; background:rgba(0,180,216,0.08); border:1px solid rgba(0,180,216,0.28); border-radius:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <strong style="color:var(--primary); font-size:0.92rem;"><i class="fas fa-university"></i> Bank Transfer Verification:</strong>
+                        <span class="badge ${isVerified ? 'badge-verified' : 'badge-pending'}" style="padding:4px 10px; font-size:0.75rem; border-radius:12px; font-weight:600; ${isVerified ? 'background:#10b981; color:#fff;' : 'background:#f59e0b; color:#fff;'}">
+                            ${isVerified ? '✓ Slip Verified' : '⏳ Slip Pending Review'}
+                        </span>
+                    </div>
+                    <div style="font-size:0.84rem; display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px; color:var(--text-main);">
+                        <div>Bank: <strong>${esc(order.bankName || 'Direct Transfer')}</strong></div>
+                        <div>Txn / Ref #: <strong>${esc(order.bankRefNumber || 'N/A')}</strong></div>
+                        <div>Depositor: <strong>${esc(order.depositorName || order.customerName || 'N/A')}</strong></div>
+                        <div>Date: <strong>${esc(order.depositDate || order.date || 'N/A')}</strong></div>
+                    </div>
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                        <button type="button" class="btn-tbl-slip" style="padding:6px 14px; font-size:0.82rem; cursor:pointer;" onclick="viewBankSlipModal('${order.orderId}')">📎 Inspect Customer Slip & Zoom</button>
+                        ${!isVerified ? `
+                            <button type="button" class="btn-primary" style="padding:6px 14px; font-size:0.82rem; cursor:pointer;" onclick="handleVerifyBankSlip('${order.orderId}')">✓ Approve & Mark Paid</button>
+                        ` : `
+                            <span style="color:#10b981; font-size:0.82rem; font-weight:600;"><i class="fas fa-check-circle"></i> Payment Proof Verified by Admin</span>
+                        `}
+                    </div>
+                </div>
+            ` : ''}
 
             <div class="receipt-items-list">
                 <strong style="font-size:0.9rem; display:block; margin-bottom:8px;">Purchased Spare Parts:</strong>
                 ${order.items && order.items.length > 0 
                     ? order.items.map(item => `
                         <div class="receipt-item-line">
-                            <span>${item.quantity} × ${item.name}</span>
+                            <span>${item.quantity} × ${esc(item.name)}</span>
                             <strong>Rs. ${formatPrice(item.price * item.quantity)}</strong>
                         </div>
                     `).join("")
@@ -677,7 +722,7 @@ function openOrderReceipt(orderId) {
             </div>
 
             <div style="margin-top:15px; font-size:0.8rem; color:var(--text-muted); border-top:1px dashed var(--border-accent); padding-top:10px;">
-                <p>Status: <strong>${order.status || 'Processing Dispatch'}</strong> | Official Warranty hologram enclosed with parcel.</p>
+                <p>Status: <strong>${esc(order.status || 'Processing Dispatch')}</strong> | Official Warranty hologram enclosed with parcel.</p>
             </div>
         </div>
     `;
@@ -685,6 +730,130 @@ function openOrderReceipt(orderId) {
     openModal("adminOrderReceiptModal");
 }
 window.openOrderReceipt = openOrderReceipt;
+
+function printAdminOrderInvoice() {
+    const orderId = activeReceiptOrderId;
+    if (!orderId) {
+        showAdminToast("Invoice Notice", "Please open an order first to print its invoice.");
+        return;
+    }
+    if (typeof printOrderInvoice === "function") {
+        printOrderInvoice(orderId);
+    } else {
+        window.print();
+    }
+}
+window.printAdminOrderInvoice = printAdminOrderInvoice;
+
+function viewBankSlipModal(orderId) {
+    activeSlipOrderId = orderId;
+    const orders = getOrdersHistory();
+    const order = orders.find(o => o.orderId === orderId);
+    if (!order) {
+        showAdminToast("Error", "Order not found.");
+        return;
+    }
+    const slipUrl = order.bankSlipUrl || order.paymentSlip;
+    if (!slipUrl) {
+        showAdminToast("No Slip Uploaded", "This order does not have an attached customer bank deposit slip.");
+        return;
+    }
+
+    const modalTitle = document.getElementById("bankSlipModalTitle");
+    if (modalTitle) modalTitle.textContent = `Bank Deposit Slip — ${order.orderId}`;
+
+    const body = document.getElementById("bankSlipModalBody");
+    const isVerified = !!(order.paymentStatus && order.paymentStatus.includes("Verified"));
+    const esc = (s) => (typeof window.escapeHtml === "function" ? window.escapeHtml(s) : String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"));
+
+    if (body) {
+        body.innerHTML = `
+            <div class="bank-slip-meta-card" style="background:var(--bg-main); border:1px solid var(--border-subtle); border-radius:8px; padding:12px 16px; margin-bottom:16px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.88rem;">
+                    <div><span style="color:var(--text-muted);">Customer:</span> <strong>${esc(order.customerName || 'N/A')}</strong></div>
+                    <div><span style="color:var(--text-muted);">Order Total:</span> <strong>Rs. ${formatPrice(order.total)}</strong></div>
+                    <div><span style="color:var(--text-muted);">Bank Name:</span> <strong>${esc(order.bankName || 'Direct Bank Deposit')}</strong></div>
+                    <div><span style="color:var(--text-muted);">Txn / Ref #:</span> <strong>${esc(order.bankRefNumber || 'N/A')}</strong></div>
+                    <div><span style="color:var(--text-muted);">Depositor Name:</span> <strong>${esc(order.depositorName || order.customerName || 'N/A')}</strong></div>
+                    <div><span style="color:var(--text-muted);">Deposit Date:</span> <strong>${esc(order.depositDate || order.date || 'N/A')}</strong></div>
+                    <div><span style="color:var(--text-muted);">Uploaded Slip:</span> <strong>${esc(order.bankSlipFileName || 'Customer_Deposit_Slip.jpg')}</strong></div>
+                    <div>
+                        <span style="color:var(--text-muted);">Verification Status:</span> 
+                        <span style="display:inline-block; padding:2px 8px; border-radius:10px; font-size:0.78rem; font-weight:600; ${isVerified ? 'background:#10b981; color:#fff;' : 'background:#f59e0b; color:#fff;'}">
+                            ${isVerified ? '✓ Verified & Approved' : '⏳ Pending Admin Verification'}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slip-viewer-container" style="background:var(--bg-main); border:1px solid var(--border-subtle); border-radius:8px; padding:15px; text-align:center;">
+                <div class="slip-image-frame" style="max-height:480px; overflow:auto; display:flex; justify-content:center; align-items:center; background:#111; border-radius:6px; padding:8px;">
+                    <a href="${slipUrl}" target="_blank" title="Click to view slip full resolution in new tab">
+                        <img src="${slipUrl}" alt="Customer Deposit Receipt" class="slip-full-img" style="max-width:100%; max-height:440px; border-radius:4px; box-shadow:0 4px 15px rgba(0,0,0,0.4); object-fit:contain;" onerror="this.onerror=null; this.src='images/logo.png';">
+                    </a>
+                </div>
+                <p style="font-size:0.8rem; color:var(--text-muted); margin-top:10px; margin-bottom:0;">
+                    <i class="fas fa-search-plus"></i> Click image or open in new tab to inspect fine print, bank stamps, and reference digits.
+                </p>
+            </div>
+        `;
+    }
+
+    // Update download button
+    const downloadBtn = document.getElementById("downloadSlipBtn");
+    if (downloadBtn) {
+        downloadBtn.href = slipUrl;
+        downloadBtn.download = `AutoGenuine_Slip_${order.orderId}.jpg`;
+    }
+
+    // Update approve button
+    const verifyBtn = document.getElementById("verifySlipBtn");
+    if (verifyBtn) {
+        if (isVerified) {
+            verifyBtn.innerHTML = `✓ Slip Already Approved`;
+            verifyBtn.disabled = true;
+            verifyBtn.style.opacity = "0.6";
+            verifyBtn.style.cursor = "not-allowed";
+        } else {
+            verifyBtn.innerHTML = `✓ Approve Slip & Mark as Paid`;
+            verifyBtn.disabled = false;
+            verifyBtn.style.opacity = "1";
+            verifyBtn.style.cursor = "pointer";
+        }
+    }
+
+    openModal("adminBankSlipModal");
+}
+window.viewBankSlipModal = viewBankSlipModal;
+
+function handleVerifyBankSlip(optOrderId) {
+    const orderId = optOrderId || activeSlipOrderId;
+    if (!orderId) {
+        showAdminToast("Error", "No active slip order selected.");
+        return;
+    }
+
+    if (typeof updateOrderPaymentStatus === "function") {
+        updateOrderPaymentStatus(orderId, "Paid (Slip Verified)", "Processing Dispatch");
+    } else {
+        let orders = getOrdersHistory();
+        const order = orders.find(o => o.orderId === orderId);
+        if (order) {
+            order.paymentStatus = "Paid (Slip Verified)";
+            order.status = "Processing Dispatch";
+            localStorage.setItem("autogenuine_orders", JSON.stringify(orders));
+        }
+    }
+
+    showAdminToast("Payment Verified", `Bank slip for order ${orderId} approved! Payment marked as Paid.`);
+    closeModal("adminBankSlipModal");
+    renderOrdersTable();
+    renderOverview();
+    if (activeReceiptOrderId === orderId) {
+        openOrderReceipt(orderId);
+    }
+}
+window.handleVerifyBankSlip = handleVerifyBankSlip;
 
 // ==========================================
 // 6. QUOTATION INQUIRIES MANAGEMENT
@@ -803,39 +972,63 @@ function renderCustomersTable() {
 
     if (query) {
         users = users.filter(u => 
-            u.name.toLowerCase().includes(query) ||
-            u.email.toLowerCase().includes(query) ||
-            (u.phone && u.phone.includes(query))
+            (u.name && u.name.toLowerCase().includes(query)) ||
+            (u.email && u.email.toLowerCase().includes(query)) ||
+            (u.phone && u.phone.includes(query)) ||
+            (u.vehicle && u.vehicle.toLowerCase().includes(query))
         );
     }
 
     const countIndicator = document.getElementById("customerCountIndicator");
     if (countIndicator) countIndicator.textContent = `Total Registered: ${users.length}`;
 
+    if (users.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:30px; color:var(--text-muted);">No registered customer accounts found.</td></tr>`;
+        return;
+    }
+
+    const esc = (s) => (typeof window.escapeHtml === "function" ? window.escapeHtml(s) : String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"));
+
     tableBody.innerHTML = users.map(u => {
-        const userOrdersCount = orders.filter(o => o.customerEmail?.toLowerCase() === u.email.toLowerCase()).length;
-        const isAdmin = u.role === "admin";
+        const userOrdersCount = orders.filter(o => o.customerEmail?.toLowerCase() === u.email?.toLowerCase()).length;
+        const isAdmin = u.role === "admin" || u.email?.toLowerCase() === 'admin@autogenuine.lk';
+        const isActive = u.isActive !== false;
 
         return `
             <tr>
                 <td>
                     <div style="display:flex; align-items:center; gap:10px;">
                         <span style="width:32px; height:32px; background:${isAdmin ? 'var(--primary)' : 'var(--bg-input)'}; color:${isAdmin ? '#fff' : 'var(--text-main)'}; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem;">
-                            ${u.name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2)}
+                            ${(u.name || 'U').split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2)}
                         </span>
-                        <strong>${u.name}</strong>
+                        <strong>${esc(u.name || 'Customer')}</strong>
                     </div>
                 </td>
-                <td><code>${u.email}</code></td>
-                <td>${u.phone || '077 123 4567'}</td>
-                <td>🚗 ${u.vehicle || 'Standard Vehicle'}</td>
+                <td><code>${esc(u.email)}</code></td>
+                <td>${esc(u.phone || '077 123 4567')}</td>
+                <td>🚗 ${esc(u.vehicle || u.registered_vehicle || 'Standard Vehicle')}</td>
                 <td>
                     <span class="stock-pill ${isAdmin ? 'low' : 'good'}">
                         ${isAdmin ? '🛡️ Administrator' : 'Customer'}
                     </span>
                 </td>
-                <td><small>${u.registeredAt || 'Active'}</small></td>
+                <td>
+                    <span class="stock-pill ${isActive ? 'good' : 'out'}" style="cursor:pointer;" onclick="handleToggleCustomerStatus('${u.email}')" title="Click to toggle status">
+                        ${isActive ? '● Active' : '✕ Suspended'}
+                    </span>
+                </td>
+                <td><small>${esc(u.registeredAt || 'Active')}</small></td>
                 <td><strong>${userOrdersCount} Order(s)</strong></td>
+                <td>
+                    <div class="table-actions">
+                        <button type="button" class="btn-tbl-view" onclick="handleToggleCustomerStatus('${u.email}')" title="${isActive ? 'Suspend User' : 'Activate User'}">
+                            ${isActive ? '🔒 Suspend' : '🔓 Activate'}
+                        </button>
+                        <button type="button" class="btn-tbl-delete" onclick="handleDeleteCustomer('${u.email}')" title="${isAdmin ? 'Primary admin cannot be deleted' : 'Delete User Account'}" ${isAdmin ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>
+                            🗑️
+                        </button>
+                    </div>
+                </td>
             </tr>
         `;
     }).join("");
@@ -845,6 +1038,84 @@ function filterAdminCustomers() {
     renderCustomersTable();
 }
 window.filterAdminCustomers = filterAdminCustomers;
+
+function openAddCustomerModal() {
+    const form = document.getElementById("adminCustomerForm");
+    if (form) form.reset();
+    openModal("adminCustomerModal");
+}
+window.openAddCustomerModal = openAddCustomerModal;
+
+async function handleSaveCustomer(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const name = document.getElementById("custFormName")?.value?.trim();
+    const email = document.getElementById("custFormEmail")?.value?.trim().toLowerCase();
+    const phone = document.getElementById("custFormPhone")?.value?.trim();
+    const role = document.getElementById("custFormRole")?.value || "customer";
+    const vehicle = document.getElementById("custFormVehicle")?.value?.trim() || "Standard Vehicle";
+    const password = document.getElementById("custFormPassword")?.value?.trim() || "123456";
+
+    if (!name || !email) {
+        alert("Name and email are required.");
+        return;
+    }
+
+    if (typeof adminCreateUserAccount === "function") {
+        const res = await adminCreateUserAccount({ name, email, phone, role, vehicle, password });
+        if (res.success) {
+            showAdminToast("Account Created", res.message);
+            closeModal("adminCustomerModal");
+            renderCustomersTable();
+            renderOverview();
+        } else {
+            alert(res.message);
+        }
+    } else {
+        alert("adminCreateUserAccount helper is not defined.");
+    }
+}
+window.handleSaveCustomer = handleSaveCustomer;
+
+async function handleDeleteCustomer(email) {
+    if (!email) return;
+    if (email.toLowerCase() === "admin@autogenuine.lk") {
+        alert("Security Protection: The primary administrator account cannot be deleted.");
+        return;
+    }
+
+    if (confirm(`Are you sure you want to delete user account "${email}"? This will revoke their access to AutoGenuine.`)) {
+        if (typeof deleteUserAccount === "function") {
+            const res = await deleteUserAccount(email);
+            if (res.success) {
+                showAdminToast("Account Removed", res.message);
+                renderCustomersTable();
+                renderOverview();
+            } else {
+                alert(res.message);
+            }
+        }
+    }
+}
+window.handleDeleteCustomer = handleDeleteCustomer;
+
+async function handleToggleCustomerStatus(email) {
+    if (!email) return;
+    if (email.toLowerCase() === "admin@autogenuine.lk") {
+        alert("The primary administrator cannot be suspended.");
+        return;
+    }
+
+    if (typeof toggleUserAccountStatus === "function") {
+        const res = await toggleUserAccountStatus(email);
+        if (res.success) {
+            showAdminToast("Status Changed", res.message);
+            renderCustomersTable();
+        } else {
+            alert(res.message);
+        }
+    }
+}
+window.handleToggleCustomerStatus = handleToggleCustomerStatus;
 
 // ==========================================
 // 8. PROMO COUPONS MANAGEMENT
@@ -933,7 +1204,7 @@ window.handleDeleteCoupon = handleDeleteCoupon;
 // 9. SYSTEM RESET CATALOG
 // ==========================================
 function confirmResetCatalog() {
-    if (confirm("Reset catalog to the default 9 genuine spare parts? Any added custom test parts will be removed and initial catalogue restored.")) {
+    if (confirm("Reset catalog to the default 24 genuine spare parts? Any added custom test parts will be removed and initial catalogue restored.")) {
         const res = resetCatalogToDefault();
         showAdminToast("Catalog Reset", res.message);
         renderProductsTable();
@@ -1007,3 +1278,4 @@ function escapeQuotes(str) {
     if (!str) return "";
     return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 }
+

@@ -38,7 +38,7 @@ function renderWishlist() {
         <article class="wishlist-card" data-id="${item.id}">
             <button class="btn-remove-wishlist" onclick="handleRemoveWishlistItem('${item.id}')" title="Remove from wishlist" aria-label="Remove">✕</button>
             <div class="wishlist-img-box" onclick="window.location.href='product-details.html?id=${item.id}'">
-                <img src="${item.mainImage}" alt="${item.name}">
+                <img src="${item.mainImage}" alt="${item.name}" onerror="this.onerror=null; this.src='images/brake-pad.jpg';">
             </div>
             <div class="wishlist-info">
                 <span class="wishlist-cat">${item.category}</span>
@@ -116,9 +116,17 @@ function switchAccountTab(tabName) {
 
     const target = document.getElementById(
         tabName === "login" ? "accountLoginTab" :
-        tabName === "register" ? "accountRegisterTab" : "accountProfileTab"
+        tabName === "register" ? "accountRegisterTab" :
+        tabName === "reset" ? "accountResetTab" : "accountProfileTab"
     );
     if (target) target.classList.add("active");
+
+    const modalTitle = document.getElementById("accountModalTitle");
+    if (modalTitle) {
+        modalTitle.textContent = tabName === "login" ? "Sign In to Account" :
+                                 tabName === "register" ? "Create Free Account" :
+                                 tabName === "reset" ? "Reset Account Password" : "My Profile & Orders";
+    }
 
     if (tabName === "profile" && user) {
         populateUserProfile(user);
@@ -130,15 +138,17 @@ function populateUserProfile(user) {
     const emailEl = document.getElementById("profileEmail");
     const avatarEl = document.getElementById("profileAvatar");
     const vehicleEl = document.getElementById("profileVehicle");
+    const addressEl = document.getElementById("profileAddress");
     const ordersList = document.getElementById("ordersListContainer");
 
-    if (nameEl) nameEl.textContent = user.name;
+    if (nameEl) nameEl.textContent = user.name || user.full_name || "Customer";
     if (emailEl) emailEl.innerHTML = `${user.email} • <span>${user.phone || ''}</span>`;
     if (avatarEl) {
-        const initials = user.name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
+        const initials = (user.name || "U").split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
         avatarEl.textContent = initials || "U";
     }
-    if (vehicleEl) vehicleEl.textContent = `🚗 ${user.vehicle || 'Standard Vehicle'}`;
+    if (vehicleEl) vehicleEl.textContent = `🚗 ${user.vehicle || user.registered_vehicle || 'Standard Vehicle'}`;
+    if (addressEl) addressEl.textContent = user.address ? `📍 ${user.address}` : "";
 
     // Admin Shortcut Box
     const adminBox = document.getElementById("profileAdminBox");
@@ -366,8 +376,9 @@ function appendChatMessage(htmlText, sender = "user") {
 
     const div = document.createElement("div");
     div.className = `chat-bubble ${sender === 'user' ? 'user-msg' : 'bot-msg'}`;
+    const safeContent = sender === 'user' ? (window.escapeHtml ? window.escapeHtml(htmlText) : htmlText) : htmlText;
     div.innerHTML = `
-        <p>${htmlText}</p>
+        <p>${safeContent}</p>
         <span class="chat-time">Just now</span>
     `;
     list.appendChild(div);

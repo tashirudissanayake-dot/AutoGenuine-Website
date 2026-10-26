@@ -430,6 +430,7 @@
                 </div>
             </div>
 
+
             <div class="form-group">
                 <label for="custNotes">Vehicle Model / Notes (Optional)</label>
                 <input type="text" id="custNotes" placeholder="e.g. Toyota Premio NZT260, 2015 model">
@@ -493,6 +494,7 @@
         <div class="account-tabs-nav" id="accountTabsNav">
             <button class="account-tab-btn active" data-tab="login" onclick="switchAccountTab('login')">Sign In</button>
             <button class="account-tab-btn" data-tab="register" onclick="switchAccountTab('register')">Register</button>
+            <button class="account-tab-btn" data-tab="reset" id="resetTabBtn" onclick="switchAccountTab('reset')">Reset Password</button>
             <button class="account-tab-btn" data-tab="profile" id="profileTabBtn" style="display: none;" onclick="switchAccountTab('profile')">My Profile & Orders</button>
         </div>
 
@@ -506,6 +508,9 @@
                 <div class="form-group">
                     <label>Password *</label>
                     <input type="password" id="loginPassword" placeholder="••••••••" required value="123">
+                </div>
+                <div style="display:flex; justify-content:flex-end; margin-top:-6px; margin-bottom:12px;">
+                    <a href="javascript:void(0)" onclick="switchAccountTab('reset')" style="color:var(--primary); font-size:0.82rem; text-decoration:none; font-weight:600;"><i class="fas fa-key"></i> Forgot Password?</a>
                 </div>
                 <button type="submit" class="btn-checkout">Sign In to Account →</button>
                 <div class="demo-login-hint">
@@ -542,15 +547,75 @@
             </form>
         </div>
 
+        <!-- RESET PASSWORD TAB -->
+        <div class="account-tab-content" id="accountResetTab">
+            <form id="resetPasswordForm" onsubmit="handleUserPasswordReset(event)">
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;">
+                    Enter your registered email to set a new account password.
+                </p>
+                <div class="form-group">
+                    <label>Registered Email Address *</label>
+                    <input type="email" id="resetEmail" placeholder="e.g. kasun@gmail.com" required>
+                </div>
+                <div class="form-group">
+                    <label>New Password *</label>
+                    <input type="password" id="resetNewPassword" placeholder="Minimum 3 characters" required minlength="3">
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Password *</label>
+                    <input type="password" id="resetConfirmPassword" placeholder="Repeat new password" required minlength="3">
+                </div>
+                <button type="submit" class="btn-checkout">Reset & Save Password →</button>
+                <div style="text-align:center; margin-top:12px;">
+                    <a href="javascript:void(0)" onclick="switchAccountTab('login')" style="color:var(--primary); font-size:0.84rem; text-decoration:none;">← Back to Sign In</a>
+                </div>
+            </form>
+        </div>
+
         <!-- PROFILE & ORDERS TAB -->
         <div class="account-tab-content" id="accountProfileTab">
-            <div class="profile-header-box">
-                <div class="profile-avatar-circle" id="profileAvatar">KD</div>
-                <div>
-                    <h4 id="profileName">Kasun Dharmasena</h4>
-                    <p id="profileEmail">kasun@gmail.com • <span id="profilePhone">077 123 4567</span></p>
-                    <div class="profile-vehicle-badge" id="profileVehicle">🚗 Toyota Premio NZT260</div>
+            <div class="profile-header-box" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div class="profile-avatar-circle" id="profileAvatar"></div>
+                    <div>
+                        <h4 id="profileName" style="margin:0;">Loading...</h4>
+                        <p id="profileEmail" style="margin:3px 0 0 0;"> • <span id="profilePhone"></span></p>
+                        <div class="profile-vehicle-badge" id="profileVehicle" style="margin-top:4px;">🚗</div>
+                        <p id="profileAddress" style="margin:4px 0 0 0; font-size:0.8rem; color:var(--text-muted);"></p>
+                    </div>
                 </div>
+                <button type="button" class="btn-secondary" id="toggleEditProfileBtn" onclick="toggleEditProfileForm()" style="padding:6px 12px; font-size:0.82rem; cursor:pointer;">
+                    ✏️ Edit Profile
+                </button>
+            </div>
+
+            <!-- INLINE EDIT PROFILE FORM -->
+            <div id="editProfileSection" style="display:none; margin:15px 0; padding:15px; background:var(--bg-main); border:1px solid var(--border-subtle); border-radius:8px;">
+                <h4 style="margin-top:0; margin-bottom:12px; font-size:0.95rem; color:var(--text-main);">
+                    ✏️ Update Profile Information
+                </h4>
+                <form id="userProfileUpdateForm" onsubmit="handleUserProfileUpdate(event)">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="editProfileName" placeholder="Your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" id="editProfilePhone" placeholder="077 123 4567" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Registered Vehicle Make & Model</label>
+                        <input type="text" id="editProfileVehicle" placeholder="e.g. Toyota Premio NZT260">
+                    </div>
+                    <div class="form-group">
+                        <label>Default Delivery Address</label>
+                        <input type="text" id="editProfileAddress" placeholder="e.g. No. 45, Temple Road, Colombo">
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button type="submit" class="btn-checkout" style="flex:1; margin-top:0; padding:10px;">Save Profile Changes</button>
+                        <button type="button" class="btn-checkout" onclick="toggleEditProfileForm(false)" style="background:var(--border-subtle); color:var(--text-main); margin-top:0; padding:10px;">Cancel</button>
+                    </div>
+                </form>
             </div>
 
             <!-- Admin Shortcut Card if user is Admin -->
@@ -676,15 +741,6 @@
             <input type="text" id="chatInput" placeholder="Type part name, chassis no, or question..." required>
             <button type="submit" aria-label="Send message">➔</button>
         </form>
-    </div>
-</div>
-
-<!-- TOAST NOTIFICATION -->
-<div class="toast-notification" id="toastNotification">
-    <div class="toast-icon">✓</div>
-    <div class="toast-content">
-        <strong id="toastTitle">Notification</strong>
-        <p id="toastMessage">Action completed successfully.</p>
     </div>
 </div>
 

@@ -312,8 +312,8 @@ Directional cooling vanes ensure rapid airflow through the rotor core, significa
         brand: "Denso CleanAir Genuine",
         warranty: "1 Year / 15,000 km Service Life",
         origin: "Japan / South Korea",
-        mainImage: "images/filter.jpg",
-        gallery: ["images/filter.jpg"],
+        mainImage: "images/cabin-filter.jpg",
+        gallery: ["images/cabin-filter.jpg"],
         shortDescription: "Multi-stage activated carbon air conditioning cabin filter that eliminates odors, exhausts fumes, dust, PM2.5 particles, and allergens from entering your vehicle cabin.",
         fullDescription: `Protect yourself and your passengers from road fumes, traffic smoke, pollen, and airborne bacteria with the AutoGenuine Activated Carbon Cabin Air Filter. 
         
@@ -367,8 +367,8 @@ Features a triple-layer micro-pleated structure containing pure coconut shell ac
         brand: "Amaron Pro Hi-Life",
         warranty: "36 Months Comprehensive Warranty",
         origin: "India (Johnson Controls & Amara Raja)",
-        mainImage: "images/battery.jpg",
-        gallery: ["images/battery.jpg"],
+        mainImage: "images/amaron-battery.jpg",
+        gallery: ["images/amaron-battery.jpg"],
         shortDescription: "Ultra long-lasting premium automotive battery with patented Silven-X alloy plates for supreme heat tolerance, high cranking amps, and zero maintenance life.",
         fullDescription: `The Amaron Pro 70Ah Hi-Life Battery is engineered with Johnson Controls' patented Silven-X alloy technology. Provides highest heat resistance and extreme vibration durability specially tailored for Sri Lankan tropical road and weather conditions.
         
@@ -422,8 +422,8 @@ High reserve capacity and 580 CCA output ensure reliable starting even with high
         brand: "Gates / Aisin Japan Genuine",
         warranty: "2 Years / 100,000 km Warranty",
         origin: "Japan / USA",
-        mainImage: "images/engine.jpg",
-        gallery: ["images/engine.jpg"],
+        mainImage: "images/timing-belt-kit.jpg",
+        gallery: ["images/timing-belt-kit.jpg"],
         shortDescription: "Complete OEM engine overhaul timing kit including high-strength aramid timing belt, tensioner pulley, idler bearings, and heavy-duty water pump with gasket.",
         fullDescription: `Ensure total engine reliability and avoid catastrophic valve-to-piston contact with the AutoGenuine Complete Timing Belt & Water Pump Overhaul Kit.
         
@@ -477,8 +477,8 @@ Constructed with heat-resistant HNBR rubber and aramid tensile cords, the timing
         brand: "Philips / Osram Pro LED",
         warranty: "2 Years Replacement Warranty",
         origin: "Germany / Taiwan",
-        mainImage: "images/lights.jpg",
-        gallery: ["images/lights.jpg"],
+        mainImage: "images/led-headlight.jpg",
+        gallery: ["images/led-headlight.jpg"],
         shortDescription: "Ultra-bright 6000K pure white automotive LED headlight conversion kit producing 12,000 lumens with razor-sharp beam cutoff and 12,000 RPM turbo cooling fan.",
         fullDescription: `Upgrade your nighttime driving vision with the AutoGenuine Super White High-Power LED Headlight Conversion Kit. Generating over 300% more road illumination than standard halogen bulbs, this kit provides a crisp 6000K diamond white beam.
         
@@ -516,6 +516,798 @@ Precision beam engineering ensures zero glare to oncoming traffic, while aircraf
                 comment: "Replaced dull yellow halogen bulbs on my Axio. The light output is bright, clean white with a sharp cutoff line that doesn't blind oncoming cars. Plug and play in 5 mins."
             }
         ]
+    },
+    {
+        id: "ngk-iridium-spark-plugs",
+        name: "NGK Laser Iridium Spark Plugs Set (4 Pcs)",
+        category: "Engine Parts",
+        categorySlug: "engine-parts",
+        price: 8500.00,
+        originalPrice: 10500.00,
+        discountPercent: 19,
+        rating: 4.9,
+        reviewsCount: 28,
+        inStock: true,
+        stockCount: 22,
+        sku: "AG-ENG-5101",
+        oemNumber: "ILKAR7B11 / 90919-01253",
+        brand: "NGK Spark Plug Japan",
+        warranty: "1 Year / 60,000 km Warranty",
+        origin: "Nagoya, Japan",
+        mainImage: "images/spark-plugs.jpg",
+        gallery: ["images/spark-plugs.jpg"],
+        shortDescription: "Original Japanese laser welded fine-wire iridium spark plugs delivering rapid cold starts, superior throttle response, and maximum fuel efficiency.",
+        fullDescription: `NGK Laser Iridium spark plugs provide superior ignitability and long service life. The ultra-fine 0.6mm iridium center electrode ensures high durability and a consistently stable spark under all driving conditions.
+        
+Trivalent metal plating provides superior anti-corrosion and anti-seizing properties, crucial for high humidity environments like Sri Lanka.`,
+        features: [
+            "Laser welded 0.6mm fine-wire Iridium center electrode",
+            "Platinum disc welded to backside of ground electrode for long life",
+            "Faster starts, smooth idling and quicker throttle acceleration",
+            "Trivalent metal plating for anti-corrosion and anti-seize",
+            "Pre-gapped to strict factory specifications"
+        ],
+        specs: {
+            "Electrode Material": "Laser Iridium & Platinum",
+            "Thread Diameter": "12 mm",
+            "Thread Pitch": "1.25 mm",
+            "Reach": "26.5 mm",
+            "Hex Size": "14 mm",
+            "Heat Range": "7",
+            "Package Contents": "Set of 4 Spark Plugs (Retail Box)",
+            "Country of Origin": "Japan"
+        },
+        compatibility: [
+            { make: "Toyota", model: "Premio / Allion (NZT260, ZRT260, ZRT265)", years: "2007 - 2021", engine: "1.5L 1NZ-FE / 1.8L 2ZR-FAE" },
+            { make: "Toyota", model: "Corolla Axio / Fielder (NKE165 Hybrid, NZE161)", years: "2012 - 2023", engine: "1.5L 1NZ-FXE / 1NZ-FE" },
+            { make: "Toyota", model: "Aqua / Prius c (NHP10)", years: "2011 - 2021", engine: "1.5L Hybrid (1NZ-FXE)" },
+            { make: "Honda", model: "Fit / Vezel / Grace (GP5, RU3, GM4)", years: "2013 - 2020", engine: "1.5L i-VTEC (LEB)" }
+        ],
+        reviews: [
+            {
+                author: "Danushka Bandara",
+                avatar: "DB",
+                location: "Kandy",
+                rating: 5,
+                date: "1 week ago",
+                title: "Engine runs silky smooth now",
+                comment: "Installed on my Premio NZT260. The minor shudder at traffic lights disappeared completely and fuel economy went from 12.8 km/l to 14.5 km/l in city traffic. 100% authentic NGK plugs."
+            }
+        ]
+    },
+    {
+        id: "toyota-hydraulic-engine-mount",
+        name: "Toyota Genuine Hydraulic Engine Mount (RH)",
+        category: "Engine Parts",
+        categorySlug: "engine-parts",
+        price: 16500.00,
+        originalPrice: 19800.00,
+        discountPercent: 17,
+        rating: 4.8,
+        reviewsCount: 15,
+        inStock: true,
+        stockCount: 9,
+        sku: "AG-ENG-5102",
+        oemNumber: "12305-21220 / 12305-0M060",
+        brand: "Toyota Genuine Parts",
+        warranty: "2 Years / 50,000 km Warranty",
+        origin: "Toyota City, Japan",
+        mainImage: "images/engine-mount.jpg",
+        gallery: ["images/engine-mount.jpg"],
+        shortDescription: "Factory OEM fluid-filled right side engine motor mount designed to eliminate cabin vibration, gear shudder, and engine rocking under acceleration.",
+        fullDescription: `A worn engine mount creates intense dashboard vibrations, engine knocking during gear engagement, and harsh cabin noise. The AutoGenuine Toyota OEM Hydraulic Motor Mount is filled with specially formulated hydraulic damping fluid to absorb natural engine harmonics.
+        
+Manufactured with reinforced aluminum casting and genuine high-grade Japanese natural rubber compound for maximum fatigue resistance.`,
+        features: [
+            "Genuine OEM fluid-filled hydraulic damping chamber",
+            "Eliminates dashboard vibrations, idle shudder and steering wheel buzz",
+            "Reinforced high-tensile cast aluminum bracket",
+            "Natural rubber compound resistant to engine oil and heat degradation",
+            "Direct bolt-on replacement for factory mount"
+        ],
+        specs: {
+            "Position": "Right Hand / Front Upper",
+            "Damping Type": "Hydraulic Liquid Filled",
+            "Bracket Material": "Cast Aluminum Alloy",
+            "Weight": "1.85 kg",
+            "Package Contents": "1x Assembled Hydraulic Engine Mount",
+            "Country of Origin": "Japan"
+        },
+        compatibility: [
+            { make: "Toyota", model: "Premio (NZT260, ZRT260)", years: "2007 - 2021", engine: "1NZ-FE (1.5L) / 2ZR-FE (1.8L)" },
+            { make: "Toyota", model: "Allion (NZT260, ZRT260)", years: "2007 - 2021", engine: "1NZ-FE (1.5L) / 2ZR-FE (1.8L)" },
+            { make: "Toyota", model: "Corolla Axio / Fielder (NZE141, NZE144)", years: "2006 - 2012", engine: "1NZ-FE (1.5L)" },
+            { make: "Toyota", model: "Corolla Axio (NZE161)", years: "2012 - 2020", engine: "1NZ-FE (1.5L)" }
+        ],
+        reviews: [
+            {
+                author: "Sanjeewa Perera",
+                avatar: "SP",
+                location: "Gampaha",
+                rating: 5,
+                date: "2 weeks ago",
+                title: "Cabin is dead quiet again",
+                comment: "My 2012 Premio had a terrible vibration in 'Drive' at red lights. Replaced with this hydraulic mount and it feels like a brand new car again. Genuine Toyota part with hologram sticker."
+            }
+        ]
+    },
+    {
+        id: "bando-serpentine-belt",
+        name: "Bando Heavy Duty 6PK Serpentine Alternator Belt",
+        category: "Engine Parts",
+        categorySlug: "engine-parts",
+        price: 3800.00,
+        originalPrice: 4800.00,
+        discountPercent: 21,
+        rating: 4.9,
+        reviewsCount: 34,
+        inStock: true,
+        stockCount: 30,
+        sku: "AG-ENG-5103",
+        oemNumber: "6PK1230 / 90916-02600",
+        brand: "Bando Chemical Japan",
+        warranty: "2 Years / 50,000 km Warranty",
+        origin: "Kobe, Japan",
+        mainImage: "images/serpentine-belt.jpg",
+        gallery: ["images/serpentine-belt.jpg"],
+        shortDescription: "OEM supplier EPDM ribbed serpentine fan & alternator drive belt engineered to resist high thermal cracking, stretching, and belt squeal.",
+        fullDescription: `Bando is the official factory OEM belt supplier to Toyota, Honda, and Nissan. This high-grade EPDM serpentine belt features precision molded ribs and high-modulus polyester cords to ensure zero slip and maintenance-free operation across high engine RPM ranges.`,
+        features: [
+            "Heat and ozone-resistant synthetic EPDM rubber construction",
+            "Aramid fiber reinforced tensile cords for zero stretch",
+            "Eliminates annoying belt squeal upon AC compressor activation",
+            "Precision ground rib profile for exact pulley grip",
+            "Tested for over 100,000 km durability"
+        ],
+        specs: {
+            "Belt Type": "Multi-Ribbed Serpentine V-Belt",
+            "Rib Count": "6 Ribs (6PK)",
+            "Effective Length": "1230 mm",
+            "Material": "EPDM Heat Resistant Synthetic Rubber",
+            "Country of Origin": "Japan"
+        },
+        compatibility: [
+            { make: "Toyota", model: "Corolla Axio / Fielder (NZE141, NZE161)", years: "2006 - 2022", engine: "1NZ-FE (1.5L)" },
+            { make: "Toyota", model: "Premio / Allion (NZT260)", years: "2007 - 2021", engine: "1NZ-FE (1.5L)" },
+            { make: "Toyota", model: "Yaris / Vitz (NCP91, NSP130)", years: "2006 - 2020", engine: "1NZ-FE / 1NR-FE" },
+            { make: "Honda", model: "Fit (GE6, GE8)", years: "2008 - 2013", engine: "1.3L / 1.5L" }
+        ],
+        reviews: [
+            {
+                author: "Charith Wijesinghe",
+                avatar: "CW",
+                location: "Kurunegala",
+                rating: 5,
+                date: "3 weeks ago",
+                title: "Fixed morning belt squeal",
+                comment: "Had an awful squeak on wet mornings when the AC switched on. Mechanic fitted this Bando 6PK1230 belt and it runs completely silent. Excellent quality Japanese belt."
+            }
+        ]
+    },
+    {
+        id: "denso-fuel-pump-module",
+        name: "Denso Electric In-Tank Fuel Pump Assembly",
+        category: "Engine Parts",
+        categorySlug: "engine-parts",
+        price: 14200.00,
+        originalPrice: 17500.00,
+        discountPercent: 19,
+        rating: 4.8,
+        reviewsCount: 19,
+        inStock: true,
+        stockCount: 12,
+        sku: "AG-ENG-5104",
+        oemNumber: "23220-21132 / 195130-7050",
+        brand: "Denso Japan Genuine",
+        warranty: "2 Years Stamped Warranty",
+        origin: "Kariya, Japan",
+        mainImage: "images/fuel-pump.jpg",
+        gallery: ["images/fuel-pump.jpg"],
+        shortDescription: "Genuine Japanese high-pressure in-tank electronic turbine fuel pump delivering stable 3.5 bar fuel rail pressure and ultra-low noise operation.",
+        fullDescription: `Denso's turbine fuel pump technology utilizes a low-pulsation impeller that operates quietly and delivers consistent fuel flow to your EFI injectors. Features hard-anodized motor housing to resist ethanol blends and fuel contaminants. Includes new fuel strainer tea bag filter and rubber connector grommet.`,
+        features: [
+            "Ultra-quiet precision balanced turbine impeller design",
+            "Delivers constant 3.5 - 3.8 bar fuel rail pressure",
+            "Includes pre-filter strainer and rubber isolator grommet",
+            "Treated copper commutator and carbon brushes for long life",
+            "Direct OEM plug fitment with zero wiring modification"
+        ],
+        specs: {
+            "Pump Technology": "Turbine Electric In-Tank",
+            "Operating Pressure": "3.5 - 4.2 Bar (50 - 60 PSI)",
+            "Flow Rate": "95 - 110 Liters/Hour",
+            "Operating Voltage": "12V DC",
+            "Package Contents": "1x Denso Fuel Pump, 1x Suction Strainer, 1x Wiring Harness Plug",
+            "Country of Origin": "Japan"
+        },
+        compatibility: [
+            { make: "Toyota", model: "Corolla / Axio / Premio / Allion / Vitz / Aqua", years: "2004 - 2021", engine: "1.0L, 1.3L, 1.5L, 1.8L EFI" },
+            { make: "Honda", model: "Civic / Fit / City / Jazz", years: "2006 - 2020", engine: "1.3L, 1.5L, 1.8L" },
+            { make: "Suzuki", model: "Swift / SX4 / Wagon R / Alto", years: "2006 - 2020", engine: "K10B, K12B, M15A" }
+        ],
+        reviews: [
+            {
+                author: "Roshan Fernando",
+                avatar: "RF",
+                location: "Negombo",
+                rating: 5,
+                date: "1 month ago",
+                title: "Engine starts instantly on first crank",
+                comment: "My car had long cranking issues after standing for a few hours. Replaced the old tired fuel pump with this Denso unit and it now fires up immediately on half a turn of the key."
+            }
+        ]
+    },
+    {
+        id: "rear-brake-shoe-set",
+        name: "Advics Rear Brake Drum Shoe Set Pair",
+        category: "Brake Parts",
+        categorySlug: "brake-parts",
+        price: 4200.00,
+        originalPrice: 5200.00,
+        discountPercent: 19,
+        rating: 4.8,
+        reviewsCount: 16,
+        inStock: true,
+        stockCount: 20,
+        sku: "AG-BRK-4093",
+        oemNumber: "04495-52040 / 04495-52090",
+        brand: "Advics / Aisin Japan",
+        warranty: "2 Years / 40,000 km Warranty",
+        origin: "Japan",
+        mainImage: "images/brake-shoes.jpg",
+        gallery: ["images/brake-shoes.jpg"],
+        shortDescription: "High-friction rear brake drum shoe set providing rock-solid parking brake hold on steep hill starts and smooth, balanced deceleration.",
+        fullDescription: `Advics rear brake shoes are engineered using high-shear bonded friction linings that match the exact curve of OEM brake drums. Provides instant handbrake engagement and balanced 30/70 rear braking ratio to prevent vehicle nose dive during emergency stopping.`,
+        features: [
+            "Non-asbestos organic friction lining for long drum life",
+            "Radius ground for immediate contact without lengthy break-in",
+            "Anti-rust black e-coated steel backing shoes",
+            "Exceptional handbrake hold on steep hill inclines",
+            "Includes 4 shoes for both left and right rear drums"
+        ],
+        specs: {
+            "Position": "Rear Axle (Left & Right Drum)",
+            "Drum Diameter": "200 mm",
+            "Shoe Width": "32 mm",
+            "Package Contents": "4 Rear Brake Shoes (Complete Axle Set)",
+            "Country of Origin": "Japan"
+        },
+        compatibility: [
+            { make: "Toyota", model: "Vitz / Yaris (KSP90, KSP130, NCP91, NSP130)", years: "2005 - 2021", engine: "1.0L, 1.3L, 1.5L" },
+            { make: "Toyota", model: "Aqua / Prius c (NHP10)", years: "2011 - 2021", engine: "1.5L Hybrid" },
+            { make: "Toyota", model: "Belta / Passo / Raum", years: "2006 - 2016", engine: "1.0L, 1.3L" },
+            { make: "Suzuki", model: "Wagon R (MH34S, MH44S, FX, FZ)", years: "2012 - 2018", engine: "660cc Mild Hybrid" }
+        ],
+        reviews: [
+            {
+                author: "Kavinda Dissanayake",
+                avatar: "KD",
+                location: "Maharagama",
+                rating: 5,
+                date: "2 weeks ago",
+                title: "Handbrake holds perfectly on hills",
+                comment: "Passed the vehicle inspection test easily. Handbrake clicks 4 times and holds firmly on steep Colombo flyovers and slopes. Advics quality is unbeatable."
+            }
+        ]
+    },
+    {
+        id: "bosch-brake-fluid-dot4",
+        name: "Bosch DOT 4 High-Performance Synthetic Brake Fluid (1L)",
+        category: "Brake Parts",
+        categorySlug: "brake-parts",
+        price: 2600.00,
+        originalPrice: 3200.00,
+        discountPercent: 19,
+        rating: 4.9,
+        reviewsCount: 42,
+        inStock: true,
+        stockCount: 35,
+        sku: "AG-BRK-4094",
+        oemNumber: "1987476036 / DOT4-HP",
+        brand: "Bosch Automotive Germany",
+        warranty: "Guaranteed 100% Genuine Sealed Bottle",
+        origin: "Germany",
+        mainImage: "images/brake-fluid.jpg",
+        gallery: ["images/brake-fluid.jpg"],
+        shortDescription: "Premium synthetic glycol-ether brake and hydraulic clutch fluid with 265°C high dry boiling point to prevent brake fade and pedal sponginess.",
+        fullDescription: `Bosch DOT 4 High Performance Brake Fluid protects critical ABS valves, master cylinders, and caliper seals against internal corrosion and moisture contamination. Formulated for optimum viscosity down to low temps and ultra-high vapor resistance under heavy mountain descent braking.`,
+        features: [
+            "Ultra-high dry boiling point of 265°C (509°F)",
+            "High wet boiling point of 165°C prevents vapor lock",
+            "Compatible with all ABS, ESP, and conventional hydraulic brake systems",
+            "Formulated with anti-corrosion additives to protect zinc, copper and steel lines",
+            "Factory sealed 1 Liter metal/plastic container"
+        ],
+        specs: {
+            "Specification": "DOT 4 / SAE J1704 / ISO 4925 Class 4",
+            "Dry Boiling Point": "265°C (509°F)",
+            "Wet Boiling Point": "165°C (329°F)",
+            "Volume": "1.0 Liter (1000 ml)",
+            "Country of Origin": "Germany"
+        },
+        compatibility: [
+            { make: "Universal", model: "All Hydraulic Braking & Clutch Systems (Toyota, Honda, Nissan, Suzuki, Mazda, BMW, Benz)", years: "1995 - 2026", engine: "All Petrol, Diesel & Hybrid Vehicles" }
+        ],
+        reviews: [
+            {
+                author: "Anura Senaviratne",
+                avatar: "AS",
+                location: "Nuwara Eliya",
+                rating: 5,
+                date: "3 weeks ago",
+                title: "Crucial for hill country driving",
+                comment: "Flushed the old brake fluid on my Vezel with Bosch DOT 4 before a Nuwara Eliya trip. Pedal remained rock hard and responsive even after long downhill descents. Genuine sealed bottle."
+            }
+        ]
+    },
+    {
+        id: "abs-wheel-speed-sensor",
+        name: "Front Wheel ABS Speed Sensor Assembly",
+        category: "Brake Parts",
+        categorySlug: "brake-parts",
+        price: 5800.00,
+        originalPrice: 7200.00,
+        discountPercent: 19,
+        rating: 4.7,
+        reviewsCount: 11,
+        inStock: true,
+        stockCount: 14,
+        sku: "AG-BRK-4095",
+        oemNumber: "89542-52030 / 89543-52030",
+        brand: "Denso Certified OEM",
+        warranty: "1 Year Replacement Warranty",
+        origin: "Japan",
+        mainImage: "images/abs-sensor.jpg",
+        gallery: ["images/abs-sensor.jpg"],
+        shortDescription: "Precision magnetic pulse ABS wheel speed sensor designed to immediately clear dashboard ABS, Traction Control, and Brake warning lights.",
+        fullDescription: `When a wheel speed sensor fails, ABS and stability systems deactivate and illuminate dash lights. This high-reliability Hall-effect sensor accurately reads magnetic encoder rings in wheel bearings and communicates wheel RPM seamlessly with your vehicle's ABS ECU.`,
+        features: [
+            "High-precision Hall-effect magnetic sensor element",
+            "Waterproof silicone sealed wire harness with factory clips",
+            "Instant resolution for ABS, VSC and Slip dashboard warning lights",
+            "Gold-plated terminal pins for zero signal resistance",
+            "Direct OEM bracket fitment into wheel knuckle"
+        ],
+        specs: {
+            "Position": "Front Axle (Left / Right Variant available)",
+            "Connector Type": "2-Pin Weatherproof Sealed",
+            "Wire Length": "820 mm (with factory chassis grommets)",
+            "Country of Origin": "Japan"
+        },
+        compatibility: [
+            { make: "Toyota", model: "Premio / Allion (NZT260, ZRT260)", years: "2007 - 2020", engine: "1NZ-FE / 2ZR-FE" },
+            { make: "Toyota", model: "Corolla Axio / Fielder (NZE141, NZE161)", years: "2006 - 2021", engine: "1NZ-FE" },
+            { make: "Toyota", model: "Yaris / Vitz (KSP90, KSP130, NCP91)", years: "2006 - 2020", engine: "1.0L, 1.3L, 1.5L" }
+        ],
+        reviews: [
+            {
+                author: "Dinesh Kumara",
+                avatar: "DK",
+                location: "Homagama",
+                rating: 5,
+                date: "1 month ago",
+                title: "ABS light cleared instantly",
+                comment: "OBD scanner showed front left wheel sensor code. Swapped this in within 20 mins, went for a 100m test drive and all dash warning lights turned off by themselves."
+            }
+        ]
+    },
+    {
+        id: "toyota-motor-oil-5w30",
+        name: "Toyota Genuine Motor Oil 5W-30 SP Fully Synthetic (4L)",
+        category: "Filters",
+        categorySlug: "filters",
+        price: 18500.00,
+        originalPrice: 21500.00,
+        discountPercent: 14,
+        rating: 5.0,
+        reviewsCount: 56,
+        inStock: true,
+        stockCount: 25,
+        sku: "AG-FLT-3094",
+        oemNumber: "08880-13705 / SP 5W-30",
+        brand: "Toyota Genuine Motor Oil Japan",
+        warranty: "100% Genuine Imported Tin Can with Security Seal",
+        origin: "Yokohama, Japan",
+        mainImage: "images/motor-oil-5w30.jpg",
+        gallery: ["images/motor-oil-5w30.jpg"],
+        shortDescription: "API SP / ILSAC GF-6A factory fill Japanese fully synthetic engine oil engineered to prevent low-speed pre-ignition (LSPI) and timing chain wear.",
+        fullDescription: `Toyota Genuine 5W-30 SP is specifically blended in Japan for modern VVT-i and Dual VVT-i petrol and hybrid engines. The advanced synthetic base stock maintains uniform film strength under extreme engine heat, providing unmatched sludge protection and extending oil drain intervals up to 10,000 km.`,
+        features: [
+            "Official API SP and ILSAC GF-6A resource conserving rating",
+            "Advanced LSPI protection for modern turbo and direct injection engines",
+            "Exceptional detergent dispersants keep valve train and pistons sludge-free",
+            "Rapid oil flow on cold start reduces initial engine friction by up to 40%",
+            "Directly imported in 4-liter steel tin canister with tamper-proof pull cap"
+        ],
+        specs: {
+            "Viscosity Grade": "SAE 5W-30",
+            "API Service Class": "API SP / ILSAC GF-6A",
+            "Base Stock": "Group III+ Hydrocracked Full Synthetic",
+            "Container Volume": "4.0 Liters (Steel Tin)",
+            "Country of Origin": "Japan"
+        },
+        compatibility: [
+            { make: "Toyota", model: "Premio / Allion / Axio / Vitz / Aqua / Prius / C-HR / Raize", years: "2005 - 2026", engine: "1NZ, 2ZR, 1KR, 1NR, M15A, 1WA Petrol & Hybrids" },
+            { make: "Honda", model: "Vezel / Fit / Grace / Civic", years: "2008 - 2024", engine: "L13, L15, R18 Engines" },
+            { make: "Suzuki", model: "Wagon R / Swift / Hustler / Spacia / Alto", years: "2010 - 2025", engine: "R06A, K10, K12 Engines" }
+        ],
+        reviews: [
+            {
+                author: "Priyantha Jayawardena",
+                avatar: "PJ",
+                location: "Colombo 07",
+                rating: 5,
+                date: "5 days ago",
+                title: "100% Authentic Japanese tin can",
+                comment: "Careful with counterfeit motor oil in the market! AutoGenuine supplied the authentic Japanese steel can with crisp weld seams and clean pull cap. Engine runs whisper quiet."
+            }
+        ]
+    },
+    {
+        id: "toyota-atf-ws-fluid",
+        name: "Toyota Genuine ATF WS Transmission Fluid (4L)",
+        category: "Filters",
+        categorySlug: "filters",
+        price: 19800.00,
+        originalPrice: 23500.00,
+        discountPercent: 16,
+        rating: 4.9,
+        reviewsCount: 31,
+        inStock: true,
+        stockCount: 18,
+        sku: "AG-FLT-3095",
+        oemNumber: "08886-02305 / ATF-WS",
+        brand: "Toyota Genuine Fluid Japan",
+        warranty: "100% Genuine Sealed Steel Canister",
+        origin: "Japan",
+        mainImage: "images/atf-ws-fluid.jpg",
+        gallery: ["images/atf-ws-fluid.jpg"],
+        shortDescription: "Ultra-low viscosity automatic transmission fluid designed to eliminate shift hesitation, gear slips, and protect planetary gear sets in modern transmissions.",
+        fullDescription: `Toyota ATF WS (World Standard) is the only approved fluid for Toyota and Lexus electronically controlled automatic transmissions and hybrid e-CVT transaxles. Ensures smooth torque converter lockup and prevents clutch pack slippage across all operating temperatures.`,
+        features: [
+            "Official Toyota factory specification ATF WS fluid",
+            "Prevents shift shock, gear hunting, and delayed engagement in Drive/Reverse",
+            "Superior thermal stability prevents oxidation under heavy stop-and-go driving",
+            "Essential for Toyota Hybrid planetary gear transaxles (Aqua, Prius, Axio Hybrid)",
+            "Imported in original 4-Liter Japanese metal container"
+        ],
+        specs: {
+            "Specification": "Toyota Genuine ATF Type WS",
+            "Color": "Red / Pinkish Hue",
+            "Volume": "4.0 Liters",
+            "Container": "Sealed Steel Can",
+            "Country of Origin": "Japan"
+        },
+        compatibility: [
+            { make: "Toyota", model: "Premio / Allion (NZT260, ZRT260)", years: "2007 - 2021", engine: "Automatic & Super CVT-i Models requiring WS" },
+            { make: "Toyota", model: "Aqua / Prius 20/30/50 / Axio Hybrid", years: "2005 - 2024", engine: "Hybrid e-CVT Transaxles" },
+            { make: "Toyota", model: "Land Cruiser Prado / Hilux / Fortuner", years: "2005 - 2023", engine: "5-Speed & 6-Speed Auto Gearboxes" }
+        ],
+        reviews: [
+            {
+                author: "Janaka Wickramasinghe",
+                avatar: "JW",
+                location: "Pannipitiya",
+                rating: 5,
+                date: "2 weeks ago",
+                title: "Silky smooth gear shifts",
+                comment: "Did a transmission fluid drain and refill on my Aqua e-CVT. Transaxle whine is gone and the drive is noticeably smoother. Excellent service and fast delivery."
+            }
+        ]
+    },
+    {
+        id: "in-tank-fuel-filter",
+        name: "In-Tank High-Efficiency Fuel Filter Assembly",
+        category: "Filters",
+        categorySlug: "filters",
+        price: 6200.00,
+        originalPrice: 7800.00,
+        discountPercent: 21,
+        rating: 4.8,
+        reviewsCount: 14,
+        inStock: true,
+        stockCount: 16,
+        sku: "AG-FLT-3096",
+        oemNumber: "23300-21010 / 23300-23030",
+        brand: "Vic / Micro Filters Japan",
+        warranty: "1 Year / 40,000 km Warranty",
+        origin: "Tokyo, Japan",
+        mainImage: "images/fuel-filter.jpg",
+        gallery: ["images/fuel-filter.jpg"],
+        shortDescription: "Ultra-fine multi-layer in-tank fuel filter canister that traps microscopic rust, water droplets, and sediment before reaching fuel injectors.",
+        fullDescription: `Replacing your in-tank fuel filter every 40,000 km prevents fuel pump burnout, clogged injector nozzles, and high-RPM fuel starvation. This OEM replacement filter fits inside the fuel tank sending unit and features reinforced resin casing tested to 10 bar pressure.`,
+        features: [
+            "Traps contaminants down to 3 microns to safeguard EFI injectors",
+            "Prevents high-RPM engine hesitation and flat spots during overtaking",
+            "High chemical resistance against ethanol and water contamination",
+            "Direct fitment inside factory in-tank fuel pump carrier cradle",
+            "Includes new high-pressure internal sealing O-rings"
+        ],
+        specs: {
+            "Filter Type": "In-Tank Fuel Suction Canister",
+            "Filtration Rating": "3 - 5 Microns",
+            "Burst Pressure": "> 10 Bar (145 PSI)",
+            "Package Contents": "1x Fuel Filter Unit + Replacement O-Rings",
+            "Country of Origin": "Japan"
+        },
+        compatibility: [
+            { make: "Toyota", model: "Premio / Allion (NZT260, ZRT260)", years: "2007 - 2021", engine: "1NZ-FE (1.5L) / 2ZR-FE (1.8L)" },
+            { make: "Toyota", model: "Corolla Axio / Fielder (NZE141, NZE161)", years: "2006 - 2021", engine: "1NZ-FE (1.5L)" },
+            { make: "Toyota", model: "Vitz / Yaris (KSP90, KSP130, NCP91)", years: "2005 - 2020", engine: "1.0L, 1.3L, 1.5L" }
+        ],
+        reviews: [
+            {
+                author: "Nalaka Ratnayake",
+                avatar: "NR",
+                location: "Panadura",
+                rating: 5,
+                date: "3 weeks ago",
+                title: "Restored lost engine pickup",
+                comment: "My Axio was struggling to accelerate past 80 km/h under load. Pulled out the old 10-year-old filter which was pitch black inside. This new Vic filter brought back full power."
+            }
+        ]
+    },
+    {
+        id: "yuasa-hybrid-aux-battery",
+        name: "GS Yuasa Hybrid Auxiliary 12V AGM Battery S34B20R",
+        category: "Batteries",
+        categorySlug: "batteries",
+        price: 32500.00,
+        originalPrice: 38000.00,
+        discountPercent: 14,
+        rating: 5.0,
+        reviewsCount: 22,
+        inStock: true,
+        stockCount: 11,
+        sku: "AG-BAT-2093",
+        oemNumber: "S34B20R / ENJ-340LN0",
+        brand: "GS Yuasa Japan",
+        warranty: "2 Years Comprehensive Replacement Warranty",
+        origin: "Kyoto, Japan",
+        mainImage: "images/hybrid-battery.jpg",
+        gallery: ["images/hybrid-battery.jpg"],
+        shortDescription: "Specialized AGM sealed 12V auxiliary boot battery with internal gas exhaust port designed for Toyota Hybrid vehicles (Aqua, Prius, Axio Hybrid).",
+        fullDescription: `Toyota hybrid vehicles require a specialized 12V AGM auxiliary battery in the cabin/boot to boot up the hybrid ECU computer and engage the high-voltage hybrid relays. GS Yuasa S34B20R features Absorbent Glass Mat (AGM) valve-regulated technology and a specialized exterior gas vent tube connection to guarantee zero sulfuric acid fumes inside the passenger compartment.`,
+        features: [
+            "100% Sealed AGM (Absorbent Glass Mat) VRLA spill-proof design",
+            "Integrated external gas vent nozzle for interior vehicle safety",
+            "Equipped with built-in battery temperature sensor mounting bracket",
+            "Zero maintenance required with ultra-low self-discharge chemistry",
+            "Official factory OEM supplier to Toyota Hybrid Motor Corporation"
+        ],
+        specs: {
+            "Battery Type": "AGM Valve Regulated Lead-Acid (VRLA)",
+            "JIS Model Code": "S34B20R",
+            "Nominal Voltage": "12 Volts",
+            "Capacity": "35 Ah (20HR Rate)",
+            "Cold Cranking Amps (CCA)": "272 A",
+            "Dimensions": "197 x 129 x 227 mm",
+            "Terminal Type": "JIS Pencil Post (Small Terminals)",
+            "Country of Origin": "Japan"
+        },
+        compatibility: [
+            { make: "Toyota", model: "Aqua (NHP10)", years: "2011 - 2021", engine: "1.5L Hybrid (Under Rear Seat Fitment)" },
+            { make: "Toyota", model: "Prius (NHW20, ZVW30)", years: "2004 - 2016", engine: "1.5L / 1.8L Hybrid (Boot Fitment)" },
+            { make: "Toyota", model: "Corolla Axio / Fielder Hybrid (NKE165)", years: "2013 - 2023", engine: "1.5L Hybrid (Under Rear Seat)" }
+        ],
+        reviews: [
+            {
+                author: "Supun Madushanka",
+                avatar: "SM",
+                location: "Kaduwela",
+                rating: 5,
+                date: "1 week ago",
+                title: "Fixed 'Check Hybrid System' warning",
+                comment: "My Aqua would not start 'READY' mode and gave a hybrid error. Turns out the 12V aux battery was at 9.8 volts. Swapped in this GS Yuasa unit and car started instantly. Exact OEM fit with vent pipe."
+            }
+        ]
+    },
+    {
+        id: "denso-high-output-alternator",
+        name: "Denso 12V 100A High-Output Alternator Assembly",
+        category: "Batteries",
+        categorySlug: "batteries",
+        price: 45000.00,
+        originalPrice: 52000.00,
+        discountPercent: 13,
+        rating: 4.9,
+        reviewsCount: 8,
+        inStock: true,
+        stockCount: 6,
+        sku: "AG-BAT-2094",
+        oemNumber: "27060-21150 / 104210-8230",
+        brand: "Denso Japan Genuine",
+        warranty: "2 Years Stamped Warranty",
+        origin: "Japan",
+        mainImage: "images/alternator.jpg",
+        gallery: ["images/alternator.jpg"],
+        shortDescription: "Original Japanese high-current 100 Amp internal regulator alternator equipped with decoupling clutch pulley for quiet and reliable vehicle electrical power.",
+        fullDescription: `A healthy alternator maintains vehicle battery charge and powers high-draw headlights, air conditioning blowers, and audio setups. Denso's hairpin stator winding technology delivers higher output at low idle RPM, keeping battery voltage rock steady at 14.2V even during heavy traffic gridlocks.`,
+        features: [
+            "Compact high-efficiency hairpin segmented stator winding",
+            "Delivers full 100 Amp charging current with 70A at idle",
+            "Overrunning alternator decoupler (OAD) clutch pulley reduces belt strain",
+            "Internal solid-state electronic voltage regulator (14.2V constant)",
+            "100% Brand new OEM unit - not a rewound or remanufactured part"
+        ],
+        specs: {
+            "Rated Voltage": "12 Volts",
+            "Current Output": "100 Amperes",
+            "Pulley Type": "6-Groove Decoupler Clutch Pulley (6PK)",
+            "Mounting Type": "Dual Lug Pivot",
+            "Country of Origin": "Japan"
+        },
+        compatibility: [
+            { make: "Toyota", model: "Premio / Allion (NZT260, ZRT260)", years: "2007 - 2021", engine: "1NZ-FE (1.5L) / 2ZR-FE (1.8L)" },
+            { make: "Toyota", model: "Corolla Axio / Fielder (NZE141, NZE161)", years: "2006 - 2021", engine: "1NZ-FE (1.5L)" },
+            { make: "Toyota", model: "Probox / Succeed (NCP51, NCP160)", years: "2005 - 2022", engine: "1NZ-FE (1.5L)" }
+        ],
+        reviews: [
+            {
+                author: "Hirantha Wickramaratne",
+                avatar: "HW",
+                location: "Ratnapura",
+                rating: 5,
+                date: "2 weeks ago",
+                title: "Rock steady 14.3V voltage now",
+                comment: "My old alternator was whining and dropping to 11.9V when AC and headlights were on. Replaced with this genuine Denso unit and charging voltage sits rock solid at 14.3V. Worth every rupee."
+            }
+        ]
+    },
+    {
+        id: "denso-dual-snail-horn",
+        name: "Denso Dual Snail High/Low Tone Premium Horn Set",
+        category: "Lights",
+        categorySlug: "lights",
+        price: 4900.00,
+        originalPrice: 6200.00,
+        discountPercent: 21,
+        rating: 4.9,
+        reviewsCount: 65,
+        inStock: true,
+        stockCount: 40,
+        sku: "AG-ELE-1092",
+        oemNumber: "JK272000-6900 / 12V 4A",
+        brand: "Denso Japan",
+        warranty: "1 Year Replacement Warranty",
+        origin: "Japan / Indonesia",
+        mainImage: "images/car-horn.jpg",
+        gallery: ["images/car-horn.jpg"],
+        shortDescription: "Authoritative European luxury car dual trumpet tone (400Hz / 480Hz) at 110dB for maximum road presence and safety in congested traffic.",
+        fullDescription: `Replace thin, squeaky factory single horn discs with the legendary Denso Dual Snail Power Horn set. Engineered with weather-sealed acoustic trumpets to project a commanding, deep harmonic horn tone that ensures pedestrians, tuk-tuks, and buses hear you clearly.`,
+        features: [
+            "Dual acoustic harmony: 400 Hz Low Tone + 480 Hz High Tone",
+            "Powerful 110 dB sound pressure projection up to 100 meters",
+            "Waterproof labyrinth design prevents rain and pressure wash entry",
+            "Ultra-low 4.5A power draw operates safely on standard vehicle wiring",
+            "Includes heavy-gauge steel mounting brackets and wiring terminals"
+        ],
+        specs: {
+            "Sound Frequency": "Low: 400 Hz, High: 480 Hz",
+            "Loudness": "110 dB (A) at 2 meters",
+            "Voltage": "12V DC (4.5 Amp per horn)",
+            "Package Contents": "1x Low Tone Horn, 1x High Tone Horn, 2x Mounting Brackets",
+            "Country of Origin": "Denso Certified OEM"
+        },
+        compatibility: [
+            { make: "Universal", model: "Universal 12V Vehicle Fitment (Toyota, Honda, Nissan, Suzuki, Mitsubishi, Hyundai, Kia)", years: "All Models", engine: "All 12V Vehicles" }
+        ],
+        reviews: [
+            {
+                author: "Suranga Senaka",
+                avatar: "SS",
+                location: "Matara",
+                rating: 5,
+                date: "4 days ago",
+                title: "Best upgrade for city driving",
+                comment: "Sounds identical to a Lexus or European SUV horn! Very loud, crisp and commanding tone. Installed in 15 minutes on my Vitz using the existing horn wiring."
+            }
+        ]
+    },
+    {
+        id: "crystal-fog-light-kit",
+        name: "Front Bumper Crystal Fog Light Kit with Wiring & Switch",
+        category: "Lights",
+        categorySlug: "lights",
+        price: 8900.00,
+        originalPrice: 11500.00,
+        discountPercent: 23,
+        rating: 4.8,
+        reviewsCount: 18,
+        inStock: true,
+        stockCount: 15,
+        sku: "AG-ELE-1093",
+        oemNumber: "81210-0D042 / 81220-0D042",
+        brand: "Koito / Stanley OEM Spec",
+        warranty: "1 Year Warranty",
+        origin: "Taiwan OEM",
+        mainImage: "images/fog-lights.jpg",
+        gallery: ["images/fog-lights.jpg"],
+        shortDescription: "Complete bolt-in front bumper crystal glass fog lamp pair equipped with H11 halogen bulbs, waterproof wiring relay harness, and OEM interior dash switch.",
+        fullDescription: `Upgrade poor night and rainy weather visibility with this complete OEM-style fog light kit. Features optical glass lenses that resist rock chips and won't turn yellow under sunlight like cheap plastic lenses. Includes full relay harness with inline fuse and exact dashboard button.`,
+        features: [
+            "Clear tempered optical glass lenses with cast aluminum heat sink body",
+            "Includes pre-installed high-output H11 55W halogen bulbs",
+            "Complete plug-and-play wiring relay harness with waterproof fuse",
+            "OEM dashboard push button switch with illuminated indicator",
+            "Full vertical beam adjustment screws for perfect road alignment"
+        ],
+        specs: {
+            "Lens Material": "Tempered Crystal Optical Glass",
+            "Bulb Socket": "H11 (55 Watt)",
+            "Operating Voltage": "12V DC",
+            "Package Contents": "2x Fog Lamps (Left & Right), 2x H11 Bulbs, 1x Relay Harness, 1x OEM Dash Switch",
+            "Waterproof Rating": "IP67 Submersible Sealed"
+        },
+        compatibility: [
+            { make: "Toyota", model: "Premio / Allion (NZT260, ZRT260)", years: "2007 - 2021", engine: "All Bumper Trim Variants" },
+            { make: "Toyota", model: "Corolla Axio / Fielder (NZE141, NZE161)", years: "2006 - 2021", engine: "All Variants" },
+            { make: "Toyota", model: "Vitz / Yaris / Belta / Aqua", years: "2006 - 2020", engine: "All Variants" }
+        ],
+        reviews: [
+            {
+                author: "Kasun Abeyrathne",
+                avatar: "KA",
+                location: "Kegalle",
+                rating: 5,
+                date: "1 week ago",
+                title: "Glass lens quality is superb",
+                comment: "Fitted on my 260 Premio bumper. The glass lens is heavy and clear, unlike cheap polycarbonate lights. Wiring harness had plenty of length and the dashboard switch clicked right into the blank slot."
+            }
+        ]
+    },
+    {
+        id: "denso-ignition-coil-pack",
+        name: "Denso Genuine Ignition Coil Pack 1NZ/2ZR",
+        category: "Lights",
+        categorySlug: "lights",
+        price: 7400.00,
+        originalPrice: 9200.00,
+        discountPercent: 20,
+        rating: 4.9,
+        reviewsCount: 29,
+        inStock: true,
+        stockCount: 24,
+        sku: "AG-ELE-1094",
+        oemNumber: "90919-02260 / 099700-2500",
+        brand: "Denso Japan Certified",
+        warranty: "2 Years Stamped Warranty",
+        origin: "Japan",
+        mainImage: "images/ignition-coil.jpg",
+        gallery: ["images/ignition-coil.jpg"],
+        shortDescription: "Original Japanese high-energy electronic pencil ignition coil pack to immediately cure engine misfires, erratic idling, and P0300-P0304 check engine codes.",
+        fullDescription: `A failing ignition coil causes engine jerking under acceleration, loss of power, and high unburned fuel consumption. This genuine Denso coil pack features premium copper windings and high-temperature silicone spark plug boot to ensure complete combustion and instant power delivery.`,
+        features: [
+            "Precision laminated silicon steel core delivers maximum secondary voltage",
+            "High-temp silicone spark plug boot prevents spark flashover and arcing",
+            "Direct solution for engine jerking, rough idle, and P0301/P0302/P0303/P0304 fault codes",
+            "Integrated OEM driver transistor circuit with zero electromagnetic interference",
+            "Tested to withstand continuous 130°C cylinder head temperatures"
+        ],
+        specs: {
+            "Coil Type": "Direct Ignition Pencil Coil (COP)",
+            "Connector Pin Count": "4-Pin Sealed Plug",
+            "Primary Resistance": "0.7 - 0.9 Ohms",
+            "Secondary Voltage": "> 35,000 Volts",
+            "Country of Origin": "Japan"
+        },
+        compatibility: [
+            { make: "Toyota", model: "Premio / Allion (NZT260, ZRT260)", years: "2007 - 2021", engine: "1NZ-FE (1.5L) / 2ZR-FE (1.8L)" },
+            { make: "Toyota", model: "Corolla Axio / Fielder (NZE141, NZE161)", years: "2006 - 2021", engine: "1NZ-FE (1.5L)" },
+            { make: "Toyota", model: "Yaris / Vitz (NCP91, NSP130)", years: "2006 - 2020", engine: "1NZ-FE / 2NZ-FE" },
+            { make: "Toyota", model: "Prius (ZVW30) / Aqua (NHP10)", years: "2009 - 2021", engine: "1NZ-FXE / 2ZR-FXE" }
+        ],
+        reviews: [
+            {
+                author: "Asela Weerakoon",
+                avatar: "AW",
+                location: "Galle",
+                rating: 5,
+                date: "1 week ago",
+                title: "Engine misfire completely fixed",
+                comment: "My Premio 260 started shaking violently under acceleration up Galle Road. Scanner pointed to Cylinder 3 misfire. Replaced with this Denso coil pack and car runs like butter again."
+            }
+        ]
     }
 ];
 
@@ -547,8 +1339,31 @@ function getStoredProducts() {
     try {
         const saved = localStorage.getItem(PRODUCTS_STORAGE_KEY);
         if (saved) {
-            const parsed = JSON.parse(saved);
+            let parsed = JSON.parse(saved);
             if (Array.isArray(parsed) && parsed.length > 0) {
+                // Remove any obsolete or previously added dummy products not in DEFAULT_PRODUCTS or custom-added by admin
+                const defaultIds = new Set(DEFAULT_PRODUCTS.map(dp => dp.id));
+                const filtered = parsed.filter(p => defaultIds.has(p.id) || (typeof p.id === 'string' && p.id.startsWith('custom-')) || (typeof p.id === 'number' && p.id > 1000));
+                
+                let updated = filtered.length !== parsed.length;
+                parsed = filtered;
+
+                DEFAULT_PRODUCTS.forEach(dp => {
+                    const existing = parsed.find(p => p.id === dp.id);
+                    if (!existing) {
+                        parsed.push({ ...dp });
+                        updated = true;
+                    } else if (existing.mainImage !== dp.mainImage) {
+                        existing.mainImage = dp.mainImage;
+                        existing.gallery = dp.gallery;
+                        updated = true;
+                    }
+                });
+                if (updated) {
+                    try {
+                        localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(parsed));
+                    } catch (e) {}
+                }
                 return parsed;
             }
         }
@@ -748,7 +1563,7 @@ function resetCatalogToDefault() {
         }).catch(err => console.warn('MySQL Product Reset sync notice:', err));
     }
 
-    return { success: true, count: DEFAULT_PRODUCTS.length, message: "Catalog reset to default 9 items successfully!" };
+    return { success: true, count: DEFAULT_PRODUCTS.length, message: `Catalog reset to default ${DEFAULT_PRODUCTS.length} genuine parts successfully!` };
 }
 
 function formatPrice(num) {
@@ -974,6 +1789,13 @@ function applyCouponCode(code) {
     const found = coupons.find(c => c.code.toUpperCase() === cleaned && c.active !== false);
 
     if (found) {
+        const subtotal = getCartSubtotal();
+        if (found.minOrder && subtotal > 0 && subtotal < found.minOrder) {
+            return {
+                success: false,
+                message: `Coupon "${found.code}" requires a minimum order of Rs. ${formatPrice(found.minOrder)}. (Cart: Rs. ${formatPrice(subtotal)})`
+            };
+        }
         const couponObj = { 
             code: found.code, 
             discountPercent: found.discountPercent, 
@@ -1156,7 +1978,7 @@ const DEFAULT_REGISTERED_USERS = [
     { 
         name: "Admin Supervisor", 
         email: "admin@autogenuine.lk", 
-        phone: "0771234567", 
+        phone: "0112345678", 
         password: "admin123", 
         role: "admin", 
         vehicle: "Workshop HQ / Fleet Control", 
@@ -1458,6 +2280,349 @@ function logoutUser() {
     }
 }
 
+async function resetUserPassword(email, newPassword) {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanPass = (newPassword || '').trim();
+
+    if (!cleanEmail || !cleanPass) {
+        return { success: false, message: "Please provide both your registered email and new password." };
+    }
+    if (cleanPass.length < 3) {
+        return { success: false, message: "New password must be at least 3 characters." };
+    }
+
+    const users = getRegisteredUsers();
+    const userIndex = users.findIndex(u => u.email && u.email.toLowerCase() === cleanEmail);
+
+    if (userIndex === -1 && cleanEmail !== 'admin@autogenuine.lk' && cleanEmail !== 'kasun@gmail.com') {
+        return { success: false, message: "No registered account found matching '" + cleanEmail + "'." };
+    }
+
+    if (userIndex > -1) {
+        users[userIndex].password = cleanPass;
+        localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+    }
+
+    // If currently logged in as this user, update active session password
+    const curUser = getCurrentUser();
+    if (curUser && curUser.email && curUser.email.toLowerCase() === cleanEmail) {
+        curUser.password = cleanPass;
+        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(curUser));
+    }
+
+    // Sync to MySQL API
+    if (API_BASE_URL) {
+        try {
+            await fetch(API_BASE_URL + 'auth.php?action=reset_password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: cleanEmail, newPassword: cleanPass })
+            });
+        } catch (err) {
+            console.warn('MySQL Password Reset sync notice:', err);
+        }
+    }
+
+    return { success: true, message: "Password reset successfully! You can now sign in with your new credentials." };
+}
+window.resetUserPassword = resetUserPassword;
+
+async function updateUserProfile(profileData) {
+    const curUser = getCurrentUser();
+    if (!curUser) {
+        return { success: false, message: "You must be signed in to update your profile." };
+    }
+
+    const cleanName = (profileData.name || curUser.name || '').trim();
+    const cleanPhone = (profileData.phone || curUser.phone || '').trim();
+    const cleanVehicle = (profileData.vehicle || curUser.vehicle || 'Standard Vehicle').trim();
+    const cleanAddress = (profileData.address || curUser.address || '').trim();
+
+    if (!cleanName) {
+        return { success: false, message: "Full Name cannot be empty." };
+    }
+
+    // Update in users list
+    const users = getRegisteredUsers();
+    const uIdx = users.findIndex(u => u.email && u.email.toLowerCase() === curUser.email.toLowerCase());
+    if (uIdx > -1) {
+        users[uIdx].name = cleanName;
+        users[uIdx].full_name = cleanName;
+        users[uIdx].phone = cleanPhone;
+        users[uIdx].vehicle = cleanVehicle;
+        users[uIdx].registered_vehicle = cleanVehicle;
+        users[uIdx].address = cleanAddress;
+        localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+    }
+
+    // Update current user
+    curUser.name = cleanName;
+    curUser.full_name = cleanName;
+    curUser.phone = cleanPhone;
+    curUser.vehicle = cleanVehicle;
+    curUser.registered_vehicle = cleanVehicle;
+    curUser.address = cleanAddress;
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(curUser));
+    updateHeaderAccountButton();
+
+    // Sync to MySQL API
+    if (API_BASE_URL) {
+        try {
+            await fetch(API_BASE_URL + 'auth.php?action=update_profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: curUser.email,
+                    name: cleanName,
+                    phone: cleanPhone,
+                    vehicle: cleanVehicle,
+                    address: cleanAddress
+                })
+            });
+        } catch (err) {
+            console.warn('MySQL Profile Update sync notice:', err);
+        }
+    }
+
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('autogenuine:authchanged', { detail: { user: curUser } }));
+    }
+
+    return { success: true, user: curUser, message: "Profile details updated successfully!" };
+}
+window.updateUserProfile = updateUserProfile;
+
+async function deleteUserAccount(emailOrId) {
+    const clean = String(emailOrId || '').toLowerCase().trim();
+    if (clean === 'admin@autogenuine.lk' || clean === '999') {
+        return { success: false, message: "Security Warning: The primary administrator account cannot be deleted." };
+    }
+
+    let users = getRegisteredUsers();
+    users = users.filter(u => String(u.id) !== clean && String(u.user_id) !== clean && u.email?.toLowerCase() !== clean);
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+
+    if (API_BASE_URL) {
+        try {
+            await fetch(API_BASE_URL + 'auth.php?action=delete_user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: clean, userId: clean })
+            });
+        } catch (err) {
+            console.warn('MySQL Delete User sync notice:', err);
+        }
+    }
+
+    return { success: true, message: "User account removed successfully." };
+}
+window.deleteUserAccount = deleteUserAccount;
+
+async function toggleUserAccountStatus(emailOrId, newStatus) {
+    const clean = String(emailOrId || '').toLowerCase().trim();
+    if (clean === 'admin@autogenuine.lk') {
+        return { success: false, message: "Cannot suspend primary administrator account." };
+    }
+
+    const users = getRegisteredUsers();
+    const u = users.find(x => String(x.id) === clean || String(x.user_id) === clean || x.email?.toLowerCase() === clean);
+    if (u) {
+        u.isActive = typeof newStatus === 'boolean' ? newStatus : (u.isActive === false ? true : false);
+        localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+
+        if (API_BASE_URL) {
+            try {
+                await fetch(API_BASE_URL + 'auth.php?action=toggle_status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: clean, isActive: u.isActive })
+                });
+            } catch (err) {
+                console.warn('MySQL Toggle Status sync notice:', err);
+            }
+        }
+        return { success: true, isActive: u.isActive, message: `User status set to ${u.isActive ? 'Active' : 'Suspended'}.` };
+    }
+    return { success: false, message: "User not found." };
+}
+window.toggleUserAccountStatus = toggleUserAccountStatus;
+
+async function adminCreateUserAccount(userData) {
+    const cleanName = (userData.name || '').trim();
+    const cleanEmail = (userData.email || '').trim().toLowerCase();
+    const cleanPhone = (userData.phone || '').trim();
+    const cleanPass = (userData.password || '123456').trim();
+    const cleanVehicle = (userData.vehicle || 'Standard Vehicle').trim();
+    const cleanRole = (userData.role || 'customer').trim();
+
+    if (!cleanName || !cleanEmail) {
+        return { success: false, message: "Name and email are required." };
+    }
+
+    const users = getRegisteredUsers();
+    if (users.some(u => u.email && u.email.toLowerCase() === cleanEmail)) {
+        return { success: false, message: "An account with this email already exists." };
+    }
+
+    const newUser = {
+        id: Date.now(),
+        user_id: Date.now(),
+        name: cleanName,
+        full_name: cleanName,
+        email: cleanEmail,
+        phone: cleanPhone,
+        password: cleanPass,
+        vehicle: cleanVehicle,
+        registered_vehicle: cleanVehicle,
+        role: cleanRole,
+        isActive: true,
+        registeredAt: new Date().toLocaleDateString('en-GB')
+    };
+
+    users.push(newUser);
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+
+    if (API_BASE_URL) {
+        try {
+            await fetch(API_BASE_URL + 'auth.php?action=create_user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: cleanName,
+                    email: cleanEmail,
+                    phone: cleanPhone,
+                    password: cleanPass,
+                    vehicle: cleanVehicle,
+                    role: cleanRole
+                })
+            });
+        } catch (err) {
+            console.warn('MySQL Create User sync notice:', err);
+        }
+    }
+
+    return { success: true, user: newUser, message: `User "${cleanName}" created successfully.` };
+}
+window.adminCreateUserAccount = adminCreateUserAccount;
+
+async function handleUserPasswordReset(event) {
+    if (event && event.preventDefault) event.preventDefault();
+    const email = document.getElementById("resetEmail")?.value?.trim();
+    const newPass = document.getElementById("resetNewPassword")?.value?.trim();
+    const confirmPass = document.getElementById("resetConfirmPassword")?.value?.trim();
+
+    if (!email || !newPass || !confirmPass) {
+        alert("Please fill in all fields.");
+        return;
+    }
+
+    if (newPass !== confirmPass) {
+        alert("Passwords do not match! Please check and confirm your new password.");
+        return;
+    }
+
+    const submitBtn = event?.target?.querySelector("button[type='submit']");
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Resetting Password...";
+    }
+
+    try {
+        const res = await resetUserPassword(email, newPass);
+        if (res.success) {
+            if (typeof showToast === "function") {
+                showToast("Password Reset Successful", res.message);
+            } else {
+                alert(res.message);
+            }
+            // Auto fill login email & switch to login tab
+            const loginEmailInput = document.getElementById("loginEmail");
+            if (loginEmailInput) loginEmailInput.value = email;
+            const loginPassInput = document.getElementById("loginPassword");
+            if (loginPassInput) loginPassInput.value = newPass;
+
+            if (typeof switchAccountTab === "function") {
+                switchAccountTab("login");
+            }
+        } else {
+            alert(res.message);
+        }
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Reset & Save Password →";
+        }
+    }
+}
+window.handleUserPasswordReset = handleUserPasswordReset;
+
+function toggleEditProfileForm(show) {
+    const section = document.getElementById("editProfileSection");
+    if (!section) return;
+
+    const isVisible = section.style.display !== "none";
+    const targetShow = (typeof show === "boolean") ? show : !isVisible;
+
+    section.style.display = targetShow ? "block" : "none";
+
+    if (targetShow) {
+        const curUser = getCurrentUser();
+        if (curUser) {
+            const nameInp = document.getElementById("editProfileName");
+            if (nameInp) nameInp.value = curUser.name || curUser.full_name || "";
+            const phoneInp = document.getElementById("editProfilePhone");
+            if (phoneInp) phoneInp.value = curUser.phone || "";
+            const vehInp = document.getElementById("editProfileVehicle");
+            if (vehInp) vehInp.value = curUser.vehicle || curUser.registered_vehicle || "";
+            const addrInp = document.getElementById("editProfileAddress");
+            if (addrInp) addrInp.value = curUser.address || "";
+        }
+    }
+}
+window.toggleEditProfileForm = toggleEditProfileForm;
+
+async function handleUserProfileUpdate(event) {
+    if (event && event.preventDefault) event.preventDefault();
+    const name = document.getElementById("editProfileName")?.value?.trim();
+    const phone = document.getElementById("editProfilePhone")?.value?.trim();
+    const vehicle = document.getElementById("editProfileVehicle")?.value?.trim();
+    const address = document.getElementById("editProfileAddress")?.value?.trim();
+
+    if (!name) {
+        alert("Name cannot be empty.");
+        return;
+    }
+
+    const submitBtn = event?.target?.querySelector("button[type='submit']");
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Saving Changes...";
+    }
+
+    try {
+        const res = await updateUserProfile({ name, phone, vehicle, address });
+        if (res.success) {
+            if (typeof showToast === "function") {
+                showToast("Profile Updated", res.message);
+            } else {
+                alert(res.message);
+            }
+            toggleEditProfileForm(false);
+            if (typeof populateUserProfile === "function") {
+                populateUserProfile(res.user);
+            }
+        } else {
+            alert(res.message);
+        }
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Save Changes";
+        }
+    }
+}
+window.handleUserProfileUpdate = handleUserProfileUpdate;
+
 // ==========================================
 // ORDERS & QUOTATIONS PERSISTENCE
 // ==========================================
@@ -1495,7 +2660,17 @@ function getOrdersHistory() {
             customerPhone: "0719876543",
             address: "Peradeniya Road, Kandy",
             city: "Kandy",
+            district: "Kandy",
             paymentMethod: "Bank Transfer",
+            paymentStatus: "Paid (Slip Verified)",
+            paymentReference: "Commercial Bank Ref: TXN-88492018-CB",
+            bankName: "Commercial Bank",
+            bankRefNumber: "TXN-88492018-CB",
+            depositorName: "Saman Kumara",
+            depositDate: "12/09/2026",
+            bankSlipUrl: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='750' viewBox='0 0 600 750' style='background:%23fff; font-family:sans-serif;'><rect width='600' height='750' fill='%23fbfbfb' stroke='%23ccc'/><rect x='20' y='20' width='560' height='100' fill='%23004b87'/><text x='40' y='65' fill='%23ffffff' font-size='22' font-weight='bold'>COMMERCIAL BANK OF CEYLON PLC</text><text x='40' y='95' fill='%23d4e8fc' font-size='14'>CUSTOMER DEPOSIT SLIP / TRANSFER RECEIPT</text><rect x='20' y='140' width='560' height='580' fill='%23ffffff' stroke='%23e0e0e0'/><text x='40' y='180' fill='%23333' font-size='14' font-weight='bold'>TRANSACTION DETAILS</text><line x1='40' y1='190' x2='560' y2='190' stroke='%23004b87' stroke-width='2'/><text x='40' y='225' fill='%23666' font-size='13'>Date &amp; Time:</text><text x='200' y='225' fill='%23111' font-size='13' font-weight='bold'>12/09/2026 14:32:10</text><text x='40' y='265' fill='%23666' font-size='13'>Reference / Txn ID:</text><text x='200' y='265' fill='%23004b87' font-size='14' font-weight='bold'>TXN-88492018-CB</text><text x='40' y='305' fill='%23666' font-size='13'>Beneficiary Name:</text><text x='200' y='305' fill='%23111' font-size='13' font-weight='bold'>AutoGenuine (Pvt) Ltd</text><text x='40' y='345' fill='%23666' font-size='13'>Account Number:</text><text x='200' y='345' fill='%23111' font-size='13' font-weight='bold'>8010 4492 1084 001</text><text x='40' y='385' fill='%23666' font-size='13'>Depositor / Sender:</text><text x='200' y='385' fill='%23111' font-size='13' font-weight='bold'>Saman Kumara</text><text x='40' y='425' fill='%23666' font-size='13'>Amount Paid:</text><text x='200' y='425' fill='%232a9d8f' font-size='18' font-weight='bold'>LKR 32,500.00</text><text x='40' y='465' fill='%23666' font-size='13'>Remarks / Order ID:</text><text x='200' y='465' fill='%23111' font-size='13' font-weight='bold'>#AG-88210 Exide Battery</text><rect x='40' y='520' width='520' height='90' fill='%23eef8f6' stroke='%232a9d8f' stroke-dasharray='4'/><text x='60' y='555' fill='%232a9d8f' font-size='15' font-weight='bold'>[ELECTRONIC BANK TRANSFER VERIFIED]</text><text x='60' y='580' fill='%23555' font-size='12'>Processed via COMBANK Online Banking. Verified for spare parts dispatch.</text><circle cx='480' cy='665' r='32' fill='none' stroke='%232a9d8f' stroke-width='3'/><text x='452' y='670' fill='%232a9d8f' font-size='10' font-weight='bold'>PAID STAMP</text></svg>",
+            bankSlipFileName: "ComBank_Receipt_88210.svg",
+            bankSlipFileSize: "2.8 KB",
             subtotal: 32500,
             discount: 0,
             shipping: 0,
@@ -1561,6 +2736,31 @@ function updateOrderStatus(orderId, newStatus) {
     }
     return { success: false, message: "Order not found." };
 }
+
+function updateOrderPaymentStatus(orderId, paymentStatus, optOrderStatus) {
+    let orders = getOrdersHistory();
+    const order = orders.find(o => o.orderId === orderId);
+    if (order) {
+        order.paymentStatus = paymentStatus;
+        if (optOrderStatus) {
+            order.status = optOrderStatus;
+        }
+        localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+
+        // Sync to MySQL via PHP API
+        if (API_BASE_URL) {
+            fetch(API_BASE_URL + 'orders.php?action=update_status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: orderId, status: order.status, paymentStatus: paymentStatus })
+            }).catch(err => console.warn('MySQL Order Payment Status sync notice:', err));
+        }
+
+        return { success: true, message: `Order ${orderId} payment verified: "${paymentStatus}".` };
+    }
+    return { success: false, message: "Order not found." };
+}
+window.updateOrderPaymentStatus = updateOrderPaymentStatus;
 
 function deleteOrder(orderId) {
     let orders = getOrdersHistory();
@@ -2325,107 +3525,368 @@ window.openQuickTrackerPrompt = openQuickTrackerPrompt;
 
 function printOrderInvoice(orderRef) {
     const order = getOrderTrackingDetails(orderRef);
-    if (!order) return;
+    if (!order) {
+        alert("Order #" + orderRef + " not found.");
+        return;
+    }
 
     let itemsRows = "";
     if (Array.isArray(order.items) && order.items.length > 0) {
-        itemsRows = order.items.map(i => `
+        itemsRows = order.items.map((i, idx) => `
             <tr>
-                <td style="padding:8px; border-bottom:1px solid #ddd;">${typeof i === 'string' ? i : i.name}</td>
-                <td style="padding:8px; border-bottom:1px solid #ddd; text-align:center;">${i.quantity || 1}</td>
-                <td style="padding:8px; border-bottom:1px solid #ddd; text-align:right;">Rs. ${formatPrice(i.price || 0)}</td>
-                <td style="padding:8px; border-bottom:1px solid #ddd; text-align:right;"><strong>Rs. ${formatPrice(i.subtotal || i.price || 0)}</strong></td>
+                <td style="padding:10px 12px; border-bottom:1px solid #e2e8f0; text-align:center; color:#64748b;">${idx + 1}</td>
+                <td style="padding:10px 12px; border-bottom:1px solid #e2e8f0;">
+                    <strong style="color:#0f172a; font-size:14px;">${typeof i === 'string' ? i : i.name}</strong>
+                    ${i.oemNumber ? `<br><small style="color:#64748b; font-size:11px;">OEM: ${i.oemNumber}</small>` : ''}
+                </td>
+                <td style="padding:10px 12px; border-bottom:1px solid #e2e8f0; text-align:center; font-weight:600;">${i.quantity || 1}</td>
+                <td style="padding:10px 12px; border-bottom:1px solid #e2e8f0; text-align:right;">Rs. ${formatPrice(i.price || 0)}</td>
+                <td style="padding:10px 12px; border-bottom:1px solid #e2e8f0; text-align:right; font-weight:700; color:#0f172a;">Rs. ${formatPrice(i.subtotal || (i.price * (i.quantity || 1)) || 0)}</td>
             </tr>
         `).join("");
     } else {
-        itemsRows = `<tr><td colspan="4" style="padding:8px;">${order.items || 'Genuine Automotive Spare Parts'}</td></tr>`;
+        itemsRows = `<tr><td colspan="5" style="padding:12px; text-align:center; color:#64748b;">${order.items || 'Genuine Automotive Spare Parts Package'}</td></tr>`;
     }
 
-    const printHtml = `
-    <html>
+    const isBank = (order.paymentMethod || "").toLowerCase().includes("bank");
+
+    const printHtml = `<!DOCTYPE html>
+    <html lang="en">
     <head>
-        <title>AutoGenuine Invoice - ${order.orderId}</title>
+        <meta charset="UTF-8">
+        <title>Commercial Invoice - ${order.orderId} - AutoGenuine Sri Lanka</title>
         <style>
-            body { font-family: 'Segoe UI', Arial, sans-serif; color: #111; padding: 40px; }
-            .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #e63946; padding-bottom: 15px; margin-bottom: 25px; }
-            .logo h2 { margin: 0; color: #e63946; font-size: 24px; }
-            .meta p { margin: 3px 0; font-size: 13px; color: #555; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
-            th { background: #f4f6f8; padding: 10px 8px; text-align: left; border-bottom: 2px solid #ccc; }
-            .totals { margin-top: 25px; text-align: right; }
-            .totals p { margin: 5px 0; font-size: 14px; }
-            .totals strong { font-size: 18px; color: #e63946; }
-            .footer { margin-top: 40px; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 15px; text-align: center; }
+            @page {
+                size: A4 portrait;
+                margin: 12mm 15mm;
+            }
+            * { box-sizing: border-box; }
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                color: #1e293b;
+                background: #ffffff;
+                margin: 0;
+                padding: 20px;
+                font-size: 13px;
+                line-height: 1.5;
+            }
+            .invoice-card {
+                max-width: 820px;
+                margin: 0 auto;
+                background: #ffffff;
+            }
+            .inv-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                border-bottom: 2px solid #e63946;
+                padding-bottom: 18px;
+                margin-bottom: 20px;
+            }
+            .inv-brand h1 {
+                margin: 0;
+                font-size: 26px;
+                font-weight: 800;
+                color: #0f172a;
+                letter-spacing: -0.5px;
+            }
+            .inv-brand h1 span { color: #e63946; }
+            .inv-brand p {
+                margin: 2px 0;
+                color: #64748b;
+                font-size: 11.5px;
+            }
+            .inv-meta {
+                text-align: right;
+            }
+            .inv-meta .inv-title {
+                font-size: 20px;
+                font-weight: 800;
+                color: #e63946;
+                letter-spacing: 1px;
+                margin: 0 0 4px 0;
+            }
+            .inv-meta p {
+                margin: 2px 0;
+                font-size: 12px;
+                color: #475569;
+            }
+            .inv-meta strong { color: #0f172a; }
+            .inv-grid-2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                margin-bottom: 22px;
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                padding: 14px 18px;
+            }
+            .inv-section-title {
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+                color: #e63946;
+                margin: 0 0 6px 0;
+            }
+            .inv-info-p {
+                margin: 3px 0;
+                color: #334155;
+            }
+            .inv-info-p strong { color: #0f172a; }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+                font-size: 12.5px;
+            }
+            th {
+                background: #0f172a;
+                color: #ffffff;
+                font-weight: 600;
+                padding: 10px 12px;
+                text-align: left;
+                font-size: 11.5px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            .inv-summary-box {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-top: 15px;
+                padding-top: 15px;
+                border-top: 2px solid #e2e8f0;
+            }
+            .inv-payment-box {
+                flex: 1;
+                max-width: 50%;
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 6px;
+                padding: 12px 14px;
+                font-size: 12px;
+            }
+            .inv-totals-box {
+                width: 280px;
+                margin-left: auto;
+            }
+            .inv-total-row {
+                display: flex;
+                justify-content: space-between;
+                padding: 4px 0;
+                font-size: 13px;
+                color: #475569;
+            }
+            .inv-total-row.grand {
+                border-top: 2px solid #0f172a;
+                margin-top: 8px;
+                padding-top: 8px;
+                font-size: 16px;
+                font-weight: 800;
+                color: #0f172a;
+            }
+            .inv-total-row.grand span:last-child {
+                color: #e63946;
+            }
+            .inv-footer {
+                margin-top: 35px;
+                border-top: 1px dashed #cbd5e1;
+                padding-top: 15px;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+                font-size: 11px;
+                color: #64748b;
+            }
+            .badge-verified {
+                display: inline-block;
+                background: #dcfce7;
+                color: #166534;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 11px;
+                font-weight: 700;
+            }
+            @media print {
+                body { padding: 0; background: #fff !important; }
+                .invoice-card { max-width: 100%; }
+                .no-print { display: none !important; }
+            }
         </style>
     </head>
     <body>
-        <div class="invoice-header">
-            <div class="logo">
-                <h2>AutoGenuine Sri Lanka</h2>
-                <p style="margin:4px 0; font-size:12px; color:#666;">Official OEM Automotive Parts Distributor</p>
-                <p style="margin:2px 0; font-size:12px; color:#666;">Hotline / WhatsApp: +94 78 628 7337 | info@autogenuine.lk</p>
+        <div class="invoice-card">
+            <!-- HEADER -->
+            <div class="inv-header">
+                <div class="inv-brand">
+                    <h1>Auto<span>Genuine</span></h1>
+                    <p><strong>AutoGenuine Sri Lanka (Pvt) Ltd</strong> — Official OEM Parts Importer</p>
+                    <p>No. 45/2, Baseline Road, Colombo 09, Sri Lanka</p>
+                    <p>Hotline / WhatsApp: +94 78 628 7337 | Email: orders@autogenuine.lk</p>
+                    <p>Business Reg (BRN): PV-00294819 | VAT Reg: 109284729-7000</p>
+                </div>
+                <div class="inv-meta">
+                    <div class="inv-title">TAX INVOICE</div>
+                    <p>Invoice / Order #: <strong>${order.orderId}</strong></p>
+                    <p>Issue Date: <strong>${order.date || new Date().toLocaleDateString()}</strong></p>
+                    <p>Dispatch Status: <strong>${order.status || 'Processing Dispatch'}</strong></p>
+                    <p>Courier Tracking: <strong>${order.trackingNumber || 'DX-849201LK'}</strong></p>
+                </div>
             </div>
-            <div class="meta" style="text-align:right;">
-                <h3 style="margin:0 0 5px 0; color:#333;">TAX INVOICE</h3>
-                <p><strong>Order Ref:</strong> ${order.orderId}</p>
-                <p><strong>Date:</strong> ${order.date}</p>
-                <p><strong>Status:</strong> ${order.status}</p>
-                <p><strong>Tracking:</strong> ${order.trackingNumber}</p>
+
+            <!-- CUSTOMER & LOGISTICS DETAILS -->
+            <div class="inv-grid-2">
+                <div>
+                    <div class="inv-section-title">Billed & Delivered To</div>
+                    <p class="inv-info-p"><strong>${order.customerName || 'Valued Customer'}</strong></p>
+                    <p class="inv-info-p">${order.address || 'Sri Lanka'}</p>
+                    <p class="inv-info-p">City / District: <strong>${order.city || 'Colombo'}${order.district ? ', ' + order.district : ''}</strong></p>
+                    <p class="inv-info-p">Contact Phone: <strong>${order.customerPhone || 'N/A'}</strong></p>
+                    ${order.customerEmail ? `<p class="inv-info-p">Email: ${order.customerEmail}</p>` : ''}
+                </div>
+                <div>
+                    <div class="inv-section-title">Dispatch & Payment Information</div>
+                    <p class="inv-info-p">Payment Method: <strong>${order.paymentMethod || 'Cash on Delivery'}</strong></p>
+                    <p class="inv-info-p">Payment Status: <span class="badge-verified">${order.paymentStatus || 'Verified / Authorized'}</span></p>
+                    <p class="inv-info-p">Courier Carrier: <strong>${order.courierName || 'Domex Islandwide Express Courier'}</strong></p>
+                    <p class="inv-info-p">Delivery Estimate: <strong>${order.estimatedDelivery || 'Within 24 - 48 Hours'}</strong></p>
+                </div>
+            </div>
+
+            <!-- ITEM TABLE -->
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:40px; text-align:center;">#</th>
+                        <th>Item Description & OEM Fitment</th>
+                        <th style="width:60px; text-align:center;">Qty</th>
+                        <th style="width:130px; text-align:right;">Unit Price (LKR)</th>
+                        <th style="width:140px; text-align:right;">Subtotal (LKR)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${itemsRows}
+                </tbody>
+            </table>
+
+            <!-- SUMMARY & TOTALS -->
+            <div class="inv-summary-box">
+                <div class="inv-payment-box">
+                    <strong style="color:#0f172a; display:block; margin-bottom:5px;">Payment Record & Guarantee:</strong>
+                    ${isBank ? `
+                        <p style="margin:2px 0;">Bank: <strong>${order.bankName || 'Commercial Bank of Ceylon'}</strong></p>
+                        <p style="margin:2px 0;">Deposit / Txn Ref: <code>${order.bankRefNumber || order.paymentReference || 'TXN-CONFIRMED'}</code></p>
+                        <p style="margin:2px 0;">Depositor: <strong>${order.depositorName || order.customerName}</strong></p>
+                        <p style="margin:2px 0; color:#166534; font-weight:600;">✓ Bank Transfer Verified & Reconciled</p>
+                    ` : `
+                        <p style="margin:2px 0;">Payment Method: <strong>${order.paymentMethod || 'Cash on Delivery (COD)'}</strong></p>
+                        <p style="margin:2px 0;">Reference: <code>${order.paymentReference || 'COD-DISPATCH'}</code></p>
+                        <p style="margin:2px 0; color:#166534; font-weight:600;">✓ Authorized for islandwide door-to-door delivery</p>
+                    `}
+                    <div style="margin-top:8px; font-size:11px; color:#64748b;">
+                        🛡️ <strong>AutoGenuine Quality Guarantee:</strong> 100% Genuine OEM parts with manufacturer anti-counterfeit holographic seal and 14-day replacement warranty.
+                    </div>
+                </div>
+
+                <div class="inv-totals-box">
+                    <div class="inv-total-row">
+                        <span>Items Subtotal:</span>
+                        <span>Rs. ${formatPrice(order.subtotal || order.total)}</span>
+                    </div>
+                    ${order.discount > 0 ? `
+                        <div class="inv-total-row" style="color:#e63946; font-weight:600;">
+                            <span>Promo Discount:</span>
+                            <span>- Rs. ${formatPrice(order.discount)}</span>
+                        </div>
+                    ` : ''}
+                    <div class="inv-total-row">
+                        <span>Islandwide Delivery:</span>
+                        <span>${order.shipping > 0 ? `Rs. ${formatPrice(order.shipping)}` : 'FREE'}</span>
+                    </div>
+                    <div class="inv-total-row grand">
+                        <span>Grand Total:</span>
+                        <span>Rs. ${formatPrice(order.total)}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="inv-footer">
+                <div>
+                    <p style="margin:0 0 2px 0;">This is an electronically generated authentic commercial invoice.</p>
+                    <p style="margin:0;">AutoGenuine Sri Lanka • Hotline: +94 78 628 7337 • support@autogenuine.lk</p>
+                </div>
+                <div style="text-align:right;">
+                    <div style="border-bottom:1px solid #475569; width:170px; margin-bottom:4px; height:30px;"></div>
+                    <span style="font-size:10.5px; color:#475569;">Authorized Dispatch Officer</span>
+                </div>
             </div>
         </div>
-
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-size:13px;">
-            <div>
-                <strong>Billed & Delivered To:</strong>
-                <p style="margin:3px 0;">${order.customerName}</p>
-                <p style="margin:3px 0;">${order.address}</p>
-                <p style="margin:3px 0;">Phone: ${order.customerPhone}</p>
-            </div>
-            <div style="text-align:right;">
-                <strong>Logistics & Courier:</strong>
-                <p style="margin:3px 0;">${order.courierName}</p>
-                <p style="margin:3px 0;">Payment: ${order.paymentMethod}</p>
-            </div>
-        </div>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Spare Part Description</th>
-                    <th style="text-align:center;">Qty</th>
-                    <th style="text-align:right;">Unit Price</th>
-                    <th style="text-align:right;">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${itemsRows}
-            </tbody>
-        </table>
-
-        <div class="totals">
-            <p>Subtotal: Rs. ${formatPrice(order.subtotal || order.total)}</p>
-            ${order.discount > 0 ? `<p>Discount: - Rs. ${formatPrice(order.discount)}</p>` : ''}
-            <p>Shipping / Islandwide Delivery: ${order.shipping > 0 ? `Rs. ${formatPrice(order.shipping)}` : 'FREE'}</p>
-            <p><strong>Grand Total: Rs. ${formatPrice(order.total)}</strong></p>
-        </div>
-
-        <div class="footer">
-            <p>Thank you for choosing AutoGenuine! All genuine OEM parts come with stamped manufacturer warranty.</p>
-            <p>For warranty claims or vehicle fitment support, contact +94 78 628 7337 (WhatsApp available).</p>
-        </div>
-        <script>window.print();</script>
     </body>
-    </html>
-    `;
+    </html>`;
 
-    const printWin = window.open("", "_blank", "width=800,height=700");
-    if (printWin) {
-        printWin.document.open();
-        printWin.document.write(printHtml);
-        printWin.document.close();
+    // Print using clean hidden iframe (avoids popup blockers & ugly blank windows)
+    let printFrame = document.getElementById("autoGenPrintIframe");
+    if (!printFrame) {
+        printFrame = document.createElement("iframe");
+        printFrame.id = "autoGenPrintIframe";
+        printFrame.style.position = "fixed";
+        printFrame.style.right = "0";
+        printFrame.style.bottom = "0";
+        printFrame.style.width = "0";
+        printFrame.style.height = "0";
+        printFrame.style.border = "0";
+        printFrame.style.opacity = "0";
+        printFrame.style.pointerEvents = "none";
+        document.body.appendChild(printFrame);
+    }
+
+    try {
+        const frameDoc = printFrame.contentWindow.document;
+        frameDoc.open();
+        frameDoc.write(printHtml);
+        frameDoc.close();
+
+        setTimeout(() => {
+            try {
+                printFrame.contentWindow.focus();
+                printFrame.contentWindow.print();
+            } catch (err) {
+                // Fallback to window.open if iframe printing restricted
+                const win = window.open("", "_blank");
+                if (win) {
+                    win.document.open();
+                    win.document.write(printHtml);
+                    win.document.close();
+                    win.onload = () => win.print();
+                }
+            }
+        }, 350);
+    } catch (e) {
+        const win = window.open("", "_blank");
+        if (win) {
+            win.document.open();
+            win.document.write(printHtml);
+            win.document.close();
+            win.onload = () => win.print();
+        }
     }
 }
 window.printOrderInvoice = printOrderInvoice;
+
+// Universal HTML Sanitization Helper to prevent XSS
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+window.escapeHtml = escapeHtml;
 
 // Auto-run on DOM ready
 if (typeof document !== "undefined") {

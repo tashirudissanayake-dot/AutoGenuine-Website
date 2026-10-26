@@ -44,7 +44,7 @@ function renderCartPage() {
     itemsContainer.innerHTML = items.map(item => `
         <article class="cart-item-card" data-id="${item.id}">
             <div class="cart-item-img" onclick="window.location.href='product-details.html?id=${item.id}'">
-                <img src="${item.image}" alt="${item.name}">
+                <img src="${item.image}" alt="${item.name}" onerror="this.onerror=null; this.src='images/brake-pad.jpg';">
             </div>
 
             <div class="cart-item-info">
@@ -162,7 +162,7 @@ function initCouponHandler() {
     if (existing && existing.code) {
         input.value = existing.code;
         feedback.className = "coupon-feedback success";
-        feedback.textContent = `✓ Active: 10% Discount Applied (${existing.code})`;
+        feedback.textContent = `✓ Active: ${existing.discountPercent || 10}% Discount Applied (${existing.code})`;
         feedback.style.display = "block";
     }
 
@@ -181,7 +181,7 @@ function initCouponHandler() {
             feedback.textContent = `✓ ${result.message}`;
             feedback.style.display = "block";
             updateSummary(getCartSubtotal());
-            showToast("Coupon Applied!", `10% discount applied to your order.`);
+            showToast("Coupon Applied!", `${result.discountPercent || 10}% discount applied to your order.`);
         } else {
             feedback.className = "coupon-feedback error";
             feedback.textContent = `✗ ${result.message}`;
@@ -245,7 +245,7 @@ function initCheckoutModal() {
     }
 
     if (checkoutForm) {
-        checkoutForm.addEventListener("submit", function (e) {
+        checkoutForm.addEventListener("submit", async function (e) {
             e.preventDefault();
             const name = document.getElementById("custName").value.trim();
             const phone = document.getElementById("custPhone").value.trim();
@@ -381,6 +381,12 @@ function initCheckoutModal() {
                 <p><strong>Total Paid / Due:</strong> <strong style="color: #4eed9d; font-size:1.1rem;">Rs. ${formatPrice(total)}</strong></p>
             `;
 
+            const isBankTransfer = payMethodRadio === "Bank Transfer";
+            const bankNameVal = isBankTransfer ? (document.getElementById("bankNameSelect")?.value || "Commercial Bank") : null;
+            const bankRefVal = isBankTransfer ? (document.getElementById("bankRefNumber")?.value.trim() || "") : null;
+            const depositorVal = isBankTransfer ? (document.getElementById("bankDepositorName")?.value.trim() || "") : null;
+            const depositDateVal = isBankTransfer ? (document.getElementById("bankTransferDate")?.value || new Date().toISOString().split("T")[0]) : null;
+
             // Save to Orders History (MySQL + LocalStorage)
             const orderData = {
                 orderId: orderRef,
@@ -393,6 +399,13 @@ function initCheckoutModal() {
                 paymentMethod: payMethodRadio,
                 paymentStatus: paymentStatus,
                 paymentReference: paymentRefCode,
+                bankName: bankNameVal,
+                bankRefNumber: bankRefVal,
+                depositorName: depositorVal,
+                depositDate: depositDateVal,
+                bankSlipUrl: isBankTransfer ? (uploadedSlipDataUrl || "") : null,
+                bankSlipFileName: isBankTransfer ? (uploadedSlipFileName || "bank_deposit_slip.jpg") : null,
+                bankSlipFileSize: isBankTransfer ? (uploadedSlipFileSize || "") : null,
                 subtotal: subtotal,
                 discount: discount,
                 shipping: shipping,
@@ -409,6 +422,11 @@ function initCheckoutModal() {
                 }))
             };
             saveOrder(orderData);
+
+            // Reset slip data
+            uploadedSlipDataUrl = "";
+            uploadedSlipFileName = "";
+            uploadedSlipFileSize = "";
 
             checkoutModal.classList.remove("active");
             checkoutModal.setAttribute("aria-hidden", "true");
@@ -428,7 +446,9 @@ function initCheckoutModal() {
 // PAYMENT METHOD LOGIC & FIELD VALIDATORS
 // ==========================================
 let activePayMethod = "COD";
+let uploadedSlipDataUrl = "";
 let uploadedSlipFileName = "";
+let uploadedSlipFileSize = "";
 
 function switchPaymentMethod(method) {
     activePayMethod = method;
@@ -442,6 +462,22 @@ function switchPaymentMethod(method) {
     if (bankPanel) bankPanel.style.display = method === "Bank" ? "block" : "none";
     if (cardPanel) cardPanel.style.display = method === "Card" ? "block" : "none";
     if (kokoPanel) kokoPanel.style.display = method === "Koko" ? "block" : "none";
+
+    if (submitBtn) {
+        if (method === "Bank") {
+            submitBtn.textContent = "Submit Bank Transfer Order →";
+            submitBtn.style.background = "";
+        } else if (method === "Card") {
+            submitBtn.textContent = "Pay Securely via Card →";
+            submitBtn.style.background = "";
+        } else if (method === "Koko") {
+            submitBtn.textContent = "Proceed with Koko 3x Pay →";
+            submitBtn.style.background = "";
+        } else {
+            submitBtn.textContent = "Confirm & Place Order (COD) →";
+            submitBtn.style.background = "";
+        }
+    }
 
     // Set today's date on bank transfer date
     const dateInput = document.getElementById("bankTransferDate");
@@ -483,25 +519,56 @@ function handleSlipFileSelect(event) {
     if (!file) return;
 
     uploadedSlipFileName = file.name;
+    uploadedSlipFileSize = (file.size / 1024).toFixed(1) + " KB";
     const labelEl = document.getElementById("slipFileName");
     const previewWrap = document.getElementById("slipPreviewWrap");
     const previewImg = document.getElementById("slipImagePreview");
 
-    if (labelEl) labelEl.textContent = `📎 Attached: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+    if (labelEl) labelEl.textContent = `📎 Attached: ${file.name} (${uploadedSlipFileSize})`;
 
     if (file.type.startsWith("image/")) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            if (previewImg) {
-                previewImg.src = e.target.result;
-                previewImg.style.display = "block";
-            }
-            if (previewWrap) previewWrap.style.display = "flex";
+            const rawDataUrl = e.target.result;
+            // Compress with hidden canvas to keep under localStorage quota (~60KB)
+            const img = new Image();
+            img.onload = function() {
+                const maxDim = 1200;
+                let width = img.width;
+                let height = img.height;
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) {
+                        height = Math.round((height * maxDim) / width);
+                        width = maxDim;
+                    } else {
+                        width = Math.round((width * maxDim) / height);
+                        height = maxDim;
+                    }
+                }
+                const canvas = document.createElement("canvas");
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+                uploadedSlipDataUrl = canvas.toDataURL("image/jpeg", 0.82);
+
+                if (previewImg) {
+                    previewImg.src = uploadedSlipDataUrl;
+                    previewImg.style.display = "block";
+                }
+                if (previewWrap) previewWrap.style.display = "flex";
+            };
+            img.src = rawDataUrl;
         };
         reader.readAsDataURL(file);
     } else {
-        if (previewWrap) previewWrap.style.display = "flex";
-        if (previewImg) previewImg.style.display = "none";
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            uploadedSlipDataUrl = e.target.result;
+            if (previewWrap) previewWrap.style.display = "flex";
+            if (previewImg) previewImg.style.display = "none";
+        };
+        reader.readAsDataURL(file);
     }
     showToast("Slip Attached", "Bank deposit slip attached successfully.");
 }
@@ -610,8 +677,9 @@ function appendChatMessage(htmlText, sender = "user") {
 
     const div = document.createElement("div");
     div.className = `chat-bubble ${sender === 'user' ? 'user-msg' : 'bot-msg'}`;
+    const safeContent = sender === 'user' ? (window.escapeHtml ? window.escapeHtml(htmlText) : htmlText) : htmlText;
     div.innerHTML = `
-        <p>${htmlText}</p>
+        <p>${safeContent}</p>
         <span class="chat-time">Just now</span>
     `;
     list.appendChild(div);
@@ -647,9 +715,17 @@ function switchAccountTab(tabName) {
 
     const target = document.getElementById(
         tabName === "login" ? "accountLoginTab" :
-        tabName === "register" ? "accountRegisterTab" : "accountProfileTab"
+        tabName === "register" ? "accountRegisterTab" :
+        tabName === "reset" ? "accountResetTab" : "accountProfileTab"
     );
     if (target) target.classList.add("active");
+
+    const modalTitle = document.getElementById("accountModalTitle");
+    if (modalTitle) {
+        modalTitle.textContent = tabName === "login" ? "Sign In to Account" :
+                                 tabName === "register" ? "Create Free Account" :
+                                 tabName === "reset" ? "Reset Account Password" : "My Profile & Orders";
+    }
 
     if (tabName === "profile" && user) {
         populateUserProfile(user);
@@ -662,15 +738,17 @@ function populateUserProfile(user) {
     const emailEl = document.getElementById("profileEmail");
     const avatarEl = document.getElementById("profileAvatar");
     const vehicleEl = document.getElementById("profileVehicle");
+    const addressEl = document.getElementById("profileAddress");
     const ordersList = document.getElementById("ordersListContainer");
 
-    if (nameEl) nameEl.textContent = user.name;
+    if (nameEl) nameEl.textContent = user.name || user.full_name || "Customer";
     if (emailEl) emailEl.innerHTML = `${user.email} • <span>${user.phone || ''}</span>`;
     if (avatarEl) {
-        const initials = user.name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
+        const initials = (user.name || "U").split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
         avatarEl.textContent = initials || "U";
     }
-    if (vehicleEl) vehicleEl.textContent = `🚗 ${user.vehicle || 'Standard Vehicle'}`;
+    if (vehicleEl) vehicleEl.textContent = `🚗 ${user.vehicle || user.registered_vehicle || 'Standard Vehicle'}`;
+    if (addressEl) addressEl.textContent = user.address ? `📍 ${user.address}` : "";
 
     // Admin Shortcut Box
     const adminBox = document.getElementById("profileAdminBox");
@@ -886,8 +964,8 @@ function renderCartRecentOrders() {
             );
         }
     } else {
-        // Guest user: show all stored orders from current session/device
-        relevantOrders = [...allOrders];
+        // Guest user: no account, show empty state for privacy
+        relevantOrders = [];
     }
 
     // Filter by Search Query
@@ -996,7 +1074,7 @@ function renderCartRecentOrders() {
                         </div>
                         <div class="meta-item">
                             <small>Deliver To</small>
-                            <span>${o.customerName || 'Customer'} (${o.customerPhone || '0771234567'})</span>
+                            <span>${o.customerName || 'Customer'} (${o.customerPhone || 'N/A'})</span>
                             <small style="color:var(--muted, #8b9bb4); display:block; margin-top:2px;">📍 ${o.city || o.address || 'Islandwide Delivery'}</small>
                         </div>
                         <div class="meta-item">

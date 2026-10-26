@@ -128,6 +128,10 @@ function initGallery(product) {
 
     mainImg.src = product.mainImage;
     mainImg.alt = product.name;
+    mainImg.onerror = function() {
+        this.onerror = null;
+        this.src = 'images/brake-pad.jpg';
+    };
 
     const galleryImages = product.gallery && product.gallery.length > 0 ? product.gallery : [product.mainImage];
 
@@ -137,7 +141,7 @@ function initGallery(product) {
         strip.style.display = "flex";
         strip.innerHTML = galleryImages.map((imgSrc, idx) => `
             <div class="thumbnail-item ${idx === 0 ? 'active' : ''}" data-src="${imgSrc}">
-                <img src="${imgSrc}" alt="${product.name} view ${idx + 1}">
+                <img src="${imgSrc}" alt="${product.name} view ${idx + 1}" onerror="this.onerror=null; this.src='images/brake-pad.jpg';">
             </div>
         `).join("");
 
@@ -323,19 +327,20 @@ function renderReviewsTab(product) {
     document.getElementById("reviewOverallStars").textContent = getStarRatingString(product.rating);
 
     const reviewsContainer = document.getElementById("customerReviewsList");
+    const esc = window.escapeHtml || (s => s);
     reviewsContainer.innerHTML = product.reviews.map(rev => `
         <article class="single-review-card">
             <div class="single-review-header">
-                <div class="review-avatar-badge">${rev.avatar || rev.author.substring(0, 2).toUpperCase()}</div>
+                <div class="review-avatar-badge">${esc(rev.avatar || rev.author.substring(0, 2).toUpperCase())}</div>
                 <div class="review-user-info">
-                    <strong>${rev.author}</strong>
-                    <small>Verified Buyer • ${rev.location || "Sri Lanka"}</small>
+                    <strong>${esc(rev.author)}</strong>
+                    <small>Verified Buyer • ${esc(rev.location || "Sri Lanka")}</small>
                 </div>
-                <div class="review-date-badge">${rev.date}</div>
+                <div class="review-date-badge">${esc(rev.date)}</div>
             </div>
             <div class="stars">${getStarRatingString(rev.rating)}</div>
-            <h4 class="review-item-title">${rev.title}</h4>
-            <p class="review-item-comment">“${rev.comment}”</p>
+            <h4 class="review-item-title">${esc(rev.title)}</h4>
+            <p class="review-item-comment">“${esc(rev.comment)}”</p>
         </article>
     `).join("");
 }
@@ -392,7 +397,7 @@ function initRelatedProducts(product) {
                 ${isProductInWishlist(item.id) ? '♥' : '♡'}
             </button>
             <div class="product-image" onclick="window.location.href='product-details.html?id=${item.id}'">
-                <img src="${item.mainImage}" alt="${item.name}">
+                <img src="${item.mainImage}" alt="${item.name}" onerror="this.onerror=null; this.src='images/brake-pad.jpg';">
                 <div class="quick-view-overlay">
                     <span class="quick-view-btn-pill">View Details →</span>
                 </div>
@@ -485,8 +490,9 @@ function appendChatMessage(htmlText, sender = "user") {
 
     const div = document.createElement("div");
     div.className = `chat-bubble ${sender === 'user' ? 'user-msg' : 'bot-msg'}`;
+    const safeContent = sender === 'user' ? (window.escapeHtml ? window.escapeHtml(htmlText) : htmlText) : htmlText;
     div.innerHTML = `
-        <p>${htmlText}</p>
+        <p>${safeContent}</p>
         <span class="chat-time">Just now</span>
     `;
     list.appendChild(div);
@@ -522,9 +528,17 @@ function switchAccountTab(tabName) {
 
     const target = document.getElementById(
         tabName === "login" ? "accountLoginTab" :
-        tabName === "register" ? "accountRegisterTab" : "accountProfileTab"
+        tabName === "register" ? "accountRegisterTab" :
+        tabName === "reset" ? "accountResetTab" : "accountProfileTab"
     );
     if (target) target.classList.add("active");
+
+    const modalTitle = document.getElementById("accountModalTitle");
+    if (modalTitle) {
+        modalTitle.textContent = tabName === "login" ? "Sign In to Account" :
+                                 tabName === "register" ? "Create Free Account" :
+                                 tabName === "reset" ? "Reset Account Password" : "My Profile & Orders";
+    }
 
     if (tabName === "profile" && user) {
         populateUserProfile(user);
@@ -537,15 +551,17 @@ function populateUserProfile(user) {
     const emailEl = document.getElementById("profileEmail");
     const avatarEl = document.getElementById("profileAvatar");
     const vehicleEl = document.getElementById("profileVehicle");
+    const addressEl = document.getElementById("profileAddress");
     const ordersList = document.getElementById("ordersListContainer");
 
-    if (nameEl) nameEl.textContent = user.name;
+    if (nameEl) nameEl.textContent = user.name || user.full_name || "Customer";
     if (emailEl) emailEl.innerHTML = `${user.email} • <span>${user.phone || ''}</span>`;
     if (avatarEl) {
-        const initials = user.name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
+        const initials = (user.name || "U").split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
         avatarEl.textContent = initials || "U";
     }
-    if (vehicleEl) vehicleEl.textContent = `🚗 ${user.vehicle || 'Standard Vehicle'}`;
+    if (vehicleEl) vehicleEl.textContent = `🚗 ${user.vehicle || user.registered_vehicle || 'Standard Vehicle'}`;
+    if (addressEl) addressEl.textContent = user.address ? `📍 ${user.address}` : "";
 
     // Admin Shortcut Box
     const adminBox = document.getElementById("profileAdminBox");

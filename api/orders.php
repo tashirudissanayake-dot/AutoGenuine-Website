@@ -65,7 +65,7 @@ function handleGetOrders($db) {
             $itemCount += $it['quantity'];
         }
 
-        $orders[] = [
+        $orderObj = [
             'orderId'        => $o['order_reference'],
             'order_id'       => (int)$o['order_id'],
             'date'           => date('d/m/Y', strtotime($o['order_date'])),
@@ -85,6 +85,22 @@ function handleGetOrders($db) {
             'itemCount'      => $itemCount,
             'items'          => $items
         ];
+
+        // Parse bank slip metadata if available in vehicle_notes
+        if (!empty($o['vehicle_notes'])) {
+            $notesData = json_decode($o['vehicle_notes'], true);
+            if (is_array($notesData) && isset($notesData['bankSlip'])) {
+                $b = $notesData['bankSlip'];
+                $orderObj['bankSlipUrl'] = $b['bankSlipUrl'] ?? '';
+                $orderObj['bankSlipFileName'] = $b['bankSlipFileName'] ?? '';
+                $orderObj['bankName'] = $b['bankName'] ?? '';
+                $orderObj['bankRefNumber'] = $b['bankRefNumber'] ?? '';
+                $orderObj['depositorName'] = $b['depositorName'] ?? '';
+                $orderObj['depositDate'] = $b['depositDate'] ?? '';
+            }
+        }
+
+        $orders[] = $orderObj;
     }
 
     sendJsonResponse(true, $orders, 'Orders retrieved successfully');
@@ -93,12 +109,26 @@ function handleGetOrders($db) {
 function handleCreateOrder($db, $input) {
     $orderRef = trim($input['orderId'] ?? '') ?: '#AG-' . rand(10000, 99999);
     $customerName = trim($input['customerName'] ?? $input['name'] ?? 'Customer');
-    $customerPhone = trim($input['customerPhone'] ?? $input['phone'] ?? '0771234567');
+    $customerPhone = trim($input['customerPhone'] ?? $input['phone'] ?? '');
     $customerEmail = trim($input['customerEmail'] ?? $input['email'] ?? '');
     $address = trim($input['address'] ?? 'Sri Lanka');
     $city = trim($input['city'] ?? 'Colombo');
     $district = trim($input['district'] ?? 'Western Province');
     $paymentMethod = trim($input['paymentMethod'] ?? 'Cash on Delivery');
+    // Normalise payment method to match DB ENUM values
+    $payMethodMap = [
+        'COD'                    => 'Cash on Delivery',
+        'Cash on Delivery'       => 'Cash on Delivery',
+        'Bank Transfer'          => 'Direct Bank Transfer',
+        'Bank'                   => 'Direct Bank Transfer',
+        'Direct Bank Transfer'   => 'Direct Bank Transfer',
+        'Credit/Debit Card'      => 'Credit / Debit Card',
+        'Card'                   => 'Credit / Debit Card',
+        'Credit / Debit Card'    => 'Credit / Debit Card',
+        'Koko Installments'      => 'Koko Installments',
+        'Koko'                   => 'Koko Installments',
+    ];
+    $paymentMethod = $payMethodMap[$paymentMethod] ?? 'Cash on Delivery';
     $subtotal = (float)($input['subtotal'] ?? 0);
     $discount = (float)($input['discount'] ?? 0);
     $shipping = (float)($input['shipping'] ?? 0);
@@ -116,13 +146,30 @@ function handleCreateOrder($db, $input) {
 
     $paymentStatus = trim($input['paymentStatus'] ?? 'Pending');
 
+    // Build vehicle notes with any bank slip metadata
+    $vehicleNotes = trim($input['vehicleNotes'] ?? $input['vehicle_notes'] ?? '');
+    if (!empty($input['bankSlipUrl']) || !empty($input['bankRefNumber'])) {
+        $meta = [
+            'vehicleNotes'     => $vehicleNotes,
+            'bankSlip'         => [
+                'bankName'         => $input['bankName'] ?? '',
+                'bankRefNumber'    => $input['bankRefNumber'] ?? '',
+                'depositorName'    => $input['depositorName'] ?? '',
+                'depositDate'      => $input['depositDate'] ?? '',
+                'bankSlipUrl'      => $input['bankSlipUrl'] ?? '',
+                'bankSlipFileName' => $input['bankSlipFileName'] ?? ''
+            ]
+        ];
+        $vehicleNotes = json_encode($meta, JSON_UNESCAPED_SLASHES);
+    }
+
     $insertOrder = $db->prepare("
         INSERT INTO orders 
-        (order_reference, user_id, customer_name, customer_phone, delivery_address, city, district, payment_method, payment_status, subtotal, discount_amount, shipping_fee, total_amount, order_status, order_date)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+        (order_reference, user_id, customer_name, customer_phone, delivery_address, city, district, payment_method, payment_status, subtotal, discount_amount, shipping_fee, total_amount, vehicle_notes, order_status, order_date)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
     ");
     $insertOrder->execute([
-        $orderRef, $userId, $customerName, $customerPhone, $address, $city, $district, $paymentMethod, $paymentStatus, $subtotal, $discount, $shipping, $total, $status
+        $orderRef, $userId, $customerName, $customerPhone, $address, $city, $district, $paymentMethod, $paymentStatus, $subtotal, $discount, $shipping, $total, $vehicleNotes, $status
     ]);
     $newOrderId = $db->lastInsertId();
 
@@ -165,15 +212,22 @@ function handleCreateOrder($db, $input) {
 function handleUpdateOrderStatus($db, $input) {
     $orderRef = trim($input['orderId'] ?? $input['order_reference'] ?? '');
     $newStatus = trim($input['status'] ?? $input['order_status'] ?? '');
+    $paymentStatus = trim($input['paymentStatus'] ?? '');
 
-    if (empty($orderRef) || empty($newStatus)) {
-        sendJsonResponse(false, [], 'Order Reference and New Status are required.');
+    if (empty($orderRef)) {
+        sendJsonResponse(false, [], 'Order Reference is required.');
     }
 
-    $stmt = $db->prepare("UPDATE orders SET order_status = ? WHERE order_reference = ? OR order_id = ?");
-    $stmt->execute([$newStatus, $orderRef, $orderRef]);
+    if (!empty($paymentStatus) && !empty($newStatus)) {
+        $dbPayStatus = (stripos($paymentStatus, 'Paid') !== false || stripos($paymentStatus, 'Verified') !== false) ? 'Paid' : 'Pending';
+        $stmt = $db->prepare("UPDATE orders SET order_status = ?, payment_status = ? WHERE order_reference = ? OR order_id = ?");
+        $stmt->execute([$newStatus, $dbPayStatus, $orderRef, $orderRef]);
+    } else if (!empty($newStatus)) {
+        $stmt = $db->prepare("UPDATE orders SET order_status = ? WHERE order_reference = ? OR order_id = ?");
+        $stmt->execute([$newStatus, $orderRef, $orderRef]);
+    }
 
-    sendJsonResponse(true, [], "Order {$orderRef} status updated to '{$newStatus}' in MySQL database.");
+    sendJsonResponse(true, [], "Order {$orderRef} status updated in MySQL database.");
 }
 
 function handleTrackOrder($db, $input) {
